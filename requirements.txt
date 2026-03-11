@@ -1,10 +1,20 @@
-supabase==2.4.0
+# ── Core — always installed ────────────────────────────────
 requests==2.31.0
 PyJWT==2.8.0
 cryptography==42.0.0
 python-dotenv==1.0.1
+
+# ── App Store Connect ──────────────────────────────────────
+# (uses requests + PyJWT above, no extra packages needed)
+
+# ── Firebase / BigQuery (READY) ────────────────────────────
 google-auth==2.28.0
+google-cloud-bigquery==3.20.0
+
+# ── YouTube + Google Ads (add credentials first) ──────────
 google-auth-oauthlib==1.2.0
 google-api-python-client==2.118.0
-google-ads==24.1.0
-google-cloud-bigquery==3.17.2
+# google-ads==24.1.0   ← uncomment when GOOGLE_ADS_DEV_TOKEN is ready
+
+# ── Supabase ───────────────────────────────────────────────
+# Using REST API directly (no supabase-py needed — fewer deps, faster install)
