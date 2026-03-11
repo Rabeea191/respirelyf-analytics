@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Respire LYF — Marketing Deep Analysis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --bg: #f0f3fa;
+  --white: #ffffff;
+  --border: #e3e8f3;
+  --border2: #c8d3ea;
+  --t1: #0d1526; --t2: #2d3a52; --t3: #5c6e8a; --t4: #8fa0b8;
+  --apple: #1d55d9; --apl: #ebf2ff; --apb: #b9d0fd;
+  --yt: #d42b2b; --ytl: #fff0f0; --ytb: #fbbfbf;
+  --meta: #6830d8; --mtl: #f4efff; --mtb: #d4bffc;
+  --grn: #0a8a5f; --gnl: #eafaf4; --gnb: #9de8cb;
+  --org: #c97209; --ogl: #fff8eb; --ogb: #f9d98a;
+  --sh: 0 1px 4px rgba(13,21,38,.06), 0 1px 2px rgba(13,21,38,.04);
+  --sh2: 0 6px 24px rgba(13,21,38,.10);
+  --sh3: 0 2px 8px rgba(13,21,38,.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 13px; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--t1); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+
+/* ────── TOP HEADER ────── */
+.header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  display: flex; align-items: stretch; gap: 0;
+  box-shadow: var(--sh3);
+  position: sticky; top: 0; z-index: 500;
+  min-height: 62px;
+}
+
+.hbrand {
+  display: flex; align-items: center; gap: 13px;
+  padding: 12px 0; border-right: 1px solid var(--border);
+  padding-right: 26px; margin-right: 24px; flex-shrink: 0;
+}
+
+.logo-wrap {
+  width: 40px; height: 40px; border-radius: 11px;
+  overflow: hidden; flex-shrink: 0;
+  background: #000;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 10px rgba(0,0,0,.3);
+}
+.logo-wrap img { width: 40px; height: 40px; object-fit: contain; display: block; }
+.logo-svg { width: 26px; height: 26px; }
+
+.btext h1 { font-size: 16px; font-weight: 800; color: var(--t1); letter-spacing: -.3px; line-height: 1.2; }
+.btext p  { font-size: 10px; color: var(--t4); letter-spacing: .5px; text-transform: uppercase; margin-top: 2px; }
+
+.hnav {
+  display: flex; align-items: stretch; gap: 0;
+  flex: 1; overflow-x: auto;
+}
+.hnav::-webkit-scrollbar { display: none; }
+
+.hn {
+  display: flex; align-items: center;
+  padding: 0 15px; font-size: 11px; font-weight: 600;
+  color: var(--t3); text-decoration: none; white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: color .15s, border-color .15s;
+}
+.hn:hover { color: var(--t1); }
+.hn.act   { color: var(--apple); border-bottom-color: var(--apple); }
+
+.hright {
+  display: flex; align-items: center; gap: 8px;
+  margin-left: auto; flex-shrink: 0; padding: 12px 0;
+}
+.hchip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 11px; border-radius: 20px;
+  font-size: 10px; font-weight: 700; border: 1px solid;
+}
+.hca { background: var(--apl); border-color: var(--apb); color: var(--apple); }
+.hcy { background: var(--ytl); border-color: var(--ytb); color: var(--yt); }
+.hcm { background: var(--mtl); border-color: var(--mtb); color: var(--meta); }
+
+/* ────── PAGE ────── */
+.page { padding: 36px 48px; max-width: 1720px; }
+
+/* ────── SECTION ────── */
+.sec { margin-bottom: 52px; }
+.stitle {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 26px; padding-bottom: 16px;
+  border-bottom: 2px solid var(--border);
+}
+.snum {
+  width: 32px; height: 32px; border-radius: 9px;
+  background: var(--apple); color: #fff;
+  font-size: 14px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.stitle h2 { font-size: 20px; font-weight: 800; color: var(--t1); letter-spacing: -.4px; }
+.stitle p  { font-size: 12px; color: var(--t3); margin-top: 3px; }
+
+.sdiv {
+  height: 1px; margin: 8px 0 44px;
+  background: linear-gradient(90deg, transparent, var(--border2) 30%, var(--border2) 70%, transparent);
+}
+
+/* ────── KPI BAND ────── */
+.kband { display: grid; grid-template-columns: repeat(auto-fit,minmax(158px,1fr)); gap: 14px; margin-bottom: 26px; }
+.kpi {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 20px; box-shadow: var(--sh);
+  position: relative; overflow: hidden; cursor: default;
+  transition: box-shadow .2s, transform .15s;
+}
+.kpi:hover { box-shadow: var(--sh2); transform: translateY(-1px); }
+.kpi::before {
+  content:''; position: absolute; top:0; left:0; right:0; height:3px;
+  background: var(--kc, var(--apple)); border-radius: 14px 14px 0 0;
+}
+.klbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--t4); margin-bottom: 10px; }
+.kval { font-size: 28px; font-weight: 900; color: var(--t1); line-height: 1; letter-spacing: -.6px; margin-bottom: 6px; }
+.ksub { font-size: 11px; color: var(--t3); }
+.ksub.up { color: var(--grn); font-weight: 600; }
+.ksub.dn { color: var(--yt);  font-weight: 600; }
+.ksub.wa { color: var(--org); font-weight: 600; }
+
+/* ────── CARD ────── */
+.card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px; box-shadow: var(--sh);
+  margin-bottom: 20px; transition: box-shadow .2s;
+}
+.card:hover { box-shadow: var(--sh2); }
+.ch { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+.ch h3 { font-size: 14px; font-weight: 700; color: var(--t1); letter-spacing: -.15px; }
+.ch p  { font-size: 11px; color: var(--t3); margin-top: 4px; }
+.ctag { font-size: 9px; font-weight: 800; padding: 4px 10px; border-radius: 8px; border: 1px solid; letter-spacing: .5px; text-transform: uppercase; white-space: nowrap; }
+.cta { background:var(--apl); border-color:var(--apb); color:var(--apple); }
+.cty { background:var(--ytl); border-color:var(--ytb); color:var(--yt); }
+.ctm { background:var(--mtl); border-color:var(--mtb); color:var(--meta); }
+.ctg { background:var(--gnl); border-color:var(--gnb); color:var(--grn); }
+.ctx { background:#f0f4fa; border-color:var(--border2); color:var(--t2); }
+
+/* grids */
+.g2   { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.g3   { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+.g31  { display:grid; grid-template-columns:2fr 1fr; gap:20px; }
+.g211 { display:grid; grid-template-columns:2fr 1fr 1fr; gap:20px; }
+.g13  { display:grid; grid-template-columns:1fr 2fr; gap:20px; }
+
+/* chart heights */
+.csm canvas { max-height:190px; }
+.cmd canvas { max-height:255px; }
+.clg canvas { max-height:320px; }
+.cxl canvas { max-height:390px; }
+
+/* ────── LEGEND ────── */
+.leg { display:flex; gap:18px; flex-wrap:wrap; margin-bottom:14px; }
+.li  { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--t2); font-weight:500; }
+.ld  { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.lr  { width:18px; height:8px;  border-radius:3px; flex-shrink:0; }
+
+/* ────── PILLS ────── */
+.pill { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:700; }
+.pa { background:var(--apl); color:var(--apple); }
+.py { background:var(--ytl); color:var(--yt); }
+.pm { background:var(--mtl); color:var(--meta); }
+.pg { background:var(--gnl); color:var(--grn); }
+.po { background:var(--ogl); color:var(--org); }
+.px { background:#f0f4fa; color:var(--t4); }
+.pG { background:#d1fae5; color:#065f46; }
+.pR { background:#fee2e2; color:#b91c1c; }
+
+/* ────── CALLOUTS ────── */
+.box {
+  padding:14px 18px; border-radius:12px; border:1px solid;
+  font-size:12px; line-height:1.7; margin-bottom:16px;
+  display:flex; gap:12px; align-items:flex-start;
+}
+.bico { font-size:17px; flex-shrink:0; margin-top:1px; }
+.bblue  { background:var(--apl); border-color:var(--apb); color:#1a3d9e; }
+.bgreen { background:var(--gnl); border-color:var(--gnb); color:#065f46; }
+.borg   { background:var(--ogl); border-color:var(--ogb); color:#7c4a0a; }
+.bred   { background:var(--ytl); border-color:var(--ytb); color:#8b1717; }
+.bpur   { background:var(--mtl); border-color:var(--mtb); color:#42188e; }
+.box strong { font-weight:700; }
+
+/* ────── TABLES ────── */
+.tbl { width:100%; border-collapse:collapse; font-size:12px; }
+.tbl thead th {
+  padding:11px 14px; text-align:left;
+  font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.8px; color:var(--t4);
+  border-bottom:2px solid var(--border); background:#f7f9ff; white-space:nowrap;
+}
+.tbl tbody td { padding:10px 14px; border-bottom:1px solid #f2f5fb; vertical-align:middle; }
+.tbl tbody tr:hover { background:#fafbff; }
+.tbl tfoot td { padding:11px 14px; font-weight:700; border-top:2px solid var(--border2); background:#f7f9ff; font-size:12px; }
+
+.ra { background:#fafcff !important; }
+.ry { background:#fff8f8 !important; }
+.num { font-weight:600; }
+.gt  { color:var(--grn); font-weight:700; }
+.ot  { color:var(--org); font-weight:600; }
+.rt  { color:var(--yt);  font-weight:600; }
+.dt  { color:var(--t4); }
+
+/* ────── BIG STAT ROWS ────── */
+.bigstat {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-radius:11px; border:1px solid;
+  margin-bottom:8px;
+}
+.bs-lbl { font-size:12px; font-weight:600; color:var(--t2); }
+.bs-val { font-size:22px; font-weight:900; letter-spacing:-.5px; }
+
+/* ────── FUNNEL ────── */
+.fn { display:flex; flex-direction:column; gap:5px; }
+.fstep {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 18px; border-radius:12px; border:1px solid;
+  position:relative; overflow:hidden;
+}
+.fbg { position:absolute; left:0; top:0; bottom:0; pointer-events:none; }
+.fic { font-size:20px; flex-shrink:0; position:relative; z-index:1; }
+.ftx { flex:1; position:relative; z-index:1; }
+.ftx strong { display:block; font-size:13px; font-weight:700; color:var(--t1); }
+.ftx small  { font-size:11px; color:var(--t2); }
+.fnum { font-size:26px; font-weight:900; color:var(--t1); position:relative; z-index:1; letter-spacing:-.6px; }
+.fdrop { text-align:center; font-size:11px; color:var(--t3); padding:3px 0; }
+.fdrop em { color:var(--yt); font-style:normal; font-weight:700; }
+
+/* ────── RET BARS ────── */
+.rrow { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.rlbl { width:80px; font-size:11px; color:var(--t2); font-weight:500; }
+.rtrk { flex:1; background:#e8eef7; border-radius:5px; height:11px; overflow:hidden; }
+.rfil { height:100%; border-radius:5px; }
+.rval { width:46px; text-align:right; font-size:12px; font-weight:800; }
+.rimp { width:90px; text-align:right; font-size:11px; color:var(--t3); }
+
+/* ────── KW BAR ────── */
+.kwbar { display:flex; align-items:center; gap:10px; }
+.kwtrk { flex:1; height:7px; background:#e8eef7; border-radius:4px; overflow:hidden; }
+.kwfil { height:100%; border-radius:4px; }
+
+/* ────── SCROLLBAR ────── */
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+
+/* ────── IMPRESSION HIGHLIGHT ────── */
+.imp-hero {
+  background:linear-gradient(135deg,var(--apple) 0%,#3b5eff 100%);
+  border-radius:16px; padding:28px 32px; color:#fff; margin-bottom:20px;
+}
+.imp-hero h3 { font-size:15px; font-weight:700; opacity:.9; margin-bottom:20px; }
+.imp-row { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; }
+.imp-item { text-align:center; }
+.imp-item .iv { font-size:30px; font-weight:900; letter-spacing:-.8px; }
+.imp-item .il { font-size:10px; opacity:.75; margin-top:4px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+.imp-item .ip { font-size:11px; opacity:.65; margin-top:2px; }
+.imp-divider { width:1px; background:rgba(255,255,255,.2); margin:0 4px; }
+
+@media(max-width:1100px) {
+  .g2,.g3,.g31,.g211,.g13 { grid-template-columns:1fr; }
+  .page { padding:20px; } .header { padding:0 20px; }
+  .kband { grid-template-columns:repeat(2,1fr); }
+  .imp-row { grid-template-columns:repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="header">
+  <div class="hbrand">
+    <div class="logo-wrap">
+      <!-- Respire LYF lung icon matching app store icon -->
+<img src="data:image/jpeg;base64,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" style="width:40px;height:40px;object-fit:cover;border-radius:11px;display:block;" alt="Respire LYF">
+    </div>
+    <div class="btext">
+      <h1>Respire LYF</h1>
+      <p>Marketing Analytics</p>
+    </div>
+  </div>
+
+  <nav class="hnav">
+    <a href="#s1" class="hn act">① Overview</a>
+    <a href="#s2" class="hn">② Day-by-Day</a>
+    <a href="#s3" class="hn">③ Impressions</a>
+    <a href="#s4" class="hn">④ Downloads</a>
+    <a href="#s5" class="hn">⑤ Apple Ads</a>
+    <a href="#s6" class="hn">⑥ YouTube</a>
+    <a href="#s7" class="hn">⑦ Full Funnel</a>
+    <a href="#s8" class="hn">⑧ Engagement</a>
+  </nav>
+
+  <div class="hright">
+    <span class="hchip hca">🍎 Apple Ads · $29.60</span>
+    <span class="hchip hcy">▶ YouTube · $8.41</span>
+    <span class="hchip hcm">f Meta · No data</span>
+  </div>
+</header>
+
+<div class="page">
+
+<!-- ══════════════════════════
+  ① OVERVIEW
+══════════════════════════ -->
+<div id="s1" class="sec">
+  <div class="stitle">
+    <div class="snum">1</div>
+    <div>
+      <h2>Overview — Feb 6 to Mar 7, 2026</h2>
+      <p>30 days · iOS · Asthma &amp; COPD · All channels · $38.01 total ad spend</p>
+    </div>
+  </div>
+
+  <div class="box bblue">
+    <div class="bico">🔍</div>
+    <div><strong>How attribution works:</strong> App Store Connect records ALL downloads regardless of source. Apple Search Ads confirms exactly 3 tap-through installs (already included in the 29 total). YouTube &amp; Meta clicks lead users to the App Store where they appear as organic — no separate tracking link was used. Every section below shows raw impression numbers, not percentages.</div>
+  </div>
+
+  <div class="kband">
+    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Total Downloads</div><div class="kval">29</div><div class="ksub up">+867% vs prior period</div></div>
+    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">App Store Impressions</div><div class="kval">5,895</div><div class="ksub up">+24,500% growth</div></div>
+    <div class="kpi" style="--kc:var(--org)"><div class="klbl">Product Page Views</div><div class="kval">177</div><div class="ksub">3.0% of 5,895 impressions</div></div>
+    <div class="kpi" style="--kc:var(--meta)"><div class="klbl">Page → Install Rate</div><div class="kval">16.4%</div><div class="ksub up">Industry avg 8–12% ✓</div></div>
+    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Apple Ads Spend</div><div class="kval">$29.60</div><div class="ksub">3,570 impr · 3 installs</div></div>
+    <div class="kpi" style="--kc:var(--yt)"><div class="klbl">YouTube Ad Spend</div><div class="kval">$8.41</div><div class="ksub wa">38.9% of $21.58 budget</div></div>
+    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">App Sessions</div><div class="kval">83</div><div class="ksub up">+277% vs prior</div></div>
+    <div class="kpi" style="--kc:#94a3b8"><div class="klbl">Revenue</div><div class="kval">$0</div><div class="ksub dn">No monetisation active</div></div>
+  </div>
+
+  <!-- CROSS-CHANNEL TABLE -->
+  <div class="card">
+    <div class="ch"><div><h3>All Channels Side-by-Side — Complete Comparison</h3><p>Every channel · every metric · raw impressions shown</p></div><span class="ctag ctx">ALL CHANNELS</span></div>
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr>
+        <th>Channel</th><th>Type</th><th>Period</th>
+        <th>Impressions</th><th>Platform of Impressions</th>
+        <th>Clicks / Taps</th><th>Confirmed Installs</th>
+        <th>Spend</th><th>CPI</th><th>Status</th>
+      </tr></thead>
+      <tbody>
+        <tr class="ra">
+          <td><strong>🍎 Apple Search Ads</strong></td>
+          <td><span class="pill pa">PAID</span></td>
+          <td style="white-space:nowrap">Feb 10–16 · 7 days</td>
+          <td><span class="kval" style="font-size:16px;color:var(--apple)">3,570</span></td>
+          <td style="font-size:11px;color:var(--t2)">Inside App Store search · part of 5,895 total</td>
+          <td class="num">31 taps · 0.87% TTR</td>
+          <td class="gt num">3 confirmed ✓</td>
+          <td class="num">$29.60</td>
+          <td class="num">$9.87</td>
+          <td><span class="pill pG">Delivered</span></td>
+        </tr>
+        <tr class="ry">
+          <td><strong>▶ YouTube Paid Ad</strong></td>
+          <td><span class="pill py">PAID</span></td>
+          <td style="white-space:nowrap">Feb 20–21 · 2 of 4 days</td>
+          <td><span class="kval" style="font-size:16px;color:var(--yt)">6,310</span></td>
+          <td style="font-size:11px;color:var(--t2)">On YouTube only — separate from App Store</td>
+          <td class="num">78 clicks · 1.24% CTR</td>
+          <td class="ot num">~1–2 est. (no link)</td>
+          <td class="num">$8.41</td>
+          <td class="ot">Unknown</td>
+          <td><span class="pill po">No deep link</span></td>
+        </tr>
+        <tr>
+          <td><strong>f Meta Ads</strong></td>
+          <td><span class="pill pm">PAID</span></td>
+          <td>Unknown</td>
+          <td class="dt">No data</td>
+          <td style="font-size:11px;color:var(--t3)">Would show as organic in App Store</td>
+          <td class="dt">—</td>
+          <td class="dt">Unknown</td>
+          <td class="dt">Unknown</td>
+          <td class="dt">—</td>
+          <td><span class="pill px">No data file</span></td>
+        </tr>
+        <tr>
+          <td><strong>📱 App Store Organic</strong></td>
+          <td><span class="pill pg">FREE</span></td>
+          <td>All 30 days</td>
+          <td><span class="kval" style="font-size:16px;color:var(--grn)">~2,325</span></td>
+          <td style="font-size:11px;color:var(--t2)">App Store search — natural discovery</td>
+          <td class="dt">—</td>
+          <td class="gt num">~26 est.</td>
+          <td class="gt">$0</td>
+          <td class="gt">$0</td>
+          <td><span class="pill pG">Best ROI</span></td>
+        </tr>
+        <tr>
+          <td><strong>▶ YouTube Organic</strong></td>
+          <td><span class="pill pg">FREE</span></td>
+          <td>Jan–Mar 2026</td>
+          <td><span class="kval" style="font-size:16px;color:var(--yt)">21,419</span></td>
+          <td style="font-size:11px;color:var(--t2)">On YouTube — not linked to App Store</td>
+          <td class="num">864 views</td>
+          <td class="dt">Untracked</td>
+          <td class="gt">$0</td>
+          <td class="gt">$0</td>
+          <td><span class="pill po">No App Store link</span></td>
+        </tr>
+      </tbody>
+      <tfoot><tr>
+        <td>COMBINED</td><td></td><td></td>
+        <td class="num">33,624 total</td><td></td>
+        <td class="num">109+ tracked</td>
+        <td class="num">29 total</td>
+        <td class="num">$38.01</td>
+        <td class="num">$1.31 blended</td><td></td>
+      </tr></tfoot>
+    </table>
+    </div>
+  </div>
+
+  <!-- 30-day master chart -->
+  <div class="card">
+    <div class="ch"><div><h3>30-Day Master Chart — All Metrics</h3><p>App Store Impressions ÷50 so all lines fit · hover for raw values · Blue shading = Apple Ads · Red = YouTube Ad days</p></div></div>
+    <div class="leg">
+      <div class="li"><div class="lr" style="background:rgba(29,85,217,.18)"></div>Apple Ads (Feb 10–16)</div>
+      <div class="li"><div class="lr" style="background:rgba(212,43,43,.12)"></div>YouTube Ad (Feb 20–21)</div>
+      <div class="li"><div class="ld" style="background:#1d55d9"></div>App Store Impressions ÷50</div>
+      <div class="li"><div class="ld" style="background:#c97209"></div>Page Views (raw)</div>
+      <div class="li"><div class="ld" style="background:#0a8a5f"></div>Downloads (raw)</div>
+      <div class="li"><div class="ld" style="background:rgba(212,43,43,.6)"></div>YouTube Views (raw)</div>
+    </div>
+    <div class="cxl"><canvas id="masterChart"></canvas></div>
+    <p style="font-size:11px;color:var(--t3);margin-top:10px">↑ Impressions divided by 50 so all lines fit. E.g. "48.5" on the chart = 2,425 actual impressions on Feb 11.</p>
+  </div>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ══════════════════════════
+  ② DAY-BY-DAY
+══════════════════════════ -->
+<div id="s2" class="sec">
+  <div class="stitle">
+    <div class="snum">2</div>
+    <div>
+      <h2>Day-by-Day: What We Did → What Happened</h2>
+      <p>Every day mapped · Blue rows = Apple Ads active · Red rows = YouTube Ad active · Raw impression counts shown</p>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:20px">
+    <div class="card">
+      <div class="ch"><div><h3>Downloads per Day</h3><p>Blue = Apple Ads period · Red = YouTube Ad days · Green = organic only</p></div></div>
+      <div class="cmd"><canvas id="dlDayChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>App Store Impressions per Day (Raw)</h3><p>Big spikes directly caused by Apple Search Ads</p></div></div>
+      <div class="cmd"><canvas id="impDayChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch">
+      <div><h3>Complete 30-Day Log</h3><p>Every metric per day · impression numbers are raw (not percentage) · hover rows for detail</p></div>
+    </div>
+    <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr>
+        <th>Date</th><th>Ad Running</th><th>YT Channel Views</th>
+        <th>App Store Impressions</th><th>Page Views</th>
+        <th>Downloads</th><th>Source Attribution</th>
+        <th>Sessions</th><th>What Happened</th>
+      </tr></thead>
+      <tbody id="dayTbody"></tbody>
+      <tfoot><tr>
+        <td><strong>TOTAL</strong></td><td>—</td><td class="num">864</td>
+        <td class="num" style="color:var(--apple)">5,895</td>
+        <td class="num">177</td>
+        <td class="num">29</td>
+        <td style="font-size:11px">Apple Ads: 3 confirmed · Organic: ~26 est.</td>
+        <td class="num">83</td><td>—</td>
+      </tr></tfoot>
+    </table>
+    </div>
+  </div>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ══════════════════════════
+  ③ IMPRESSIONS DEEP DIVE
+══════════════════════════ -->
+<div id="s3" class="sec">
+  <div class="stitle">
+    <div class="snum">3</div>
+    <div>
+      <h2>Impressions — Deep Dive</h2>
+      <p>Raw impression numbers across all platforms · Where they happened · What they led to</p>
+    </div>
+  </div>
+
+  <!-- HERO IMPRESSION BANNER -->
+  <div class="imp-hero">
+    <h3>📊 Total Impressions Across All Platforms — Feb 6 to Mar 7</h3>
+    <div class="imp-row">
+      <div class="imp-item">
+        <div class="iv">3,570</div>
+        <div class="il">Apple Ads</div>
+        <div class="ip">In App Store search</div>
+      </div>
+      <div class="imp-item">
+        <div class="iv">~2,325</div>
+        <div class="il">App Store Organic</div>
+        <div class="ip">Natural discovery</div>
+      </div>
+      <div class="imp-item">
+        <div class="iv">5,895</div>
+        <div class="il">App Store Total</div>
+        <div class="ip">Apple Ads + Organic</div>
+      </div>
+      <div class="imp-item">
+        <div class="iv">6,310</div>
+        <div class="il">YouTube Paid</div>
+        <div class="ip">On YouTube (separate)</div>
+      </div>
+      <div class="imp-item">
+        <div class="iv">21,419</div>
+        <div class="il">YouTube Organic</div>
+        <div class="ip">Channel impressions</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box borg">
+    <div class="bico">📌</div>
+    <div><strong>Critical distinction — two separate impression pools:</strong>
+    The 3,570 Apple Ads impressions ARE inside the 5,895 App Store total (same platform — App Store search). The 6,310 YouTube paid + 21,419 YouTube organic impressions are completely separate — they happen on YouTube, not in the App Store. Only users who clicked a YouTube ad AND then searched the App Store would add to App Store impressions.</div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div><h3>App Store Impressions: Paid vs Organic</h3><p>Apple Ads drove 3,570 of 5,895 impressions in just 7 days (60.5%)</p></div><span class="ctag cta">APP STORE</span></div>
+      <div class="csm"><canvas id="impSplitDonut"></canvas></div>
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+        <div class="bigstat" style="background:var(--apl);border-color:var(--apb)">
+          <span class="bs-lbl" style="color:var(--apple)">🍎 Apple Search Ads (7 days, Feb 10–16)</span>
+          <span class="bs-val" style="color:var(--apple)">3,570</span>
+        </div>
+        <div class="bigstat" style="background:var(--gnl);border-color:var(--gnb)">
+          <span class="bs-lbl" style="color:var(--grn)">📱 Organic App Store (30 days)</span>
+          <span class="bs-val" style="color:var(--grn)">~2,325</span>
+        </div>
+        <div class="bigstat" style="background:#f7f9ff;border-color:var(--border)">
+          <span class="bs-lbl" style="color:var(--t2)">📊 App Store Total</span>
+          <span class="bs-val" style="color:var(--t1)">5,895</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>App Store Impressions per Day — Paid vs Organic Split</h3><p>Blue = Apple Ads impressions · Grey = organic impressions</p></div></div>
+      <div class="cmd"><canvas id="impSplitDay"></canvas></div>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="card">
+      <div class="ch"><div><h3>Impression → Page View Rate</h3><p>How many of 5,895 App Store impressions led to a page view</p></div></div>
+      <div style="text-align:center;padding:20px 0 14px">
+        <div style="font-size:56px;font-weight:900;color:var(--org);letter-spacing:-2px">177</div>
+        <div style="font-size:13px;color:var(--t2);margin-top:4px">page views from <strong>5,895</strong> impressions</div>
+        <div style="font-size:20px;font-weight:800;color:var(--org);margin-top:8px">3.0% tap rate</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:4px">97% scroll past without tapping</div>
+      </div>
+      <div style="background:#e8eef7;border-radius:8px;height:12px;overflow:hidden;margin-top:8px">
+        <div style="width:3%;height:100%;background:var(--org);border-radius:8px"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t4);margin-top:5px"><span>Tapped (177)</span><span>Scrolled past (5,718)</span></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>Top 5 Impression Days</h3><p>Highest App Store impression counts</p></div></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="bigstat" style="background:var(--apl);border-color:var(--apb)"><span class="bs-lbl"><span class="pill pa">🍎</span> Feb 11</span><span class="bs-val" style="color:var(--apple)">2,425</span></div>
+        <div class="bigstat" style="background:var(--apl);border-color:var(--apb)"><span class="bs-lbl"><span class="pill pa">🍎</span> Feb 16</span><span class="bs-val" style="color:var(--apple)">1,399</span></div>
+        <div class="bigstat" style="background:var(--apl);border-color:var(--apb)"><span class="bs-lbl"><span class="pill pa">🍎</span> Feb 12</span><span class="bs-val" style="color:var(--apple)">821</span></div>
+        <div class="bigstat" style="background:#f7f9ff;border-color:var(--border)"><span class="bs-lbl"><span class="pill px">Residual</span> Feb 17</span><span class="bs-val" style="color:var(--t2)">466</span></div>
+        <div class="bigstat" style="background:var(--apl);border-color:var(--apb)"><span class="bs-lbl"><span class="pill pa">🍎</span> Feb 15</span><span class="bs-val" style="color:var(--apple)">116</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>All-Platform Impressions</h3><p>Where each impression appeared</p></div></div>
+      <div class="csm"><canvas id="crossImpChart"></canvas></div>
+      <p style="font-size:11px;color:var(--t2);margin-top:10px;line-height:1.6">Total 33,624 impressions across platforms. YouTube's 27,729 impressions don't flow into App Store automatically — users must choose to search and download.</p>
+    </div>
+  </div>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ══════════════════════════
+  ④ DOWNLOADS DEEP DIVE
+══════════════════════════ -->
+<div id="s4" class="sec">
+  <div class="stitle">
+    <div class="snum">4</div>
+    <div>
+      <h2>Downloads — When, Why &amp; From Where</h2>
+      <p>29 total installs · Source attribution clarified · Day-by-day breakdown</p>
+    </div>
+  </div>
+
+  <div class="box bblue">
+    <div class="bico">💡</div>
+    <div><strong>How to count downloads correctly:</strong> App Store Connect reports 29 total downloads. Apple Ads confirmed 3 tap-through installs (included in 29). During the Apple Ads week (Feb 10–16), there were 11 total downloads — only 3 were from Apple Ads; the other 8 were organic. YouTube and Meta installs show as organic and are untrackable without a deep link.</div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div><h3>Daily Downloads with Ad Period Overlay</h3><p>Blue = Apple Ads running · Red = YouTube Ad · Green = organic only</p></div></div>
+      <div class="clg"><canvas id="dlAttrChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>Apple Ads Week: 11 Downloads — Only 3 from Apple Ads</h3><p>Feb 10–16 stacked — Blue = confirmed Apple Ads install · Grey = organic/other</p></div><span class="ctag cta">ATTRIBUTION</span></div>
+      <div class="cmd"><canvas id="appleWeekChart"></canvas></div>
+      <div class="box borg" style="margin-top:14px;margin-bottom:0">
+        <div class="bico">⚠️</div>
+        <div><strong>Do not count all 11 downloads as Apple Ads results.</strong> Apple Ads confirmed exactly 3 via tap-through reporting: 1 on Feb 11, 1 on Feb 12, 1 on Feb 13. The remaining 8 came from organic App Store search, YouTube organic, or Meta ads (unknown).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="card">
+      <div class="ch"><div><h3>Estimated Download Sources</h3><p>Best estimate of 29 installs by origin</p></div></div>
+      <div class="csm"><canvas id="dlSrcDonut"></canvas></div>
+      <p style="font-size:11px;color:var(--t2);margin-top:10px;line-height:1.6">Organic is the single biggest driver at zero cost. Apple Ads confirmed 3. YouTube estimated 1–2 (no tracking). Meta unknown.</p>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>Download Spike Analysis</h3></div></div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div class="box bblue" style="margin:0"><div class="bico">📅</div><div><strong>Feb 11 — 4 downloads</strong> (highest single day)<br><span style="font-size:11px">Apple Ads peak: 2,425 impressions. 1 Apple Ads install confirmed. 3 from organic or other channels.</span></div></div>
+        <div class="box borg" style="margin:0"><div class="bico">📅</div><div><strong>Feb 19–20 — 3 downloads each (6 total)</strong><br><span style="font-size:11px">Feb 20: YouTube Ad live, 127 channel views. 3 downloads likely include 1–2 YouTube-driven (untracked).</span></div></div>
+        <div class="box bgreen" style="margin:0"><div class="bico">📅</div><div><strong>Mar 5–7 — 4 downloads in 3 days</strong><br><span style="font-size:11px">Zero paid ads. Pure organic. App Store natural search improving month-over-month.</span></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>Page Views vs Downloads per Day</h3><p>When page views happened vs when installs happened</p></div></div>
+      <div class="cmd"><canvas id="pvDlChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ══════════════════════════
+  ⑤ APPLE SEARCH ADS
+══════════════════════════ -->
+<div id="s5" class="sec">
+  <div class="stitle">
+    <div class="snum">5</div>
+    <div>
+      <h2>Apple Search Ads — Full Analysis</h2>
+      <p>Feb 10–16, 2026 · $29.60 spent · 3,570 App Store impressions · 31 taps · 3 confirmed installs</p>
+    </div>
+  </div>
+
+  <div class="kband">
+    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Spend</div><div class="kval">$29.60</div><div class="ksub">$70 budget · 42.3% used</div></div>
+    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">App Store Impressions</div><div class="kval">3,570</div><div class="ksub">In-store keyword search</div></div>
+    <div class="kpi" style="--kc:var(--org)"><div class="klbl">Taps</div><div class="kval">31</div><div class="ksub">0.87% tap-through rate</div></div>
+    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Confirmed Installs</div><div class="kval">3</div><div class="ksub up">9.7% tap → install</div></div>
+    <div class="kpi" style="--kc:var(--meta)"><div class="klbl">Cost / Install</div><div class="kval">$9.87</div><div class="ksub">Industry avg $3–$10</div></div>
+    <div class="kpi" style="--kc:var(--org)"><div class="klbl">Avg Cost / Tap</div><div class="kval">$0.95</div><div class="ksub">Competitive for health</div></div>
+  </div>
+
+  <div class="g31">
+    <div class="card">
+      <div class="ch"><div><h3>All Keywords — Impressions, Taps &amp; Installs</h3><p>14 keywords got activity out of 120+. Sorted by impressions.</p></div><span class="ctag cta">KEYWORDS</span></div>
+      <div style="overflow-x:auto">
+      <table class="tbl" id="kwTable">
+        <thead><tr>
+          <th>Keyword</th><th>Impressions</th><th>Impression Bar</th>
+          <th>Taps</th><th>Installs</th><th>Spend</th><th>Avg CPT</th><th>Result</th>
+        </tr></thead>
+        <tbody id="kwTbody"></tbody>
+        <tfoot><tr>
+          <td>Total</td>
+          <td class="num" style="color:var(--apple)">3,570</td><td></td>
+          <td class="num">31</td><td class="gt num">3</td>
+          <td class="num">$29.60</td><td class="num">$0.95</td><td></td>
+        </tr></tfoot>
+      </table>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div class="card">
+        <div class="ch"><div><h3>3 Keywords That Got Installs</h3><p>Out of 14 active keywords only these 3 converted</p></div></div>
+        <div class="box bgreen" style="margin-bottom:9px"><div class="bico">🏆</div><div><strong>peak flow</strong> — 1 install · 45 impressions · $0.05 spend<br><span style="font-size:11px">$0.05 per install — best CPI. User searched for exact asthma term. Most intent-aligned.</span></div></div>
+        <div class="box bblue" style="margin-bottom:9px"><div class="bico">✅</div><div><strong>health insights</strong> — 1 install · 280 impressions · $1.27 spend<br><span style="font-size:11px">General health searcher. $1.27 CPI — good value.</span></div></div>
+        <div class="box bblue" style="margin:0"><div class="bico">✅</div><div><strong>health monitoring</strong> — 1 install · 235 impressions · $2.63 spend<br><span style="font-size:11px">Health monitoring searcher. Decent CPI for health niche.</span></div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div><h3>Keyword Impressions vs Installs</h3><p>High impressions do not always mean installs</p></div></div>
+        <div class="csm"><canvas id="kwImpInstChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div><h3>Apple Ads Week: Daily Impressions vs Downloads (Dual Axis)</h3><p>Feb 10–16 · Left axis = impressions · Right axis = downloads · Notice the 1-day conversion lag</p></div></div>
+    <div class="cmd"><canvas id="appleWeekDetail"></canvas></div>
+    <p style="font-size:11px;color:var(--t2);margin-top:10px">Feb 11 had 2,425 impressions (peak) but installs peaked on Feb 12–13. There is a 1-day lag — users see the ad, consider it overnight, then install the next day. This is normal for health apps.</p>
+  </div>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ══════════════════════════
+  ⑥ YOUTUBE
+══════════════════════════ -->
+<div id="s6" class="sec">
+  <div class="stitle">
+    <div class="snum">6</div>
+    <div>
+      <h2>YouTube — Paid Ad + Organic Channel</h2>
+      <p>Paid ad: Feb 20–21 · 6,310 impressions · $8.41 spent · Organic: 864 views · 21,419 channel impressions</p>
+    </div>
+  </div>
+
+  <div class="box bred">
+    <div class="bico">⚠️</div>
+    <div><strong>YouTube installs are not tracked:</strong> No App Store deep link was added to the YouTube ad. Downloads driven by YouTube appear as organic in App Store Connect. We cannot confirm exactly how many downloads came from YouTube. Feb 20 had 3 downloads and 127 YouTube views — YouTube likely drove 1–2 but this is an estimate only.</div>
+  </div>
+
+  <div class="g211">
+    <div class="card">
+      <div class="ch"><div><h3>YouTube Paid Ad Summary</h3><p>Feb 20–21 · $8.41 of $21.58 budget · Only Fri–Sat delivered</p></div><span class="ctag cty">PAID AD</span></div>
+      <div class="kband" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
+        <div class="kpi" style="--kc:var(--yt)"><div class="klbl">Spent</div><div class="kval" style="font-size:22px">$8.41</div><div class="ksub dn">38.9% of budget</div></div>
+        <div class="kpi" style="--kc:var(--yt)"><div class="klbl">YouTube Impressions</div><div class="kval" style="font-size:22px">6,310</div><div class="ksub">On YouTube only</div></div>
+        <div class="kpi" style="--kc:var(--org)"><div class="klbl">Clicks</div><div class="kval" style="font-size:22px">78</div><div class="ksub">1.24% CTR</div></div>
+        <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Cost / Click</div><div class="kval" style="font-size:22px">$0.11</div><div class="ksub up">Very low CPC</div></div>
+      </div>
+      <div class="box borg" style="margin:0"><div class="bico">📋</div><div><strong>Why only 2 of 4 days ran:</strong> Sunday &amp; Monday had zero delivery. Google could not find enough eligible viewers with the narrow targeting. $13.17 remained unspent. Adding broader health interest keywords and a wider geo would fix underdelivery.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><div><h3>Ad Video Retention</h3><p>What % of viewers watch at each point</p></div></div>
+      <div style="margin:6px 0">
+        <div class="rrow"><div class="rlbl">Start (0s)</div><div class="rtrk"><div class="rfil" style="width:100%;background:#1d55d9"></div></div><div class="rval" style="color:#1d55d9">100%</div><div class="rimp" style="color:var(--apple);font-weight:700">6,310 viewers</div></div>
+        <div class="rrow"><div class="rlbl">30s (25%)</div><div class="rtrk"><div class="rfil" style="width:17.81%;background:#d42b2b"></div></div><div class="rval" style="color:#d42b2b">17.8%</div><div class="rimp">~1,124 viewers</div></div>
+        <div class="rrow"><div class="rlbl">1:00 (50%)</div><div class="rtrk"><div class="rfil" style="width:9.59%;background:#d42b2b"></div></div><div class="rval" style="color:#d42b2b">9.6%</div><div class="rimp">~605 viewers</div></div>
+        <div class="rrow"><div class="rlbl">1:31 (75%)</div><div class="rtrk"><div class="rfil" style="width:8.22%;background:#c97209"></div></div><div class="rval" style="color:#c97209">8.2%</div><div class="rimp">~519 viewers</div></div>
+        <div class="rrow"><div class="rlbl">End (2:01)</div><div class="rtrk"><div class="rfil" style="width:8.22%;background:#0a8a5f"></div></div><div class="rval" style="color:#0a8a5f">8.2%</div><div class="rimp">~519 watched all</div></div>
+      </div>
+      <div class="box bblue" style="margin:0"><div class="bico">💡</div><div><strong>Key insight:</strong> 82% skip before 30s. But viewers who pass 30s almost never leave (9.6% → 8.2% to the end). The content is solid — only the opening 30-second hook needs to be stronger.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><div><h3>Ad Audience Demographics</h3><p>Age groups who saw the YouTube ad</p></div></div>
+      <div class="csm"><canvas id="ageChart"></canvas></div>
+      <p style="font-size:11px;color:var(--t2);margin-top:10px">25–34 top group (31.2%). Male 60.7% vs Female 40.7%. Solid alignment with asthma/COPD demographics.</p>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div><h3>YouTube Daily Channel Views — Feb 6 to Mar 7</h3><p>Red spike on Feb 20 = YouTube Paid Ad day (127 views — channel peak)</p></div><span class="ctag cty">ORGANIC</span></div>
+      <div class="cmd"><canvas id="ytViewsChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>Top 10 Videos by Views</h3><p>864 total organic views · No App Store link in any video description (missed opportunity)</p></div></div>
+      <div style="overflow-x:auto">
+      <table class="tbl">
+        <thead><tr><th>#</th><th>Video Title</th><th>Views</th><th>Impr.</th><th>CTR</th><th>Published</th></tr></thead>
+        <tbody id="vidTbody"></tbody>
+      </table>
+      </div>
+      <div class="box borg" style="margin-top:14px;margin-bottom:0"><div class="bico">🔗</div><div><strong>Quick win:</strong> Add the App Store link to all video descriptions. 864 organic viewers are currently getting no path to download. This is free traffic going to waste.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ══════════════════════════
+  ⑦ FULL FUNNEL
+══════════════════════════ -->
+<div id="s7" class="sec">
+  <div class="stitle">
+    <div class="snum">7</div>
+    <div>
+      <h2>Full Conversion Funnel</h2>
+      <p>From first impression to active app user — every drop-off shown with raw numbers</p>
+    </div>
+  </div>
+
+  <div class="g13">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div class="card">
+        <div class="ch"><div><h3>Funnel Bar Chart (Log Scale)</h3><p>True scale of the drop-off</p></div></div>
+        <div class="cmd"><canvas id="funnelChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div><h3>Key Conversion Rates</h3></div></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="bigstat" style="background:#f7f9ff;border-color:var(--border)"><span class="bs-lbl">Impr. → Page View</span><span class="bs-val" style="color:var(--org)">3.0%</span></div>
+          <div class="bigstat" style="background:var(--gnl);border-color:var(--gnb)"><span class="bs-lbl">Page View → Install ✅ above avg</span><span class="bs-val" style="color:var(--grn)">16.4%</span></div>
+          <div class="bigstat" style="background:#f7f9ff;border-color:var(--border)"><span class="bs-lbl">Overall: Impr. → Install</span><span class="bs-val" style="color:var(--apple)">0.49%</span></div>
+          <div class="bigstat" style="background:#f7f9ff;border-color:var(--border)"><span class="bs-lbl">Sessions per install</span><span class="bs-val" style="color:var(--meta)">2.86×</span></div>
+          <div class="bigstat" style="background:var(--ytl);border-color:var(--ytb)"><span class="bs-lbl">Days with 0 sessions</span><span class="bs-val" style="color:var(--yt)">21 / 30</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><div><h3>Step-by-Step Funnel</h3><p>Every stage with raw numbers and drop-off explanation</p></div></div>
+      <div class="fn">
+        <div class="fstep" style="border-color:var(--apb);background:var(--apl)">
+          <div class="fbg" style="width:100%;background:rgba(29,85,217,.04)"></div>
+          <div class="fic">📣</div>
+          <div class="ftx"><strong>Total Ad Impressions (all channels)</strong><small>Apple Ads 3,570 + YouTube Paid 6,310 + YouTube Organic 21,419 + App Store Organic ~2,325</small></div>
+          <div class="fnum">33,624</div>
+        </div>
+        <div class="fdrop">↓ Apple Ads feeds directly to App Store · YouTube &amp; Meta require users to independently search the App Store <em>▼ most never reach the store</em></div>
+        <div class="fstep" style="border-color:var(--apb);background:#fafcff">
+          <div class="fbg" style="width:17.5%;background:rgba(29,85,217,.04)"></div>
+          <div class="fic">📱</div>
+          <div class="ftx"><strong>App Store Impressions</strong><small>Apple Ads (3,570) + Organic (~2,325) = 5,895 total</small></div>
+          <div class="fnum">5,895</div>
+        </div>
+        <div class="fdrop">↓ 177 of 5,895 tapped to view listing (3.0%) <em>▼ 5,718 scrolled past — icon/name not compelling enough</em></div>
+        <div class="fstep" style="border-color:var(--ogb);background:var(--ogl)">
+          <div class="fbg" style="width:3%;background:rgba(201,114,9,.04)"></div>
+          <div class="fic">📄</div>
+          <div class="ftx"><strong>Product Page Views</strong><small>Users opened and read the full app listing</small></div>
+          <div class="fnum">177</div>
+        </div>
+        <div class="fdrop">↓ 29 of 177 tapped "Get" (16.4%) <em style="color:var(--grn)">✓ above average — industry avg 8–12%</em></div>
+        <div class="fstep" style="border-color:var(--gnb);background:var(--gnl)">
+          <div class="fbg" style="width:0.5%;background:rgba(10,138,95,.04)"></div>
+          <div class="fic">⬇</div>
+          <div class="ftx"><strong>Downloads / Installs</strong><small>Apple Ads confirmed 3 · Organic ~26</small></div>
+          <div class="fnum">29</div>
+        </div>
+        <div class="fdrop">↓ 83 sessions from 29 installs = 2.86 sessions per user</div>
+        <div class="fstep" style="border-color:var(--mtb);background:var(--mtl)">
+          <div class="fbg" style="width:0.09%;background:rgba(104,48,216,.04)"></div>
+          <div class="fic">📲</div>
+          <div class="ftx"><strong>App Sessions</strong><small>29 installs · 83 total sessions · 9 active days of 30</small></div>
+          <div class="fnum">83</div>
+        </div>
+        <div class="fdrop">↓ No monetisation system in place <em>▼ 83 sessions generated $0</em></div>
+        <div class="fstep" style="border-color:var(--border2);background:#f7f9ff">
+          <div class="fic">💰</div>
+          <div class="ftx"><strong>Revenue</strong><small>No in-app purchase or subscription implemented yet</small></div>
+          <div class="fnum" style="color:var(--yt)">$0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sdiv"></div>
+
+<!-- ══════════════════════════
+  ⑧ ENGAGEMENT
+══════════════════════════ -->
+<div id="s8" class="sec">
+  <div class="stitle">
+    <div class="snum">8</div>
+    <div>
+      <h2>App Engagement — After Install</h2>
+      <p>Sessions · Active devices · User behaviour · 83 sessions from 29 installs over 30 days</p>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><div><h3>Daily Sessions — All 30 Days</h3><p>Purple = active sessions · Light = zero · 21 of 30 days had no activity</p></div></div>
+      <div class="cmd"><canvas id="sessionsChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>Session Cluster Analysis</h3><p>When users were actually active and why</p></div></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="box bblue" style="margin:0"><div class="bico">📅</div><div><strong>Feb 12 — 12 sessions, 2 devices</strong><br><span style="font-size:11px">Day 3 of Apple Ads. New install engaged immediately — opened the app 12 times in one day.</span></div></div>
+        <div class="box bblue" style="margin:0"><div class="bico">📅</div><div><strong>Feb 18 — 25 sessions, 1 device (peak day)</strong><br><span style="font-size:11px">No ads running. Organic user, very engaged. 25 app opens in one day — high intent user.</span></div></div>
+        <div class="box borg" style="margin:0"><div class="bico">📅</div><div><strong>Feb 20 — 10 sessions, 2 devices</strong><br><span style="font-size:11px">YouTube Ad live. A second device active — new user acquired that day.</span></div></div>
+        <div class="box bpur" style="margin:0"><div class="bico">📅</div><div><strong>Mar 2 — 19 sessions, 1 device</strong><br><span style="font-size:11px">Same power user returned after a 10-day gap. No ads. This user is genuinely retained.</span></div></div>
+        <div class="box bblue" style="margin:0"><div class="bico">📅</div><div><strong>Mar 7 — 5 sessions, 1 device</strong><br><span style="font-size:11px">End of period. Continued engagement. Power user still active 25 days post-install.</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="card">
+      <div class="ch"><div><h3>Weekly Downloads &amp; Sessions</h3></div></div>
+      <div class="csm"><canvas id="weeklyChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>Active Devices per Day</h3><p>Max 2 devices on any single day</p></div></div>
+      <div class="csm"><canvas id="devicesChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>Engagement Summary</h3></div></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="bigstat" style="background:#f7f9ff;border-color:var(--border)"><span class="bs-lbl">Total sessions</span><span class="bs-val" style="color:var(--meta)">83</span></div>
+        <div class="bigstat" style="background:var(--gnl);border-color:var(--gnb)"><span class="bs-lbl">Days with sessions (active)</span><span class="bs-val" style="color:var(--grn)">9 / 30</span></div>
+        <div class="bigstat" style="background:var(--ytl);border-color:var(--ytb)"><span class="bs-lbl">Dead days (0 sessions)</span><span class="bs-val" style="color:var(--yt)">21 / 30</span></div>
+        <div class="bigstat" style="background:#f7f9ff;border-color:var(--border)"><span class="bs-lbl">Sessions / install</span><span class="bs-val" style="color:var(--apple)">2.86×</span></div>
+        <div class="bigstat" style="background:#f7f9ff;border-color:var(--border)"><span class="bs-lbl">Peak day (Feb 18)</span><span class="bs-val" style="color:var(--meta)">25 sessions</span></div>
+        <div class="bigstat" style="background:var(--ytl);border-color:var(--ytb)"><span class="bs-lbl">Revenue from 83 sessions</span><span class="bs-val" style="color:var(--yt)">$0</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .page -->
+
+<script>
+// ══ RAW DATA ══
+const FL=['Feb 6','Feb 7','Feb 8','Feb 9','Feb 10','Feb 11','Feb 12','Feb 13','Feb 14','Feb 15','Feb 16','Feb 17','Feb 18','Feb 19','Feb 20','Feb 21','Feb 22','Feb 23','Feb 24','Feb 25','Feb 26','Feb 27','Feb 28','Mar 1','Mar 2','Mar 3','Mar 4','Mar 5','Mar 6','Mar 7'];
+const imp  =[3,6,2,8,6,2425,821,19,80,116,1399,466,29,25,72,74,35,33,32,22,21,25,19,9,34,16,13,9,28,48];
+const pv   =[0,2,0,2,2,10,4,2,8,4,10,8,2,2,24,37,1,1,0,5,3,1,2,0,4,1,1,5,17,19];
+const dl   =[0,0,0,0,1,4,2,2,1,0,1,1,2,3,3,0,0,1,0,0,1,0,0,1,1,1,0,2,1,1];
+const sess =[0,0,0,0,1,2,12,0,0,0,0,3,25,6,10,0,0,0,0,0,0,0,0,0,19,0,0,0,0,5];
+const ytVw =[7,4,16,31,8,31,37,34,7,17,40,51,55,40,127,56,51,11,12,7,5,14,5,1,11,18,10,9,8,15];
+const actD =[0,0,0,0,1,1,2,0,0,0,0,1,1,2,2,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1];
+
+const isA=i=>i>=4&&i<=10;
+const isY=i=>i>=14&&i<=15;
+
+// ══ CHART DEFAULTS ══
+Chart.defaults.font.family='Inter';
+const TT={backgroundColor:'#fff',titleColor:'#0d1526',bodyColor:'#2d3a52',borderColor:'#e3e8f3',borderWidth:1,padding:13,cornerRadius:9,titleFont:{weight:'700',size:12},bodyFont:{size:11}};
+const GX={
+  x:{ticks:{color:'#8fa0b8',font:{size:10},maxTicksLimit:12},grid:{color:'#f2f5fb'},border:{color:'#e3e8f3'}},
+  y:{ticks:{color:'#8fa0b8',font:{size:10}},grid:{color:'#f2f5fb'},border:{color:'#e3e8f3'}}
+};
+const base={responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:TT},scales:GX};
+const cx=id=>document.getElementById(id).getContext('2d');
+
+// ══ 1. MASTER CHART ══
+new Chart(cx('masterChart'),{
+  type:'line',
+  data:{
+    labels:FL,
+    datasets:[
+      {label:'Impressions ÷50',data:imp.map(v=>+(v/50).toFixed(2)),borderColor:'#1d55d9',backgroundColor:'rgba(29,85,217,.07)',fill:true,tension:.4,pointRadius:2,borderWidth:2.5},
+      {label:'Page Views',data:pv,borderColor:'#c97209',backgroundColor:'transparent',tension:.4,pointRadius:3,borderWidth:2,borderDash:[6,4]},
+      {label:'Downloads',data:dl,borderColor:'#0a8a5f',backgroundColor:'rgba(10,138,95,.08)',fill:true,tension:.3,
+        pointRadius:dl.map(v=>v>=3?7:v>0?4:2),
+        pointBackgroundColor:dl.map(v=>v>=3?'#0a8a5f':v>0?'rgba(10,138,95,.7)':'rgba(10,138,95,.3)'),
+        borderWidth:2.5},
+      {label:'YouTube Views',data:ytVw,borderColor:'rgba(212,43,43,.5)',backgroundColor:'transparent',tension:.4,pointRadius:2,borderWidth:1.5,borderDash:[3,3]}
+    ]
+  },
+  options:{
+    ...base,
+    plugins:{
+      ...base.plugins,
+      legend:{display:true,labels:{color:'#2d3a52',font:{size:11},boxWidth:12,padding:18}}
+    }
+  }
+});
+
+// ══ 2. DL DAY CHART ══
+new Chart(cx('dlDayChart'),{
+  type:'bar',
+  data:{labels:FL,datasets:[{
+    label:'Downloads',
+    data:dl,
+    backgroundColor:dl.map((_,i)=>isA(i)?'#1d55d9':isY(i)?'#d42b2b':'#0a8a5f'),
+    borderRadius:5
+  }]},
+  options:{...base,plugins:{...base.plugins,tooltip:{...TT,callbacks:{afterBody:ctx=>{const i=ctx[0].dataIndex;return[isA(i)?'Apple Search Ads active':isY(i)?'YouTube Ad active':'No paid ads — organic']}}}}}
+});
+
+// ══ 3. IMP DAY CHART ══
+new Chart(cx('impDayChart'),{
+  type:'bar',
+  data:{labels:FL,datasets:[{
+    label:'App Store Impressions',
+    data:imp,
+    backgroundColor:imp.map((_,i)=>isA(i)?'rgba(29,85,217,.8)':'#cbd5e1'),
+    borderRadius:4
+  }]},
+  options:{...base,plugins:{...base.plugins,tooltip:{...TT,callbacks:{afterBody:ctx=>{const i=ctx[0].dataIndex;const v=imp[i];return[`Raw impressions: ${v.toLocaleString()}`,isA(i)?'Apple Ads driving these':'Organic only']}}}}}
+});
+
+// ══ 4. IMP SPLIT DONUT ══
+new Chart(cx('impSplitDonut'),{
+  type:'doughnut',
+  data:{labels:['Apple Ads (3,570)','Organic (~2,325)'],datasets:[{data:[3570,2325],backgroundColor:['#1d55d9','#0a8a5f'],borderWidth:6,borderColor:'#fff',hoverOffset:7}]},
+  options:{responsive:true,cutout:'65%',plugins:{legend:{position:'bottom',labels:{color:'#2d3a52',font:{size:11},padding:14,boxWidth:10}},tooltip:TT}}
+});
+
+// ══ 5. IMP SPLIT DAY ══
+new Chart(cx('impSplitDay'),{
+  type:'bar',
+  data:{labels:FL,datasets:[
+    {label:'Apple Ads Impressions',data:imp.map((v,i)=>isA(i)?v:0),backgroundColor:'rgba(29,85,217,.8)',borderRadius:4,stack:'s'},
+    {label:'Organic Impressions',data:imp.map((v,i)=>isA(i)?0:v),backgroundColor:'#cbd5e1',borderRadius:4,stack:'s'}
+  ]},
+  options:{...base,plugins:{...base.plugins,legend:{display:true,labels:{color:'#2d3a52',font:{size:10},boxWidth:8,padding:12}},tooltip:{...TT,callbacks:{afterBody:ctx=>{const i=ctx[0].dataIndex;return[`Total that day: ${imp[i].toLocaleString()} impressions`]}}}}}
+});
+
+// ══ 6. CROSS PLATFORM DONUT ══
+new Chart(cx('crossImpChart'),{
+  type:'doughnut',
+  data:{
+    labels:['Apple Ads (App Store)','App Store Organic','YouTube Paid Ad','YouTube Organic Channel'],
+    datasets:[{data:[3570,2325,6310,21419],backgroundColor:['#1d55d9','#0a8a5f','#d42b2b','rgba(212,43,43,.45)'],borderWidth:5,borderColor:'#fff',hoverOffset:6}]
+  },
+  options:{responsive:true,cutout:'58%',plugins:{legend:{position:'bottom',labels:{color:'#2d3a52',font:{size:10},padding:9,boxWidth:8}},tooltip:TT}}
+});
+
+// ══ 7. DL ATTR CHART ══
+new Chart(cx('dlAttrChart'),{
+  type:'bar',
+  data:{labels:FL,datasets:[{
+    label:'Downloads',data:dl,
+    backgroundColor:dl.map((_,i)=>isA(i)?'#1d55d9':isY(i)?'#d42b2b':'#0a8a5f'),
+    borderRadius:5
+  }]},
+  options:{...base,plugins:{...base.plugins,tooltip:{...TT,callbacks:{title:ctx=>FL[ctx[0].dataIndex],afterBody:ctx=>{const i=ctx[0].dataIndex;const src=isA(i)?'Apple Ads running':isY(i)?'YouTube Ad running':'Organic only';return[src,`App Store impressions that day: ${imp[i].toLocaleString()}`]}}}}}
+});
+
+// ══ 8. APPLE WEEK STACKED ══
+new Chart(cx('appleWeekChart'),{
+  type:'bar',
+  data:{
+    labels:['Feb 10','Feb 11','Feb 12','Feb 13','Feb 14','Feb 15','Feb 16'],
+    datasets:[
+      {label:'Apple Ads installs (confirmed)',data:[0,1,1,1,0,0,0],backgroundColor:'#1d55d9',borderRadius:4,stack:'s'},
+      {label:'Organic / Other installs',data:[1,3,1,1,1,0,1],backgroundColor:'#cbd5e1',borderRadius:4,stack:'s'}
+    ]
+  },
+  options:{...base,plugins:{...base.plugins,legend:{display:true,labels:{color:'#2d3a52',font:{size:11},boxWidth:10,padding:12}}}}
+});
+
+// ══ 9. DL SOURCE DONUT ══
+new Chart(cx('dlSrcDonut'),{
+  type:'doughnut',
+  data:{labels:['Organic / Unattributed (~25)','Apple Ads (3 confirmed)','YouTube est. (~1)'],datasets:[{data:[25,3,1],backgroundColor:['#0a8a5f','#1d55d9','#d42b2b'],borderWidth:5,borderColor:'#fff',hoverOffset:6}]},
+  options:{responsive:true,cutout:'60%',plugins:{legend:{position:'bottom',labels:{color:'#2d3a52',font:{size:11},padding:12,boxWidth:10}},tooltip:TT}}
+});
+
+// ══ 10. PV DL CHART ══
+new Chart(cx('pvDlChart'),{
+  type:'bar',
+  data:{labels:FL,datasets:[
+    {label:'Page Views',data:pv,backgroundColor:'rgba(201,114,9,.5)',borderRadius:4},
+    {label:'Downloads',data:dl,backgroundColor:'rgba(10,138,95,.8)',borderRadius:4}
+  ]},
+  options:{...base,plugins:{...base.plugins,legend:{display:true,labels:{color:'#2d3a52',font:{size:11},boxWidth:10,padding:12}}}}
+});
+
+// ══ 11. KW IMP INST ══
+const kwData=[
+  {kw:'vitals app',imp:917,taps:3,inst:0,spend:2.21,cpt:.74},
+  {kw:'ai',imp:660,taps:3,inst:0,spend:2.65,cpt:.88},
+  {kw:'health app',imp:491,taps:3,inst:0,spend:2.38,cpt:.79},
+  {kw:'health insights',imp:280,taps:2,inst:1,spend:1.27,cpt:.64},
+  {kw:'health monitoring',imp:235,taps:3,inst:1,spend:2.63,cpt:.88},
+  {kw:'apple watch',imp:220,taps:2,inst:0,spend:1.87,cpt:.93},
+  {kw:'tracking app',imp:206,taps:3,inst:0,spend:4.20,cpt:1.40},
+  {kw:'pollen',imp:66,taps:1,inst:0,spend:1.67,cpt:1.67},
+  {kw:'peak flow',imp:45,taps:1,inst:1,spend:.05,cpt:.05},
+  {kw:'asthma tracker',imp:48,taps:6,inst:0,spend:7.41,cpt:1.23},
+  {kw:'respiratory rate',imp:8,taps:1,inst:0,spend:.97,cpt:.97},
+  {kw:'symptom tracker',imp:7,taps:1,inst:0,spend:.92,cpt:.92},
+  {kw:'copd tracker',imp:43,taps:0,inst:0,spend:0,cpt:0},
+  {kw:'breathing tracker',imp:16,taps:0,inst:0,spend:0,cpt:0},
+].sort((a,b)=>b.imp-a.imp);
+
+new Chart(cx('kwImpInstChart'),{
+  type:'bar',
+  data:{
+    labels:kwData.slice(0,8).map(k=>k.kw),
+    datasets:[
+      {label:'Impressions',data:kwData.slice(0,8).map(k=>k.imp),backgroundColor:'rgba(29,85,217,.25)',borderRadius:4},
+      {label:'Taps ×10',data:kwData.slice(0,8).map(k=>k.taps*10),backgroundColor:'#1d55d9',borderRadius:4}
+    ]
+  },
+  options:{...base,plugins:{...base.plugins,legend:{display:true,labels:{color:'#2d3a52',font:{size:10},boxWidth:8,padding:10}}}}
+});
+
+// ══ 12. APPLE WEEK DETAIL ══
+new Chart(cx('appleWeekDetail'),{
+  type:'bar',
+  data:{
+    labels:['Feb 10','Feb 11','Feb 12','Feb 13','Feb 14','Feb 15','Feb 16'],
+    datasets:[
+      {label:'App Store Impressions',data:[6,2425,821,19,80,116,1399],backgroundColor:'rgba(29,85,217,.2)',borderRadius:4,yAxisID:'y'},
+      {label:'Total Downloads',data:[1,4,2,2,1,0,1],backgroundColor:'#0a8a5f',borderRadius:4,yAxisID:'y1'}
+    ]
+  },
+  options:{
+    ...base,
+    plugins:{...base.plugins,legend:{display:true,labels:{color:'#2d3a52',font:{size:11},boxWidth:10,padding:12}}},
+    scales:{
+      x:GX.x,
+      y:{...GX.y,position:'left',title:{display:true,text:'App Store Impressions',color:'#8fa0b8',font:{size:10}}},
+      y1:{...GX.y,position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Downloads',color:'#8fa0b8',font:{size:10}},max:7}
+    }
+  }
+});
+
+// ══ 13. AGE ══
+new Chart(cx('ageChart'),{
+  type:'bar',
+  data:{labels:['18–24','25–34','35–44','45–54','55–64','65+'],datasets:[{data:[1066,1649,1172,698,415,324],backgroundColor:['#c7d9fc','#1d55d9','#3b72f5','#6090f7','#93b2fa','#d0dcfe'],borderRadius:5}]},
+  options:{...base}
+});
+
+// ══ 14. YT VIEWS ══
+new Chart(cx('ytViewsChart'),{
+  type:'line',
+  data:{labels:FL,datasets:[{label:'YouTube Channel Views',data:ytVw,borderColor:'#d42b2b',backgroundColor:'rgba(212,43,43,.07)',fill:true,tension:.4,pointRadius:ytVw.map(v=>v>80?7:2),pointBackgroundColor:ytVw.map(v=>v>80?'#d42b2b':'rgba(212,43,43,.4)'),borderWidth:2.5}]},
+  options:{...base}
+});
+
+// ══ 15. FUNNEL ══
+new Chart(cx('funnelChart'),{
+  type:'bar',
+  data:{labels:['All Ad Impr.','App Store Impr.','Page Views','Downloads','Sessions'],datasets:[{data:[33624,5895,177,29,83],backgroundColor:['#c7d9fc','#1d55d9','#c97209','#0a8a5f','#6830d8'],borderRadius:6}]},
+  options:{
+    ...base,indexAxis:'y',
+    scales:{
+      x:{type:'logarithmic',ticks:{color:'#8fa0b8',font:{size:10}},grid:{color:'#f2f5fb'},border:{color:'#e3e8f3'}},
+      y:{ticks:{color:'#2d3a52',font:{size:11},font:{weight:'600'}},grid:{color:'#f2f5fb'},border:{color:'#e3e8f3'}}
+    }
+  }
+});
+
+// ══ 16. SESSIONS ══
+new Chart(cx('sessionsChart'),{
+  type:'bar',
+  data:{labels:FL,datasets:[{label:'Sessions',data:sess,backgroundColor:sess.map(v=>v>0?'#6830d8':'#e9dffd'),borderRadius:4}]},
+  options:{...base,plugins:{...base.plugins,tooltip:{...TT,callbacks:{afterBody:ctx=>{const i=ctx[0].dataIndex;return sess[i]>0?[`Active devices: ${actD[i]}`]:['No sessions this day']}}}}}
+});
+
+// ══ 17. WEEKLY ══
+const wDL=[7,8,7,7], wS=[15,15,10,43];
+new Chart(cx('weeklyChart'),{
+  type:'bar',
+  data:{labels:['W1 Feb6–12','W2 Feb13–19','W3 Feb20–26','W4 Feb27–Mar7'],datasets:[
+    {label:'Downloads',data:wDL,backgroundColor:'#0a8a5f',borderRadius:4},
+    {label:'Sessions',data:wS,backgroundColor:'rgba(104,48,216,.5)',borderRadius:4}
+  ]},
+  options:{...base,plugins:{...base.plugins,legend:{display:true,labels:{color:'#2d3a52',font:{size:10},boxWidth:8,padding:10}}}}
+});
+
+// ══ 18. DEVICES ══
+new Chart(cx('devicesChart'),{
+  type:'line',
+  data:{labels:FL,datasets:[{label:'Active Devices',data:actD,borderColor:'#6830d8',backgroundColor:'rgba(104,48,216,.07)',fill:true,tension:.3,pointRadius:actD.map(v=>v>0?5:2),pointBackgroundColor:'#6830d8',borderWidth:2.5}]},
+  options:{...base,scales:{...GX,y:{...GX.y,max:4,ticks:{...GX.y.ticks,stepSize:1}}}}
+});
+
+// ══ BUILD DAY TABLE ══
+const dayRows=[
+  {d:'Feb 6', ad:'none',ytv:7,   imp:3,   pv:0,  dl:0, src:'—',        sess:0,  note:'Quiet. No ads. Low organic traffic. App barely discoverable yet.'},
+  {d:'Feb 7', ad:'none',ytv:4,   imp:6,   pv:2,  dl:0, src:'—',        sess:0,  note:'2 page views, 0 downloads. Someone browsed but did not install.'},
+  {d:'Feb 8', ad:'none',ytv:16,  imp:2,   pv:0,  dl:0, src:'—',        sess:0,  note:'YouTube organic building (16 views). App Store quiet.'},
+  {d:'Feb 9', ad:'none',ytv:31,  imp:8,   pv:2,  dl:0, src:'—',        sess:0,  note:'YouTube organic spike (31 views). No App Store impact.'},
+  {d:'Feb 10',ad:'apple',ytv:8,  imp:6,   pv:2,  dl:1, src:'organic',  sess:1,  note:'Apple Ads Day 1. Only 6 impressions — campaign warming up. 1 organic download.'},
+  {d:'Feb 11',ad:'apple',ytv:31, imp:2425,pv:10, dl:4, src:'apple+org', sess:2,  note:'PEAK: Apple Ads fully live. 2,425 impressions. 4 downloads (1 confirmed Apple Ads). 2 sessions.'},
+  {d:'Feb 12',ad:'apple',ytv:37, imp:821, pv:4,  dl:2, src:'apple+org', sess:12, note:'Apple Ads strong: 821 impressions. 2 downloads (1 confirmed Apple Ads). 12 sessions — engaged user.'},
+  {d:'Feb 13',ad:'apple',ytv:34, imp:19,  pv:2,  dl:2, src:'apple+org', sess:0,  note:'Impressions dropped to 19. 2 downloads — 1 confirmed Apple Ads (3rd and final). Conversion lag.'},
+  {d:'Feb 14',ad:'apple',ytv:7,  imp:80,  pv:8,  dl:1, src:'organic',  sess:0,  note:'Apple Ads active. 8 page views, 1 download — organic. Apple Ads 3 installs already complete.'},
+  {d:'Feb 15',ad:'apple',ytv:17, imp:116, pv:4,  dl:0, src:'—',        sess:0,  note:'Apple Ads active. 116 impressions, 0 downloads.'},
+  {d:'Feb 16',ad:'apple',ytv:40, imp:1399,pv:10, dl:1, src:'organic',  sess:0,  note:'Last Apple Ads day. 1,399 impressions (2nd highest). 1 organic download.'},
+  {d:'Feb 17',ad:'none', ytv:51, imp:466, pv:8,  dl:1, src:'organic',  sess:3,  note:'Apple Ads ended. 466 residual impressions from ongoing search activity. 1 organic download.'},
+  {d:'Feb 18',ad:'none', ytv:55, imp:29,  pv:2,  dl:2, src:'organic',  sess:25, note:'No ads. 2 organic downloads. 25 sessions — power user extremely active.'},
+  {d:'Feb 19',ad:'none', ytv:40, imp:25,  pv:2,  dl:3, src:'organic',  sess:6,  note:'Day before YouTube ad. 3 downloads, strong YT organic (40 views). Organic momentum building.'},
+  {d:'Feb 20',ad:'yt',   ytv:127,imp:72,  pv:24, dl:3, src:'yt+org',   sess:10, note:'YouTube Ad Day 1 (Friday). 127 channel views — channel peak. 3 downloads, 24 page views. YT likely drove some.'},
+  {d:'Feb 21',ad:'yt',   ytv:56, imp:74,  pv:37, dl:0, src:'yt-noconv',sess:0,  note:'YouTube Ad Day 2 (Saturday). 37 page views — highest ever. BUT 0 downloads. Traffic did not convert.'},
+  {d:'Feb 22',ad:'yt',   ytv:51, imp:35,  pv:1,  dl:0, src:'—',        sess:0,  note:'YouTube Ad Sunday — ZERO delivery ($0 spent). 0 downloads.'},
+  {d:'Feb 23',ad:'yt',   ytv:11, imp:33,  pv:1,  dl:1, src:'organic',  sess:0,  note:'YouTube Ad Monday — ZERO delivery ($0 spent). 1 organic download.'},
+  {d:'Feb 24',ad:'none', ytv:12, imp:32,  pv:0,  dl:0, src:'—',        sess:0,  note:'No ads. 0 downloads.'},
+  {d:'Feb 25',ad:'none', ytv:7,  imp:22,  pv:5,  dl:0, src:'—',        sess:0,  note:'5 page views but no download — bounce.'},
+  {d:'Feb 26',ad:'none', ytv:5,  imp:21,  pv:3,  dl:1, src:'organic',  sess:0,  note:'1 organic download.'},
+  {d:'Feb 27',ad:'none', ytv:14, imp:25,  pv:1,  dl:0, src:'—',        sess:0,  note:'0 downloads.'},
+  {d:'Feb 28',ad:'none', ytv:5,  imp:19,  pv:2,  dl:0, src:'—',        sess:0,  note:'0 downloads.'},
+  {d:'Mar 1',  ad:'none', ytv:1,  imp:9,   pv:0,  dl:1, src:'organic',  sess:0,  note:'1 organic download with minimal traffic — high-intent direct search.'},
+  {d:'Mar 2',  ad:'none', ytv:11, imp:34,  pv:4,  dl:1, src:'organic',  sess:19, note:'1 organic download. 19 sessions — power user returned after 10-day gap.'},
+  {d:'Mar 3',  ad:'none', ytv:18, imp:16,  pv:1,  dl:1, src:'organic',  sess:0,  note:'1 organic download. Organic search continuing.'},
+  {d:'Mar 4',  ad:'none', ytv:10, imp:13,  pv:1,  dl:0, src:'—',        sess:0,  note:'0 downloads.'},
+  {d:'Mar 5',  ad:'none', ytv:9,  imp:9,   pv:5,  dl:2, src:'organic',  sess:0,  note:'2 organic downloads from 5 page views — strong organic CVR (40%).'},
+  {d:'Mar 6',  ad:'none', ytv:8,  imp:28,  pv:17, dl:1, src:'organic',  sess:0,  note:'17 page views, 1 download. Late-period organic momentum.'},
+  {d:'Mar 7',  ad:'none', ytv:15, imp:48,  pv:19, dl:1, src:'organic',  sess:5,  note:'1 download, 19 page views. Impressions (48) + views trending up — organic improving.'},
+];
+const adP={apple:'<span class="pill pa">🍎 Apple Ads</span>',yt:'<span class="pill py">▶ YouTube Ad</span>',none:'<span class="pill px">No paid ads</span>'};
+const srcP={
+  'apple+org':'<span class="pill pa">🍎 Apple Ads (1)</span>&nbsp;<span class="pill pg">Organic</span>',
+  'organic':'<span class="pill pg">📱 Organic</span>',
+  'yt+org':'<span class="pill py">▶ YT likely</span>&nbsp;<span class="pill pg">Organic</span>',
+  'yt-noconv':'<span class="pill py">YT traffic · 0 DL</span>',
+  '—':'<span class="pill px">—</span>'
+};
+const tb=document.getElementById('dayTbody');
+dayRows.forEach(r=>{
+  const rc=r.ad==='apple'?'ra':r.ad==='yt'?'ry':'';
+  const ic=r.imp>500?'gt':r.imp>100?'ot':'';
+  const dc=r.dl>=3?'gt':r.dl>0?'':'dt';
+  tb.innerHTML+=`<tr class="${rc}">
+    <td style="font-weight:700;white-space:nowrap">${r.d}</td>
+    <td style="min-width:160px">${adP[r.ad]}</td>
+    <td class="num">${r.ytv}</td>
+    <td class="num ${ic}" style="font-size:13px">${r.imp.toLocaleString()}</td>
+    <td class="num">${r.pv||'<span class="dt">0</span>'}</td>
+    <td class="num ${dc}" style="font-size:13px">${r.dl}</td>
+    <td style="min-width:210px">${srcP[r.src]||r.src}</td>
+    <td class="num ${r.sess>0?'':'dt'}">${r.sess||'—'}</td>
+    <td style="font-size:11px;color:#5c6e8a;min-width:320px;line-height:1.5">${r.note}</td>
+  </tr>`;
+});
+
+// ══ KEYWORD TABLE ══
+const maxKwImp=Math.max(...kwData.map(k=>k.imp));
+const kb=document.getElementById('kwTbody');
+kwData.forEach(k=>{
+  const bw=Math.round((k.imp/maxKwImp)*100);
+  const res=k.inst>0?`<span class="pill pG">✅ ${k.inst} install · $${(k.spend/k.inst).toFixed(2)} CPI</span>`:k.taps>3?'<span class="pill po">Taps, no install</span>':k.taps>0?'<span class="pill px">Some interest</span>':'<span class="pill px">No taps</span>';
+  kb.innerHTML+=`<tr>
+    <td style="font-weight:600">${k.kw}</td>
+    <td class="num" style="color:var(--apple)">${k.imp}</td>
+    <td style="min-width:130px"><div class="kwbar"><div class="kwtrk"><div class="kwfil" style="width:${bw}%;background:var(--apple)"></div></div><span style="font-size:10px;color:var(--t4);min-width:28px">${k.imp}</span></div></td>
+    <td class="num">${k.taps}</td>
+    <td class="num ${k.inst>0?'gt':'dt'}">${k.inst}</td>
+    <td class="num">$${k.spend.toFixed(2)}</td>
+    <td class="num">$${k.cpt.toFixed(2)}</td>
+    <td>${res}</td>
+  </tr>`;
+});
+
+// ══ VIDEO TABLE ══
+const vids=[
+  {t:'Want to MAXIMIZE Your Respire LYF Experience',v:108,imp:180,ctr:14.44,pub:'Feb 9'},
+  {t:'Why Everything You Know About HYDRATION Is WRONG',v:77,imp:4856,ctr:0.97,pub:'Feb 16'},
+  {t:"You Won't Believe the DIFFERENCE: Dry vs Wet Coughs",v:42,imp:474,ctr:3.80,pub:'Feb 17'},
+  {t:"My Asthma Was Under Control — Why Coughing at 3 AM?",v:38,imp:571,ctr:2.28,pub:'Feb 16'},
+  {t:'Millions do not realize their lungs are screaming for help',v:31,imp:96,ctr:8.33,pub:'Jan 17'},
+  {t:'Asthma & COPD Management Feels Like the Wrong Map',v:29,imp:275,ctr:5.09,pub:'Feb 8'},
+  {t:'7 Days to EASIER BREATHING with This Asthma App Trick',v:26,imp:293,ctr:0.68,pub:'Feb 19'},
+  {t:'Asthma & COPD Just Got a MAJOR Upgrade',v:18,imp:498,ctr:2.01,pub:'Feb 20'},
+  {t:'I Took Supplements for Asthma & COPD — 30 Days Results',v:24,imp:1106,ctr:0.81,pub:'Feb 21'},
+  {t:'Chronic Stress Is SLOWLY KILLING Your Lungs!',v:22,imp:1795,ctr:0.72,pub:'Feb 16'},
+];
+const maxV=Math.max(...vids.map(v=>v.v));
+const vb=document.getElementById('vidTbody');
+vids.forEach((v,i)=>{
+  const bw=Math.round((v.v/maxV)*44);
+  const cc=v.ctr>8?'pG':v.ctr>3?'pa':'px';
+  vb.innerHTML+=`<tr>
+    <td class="dt">${i+1}</td>
+    <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px" title="${v.t}">${v.t}</td>
+    <td><span style="display:inline-block;height:5px;width:${bw}px;background:#d42b2b;border-radius:2px;vertical-align:middle;margin-right:7px"></span><strong>${v.v}</strong></td>
+    <td class="num dt">${v.imp.toLocaleString()}</td>
+    <td><span class="pill ${cc}">${v.ctr}%</span></td>
+    <td class="dt">${v.pub}</td>
+  </tr>`;
+});
+
+// ══ STICKY NAV HIGHLIGHT ══
+const secIds=['s1','s2','s3','s4','s5','s6','s7','s8'];
+const navAs=document.querySelectorAll('.hn');
+window.addEventListener('scroll',()=>{
+  let cur='s1';
+  secIds.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&window.scrollY>=el.offsetTop-90)cur=id;
+  });
+  navAs.forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+cur));
+},{passive:true});
+</script>
+</body>
+</html>

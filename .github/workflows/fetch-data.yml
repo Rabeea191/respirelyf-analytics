@@ -1,0 +1,70 @@
+name: Fetch Analytics Data
+
+on:
+  schedule:
+    - cron: '0 2 * * *'   # 02:00 UTC daily — data ready for morning review
+  workflow_dispatch:        # Manual trigger for testing / backfill
+
+jobs:
+  fetch-all:
+    name: Run all pipeline fetchers
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # ── Always-on (credentials provided) ─────────────────
+      - name: App Store Connect
+        run: python -m pipeline.fetch_app_store
+        env: &common_env
+          APPSTORE_ISSUER_ID:       ${{ secrets.APPSTORE_ISSUER_ID }}
+          APPSTORE_KEY_ID:          ${{ secrets.APPSTORE_KEY_ID }}
+          APPSTORE_PRIVATE_KEY:     ${{ secrets.APPSTORE_PRIVATE_KEY }}
+          APPSTORE_APP_ID:          ${{ secrets.APPSTORE_APP_ID }}
+          GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
+          FIREBASE_PROJECT_ID:      ${{ secrets.FIREBASE_PROJECT_ID }}
+          BIGQUERY_DATASET_ID:      ${{ secrets.BIGQUERY_DATASET_ID }}
+          SUPABASE_URL:             https://jxanvdhpqzxehupxkmee.supabase.co
+          SUPABASE_SERVICE_KEY:     ${{ secrets.SUPABASE_SERVICE_KEY }}
+          # Optional — gracefully skipped when not set
+          APPLE_ADS_CLIENT_ID:      ${{ secrets.APPLE_ADS_CLIENT_ID }}
+          APPLE_ADS_TEAM_ID:        ${{ secrets.APPLE_ADS_TEAM_ID }}
+          APPLE_ADS_KEY_ID:         ${{ secrets.APPLE_ADS_KEY_ID }}
+          APPLE_ADS_PRIVATE_KEY:    ${{ secrets.APPLE_ADS_PRIVATE_KEY }}
+          GOOGLE_CLIENT_ID:         ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET:     ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN:     ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          YOUTUBE_CHANNEL_ID:       ${{ secrets.YOUTUBE_CHANNEL_ID }}
+          GOOGLE_ADS_CUSTOMER_ID:   ${{ secrets.GOOGLE_ADS_CUSTOMER_ID }}
+          GOOGLE_ADS_DEV_TOKEN:     ${{ secrets.GOOGLE_ADS_DEV_TOKEN }}
+          META_ACCESS_TOKEN:        ${{ secrets.META_ACCESS_TOKEN }}
+          META_AD_ACCOUNT_ID:       ${{ secrets.META_AD_ACCOUNT_ID }}
+          META_PAGE_ID:             ${{ secrets.META_PAGE_ID }}
+
+      - name: Firebase / BigQuery
+        run: python -m pipeline.fetch_firebase
+        env: *common_env
+
+      # ── Optional (skip gracefully when no creds) ──────────
+      - name: Apple Search Ads
+        run: python -m pipeline.fetch_apple_ads
+        env: *common_env
+
+      - name: YouTube Analytics
+        run: python -m pipeline.fetch_youtube
+        env: *common_env
+
+      - name: Google Ads
+        run: python -m pipeline.fetch_google_ads
+        env: *common_env
+
+      - name: Meta Ads + Page
+        run: python -m pipeline.fetch_meta
+        env: *common_env
