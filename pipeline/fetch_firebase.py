@@ -50,7 +50,7 @@ SELECT
     event_name,
     COUNT(*)                      AS event_count,
     COUNT(DISTINCT user_pseudo_id) AS unique_users
-FROM `{project}.{dataset}.events_{suffix}`
+FROM `{project}.{dataset}.{suffix}`
 GROUP BY event_date, event_name
 ORDER BY event_count DESC
 """
@@ -61,7 +61,7 @@ SELECT
     up.key           AS property,
     up.value.string_value AS value,
     COUNT(DISTINCT user_pseudo_id) AS user_count
-FROM `{project}.{dataset}.events_{suffix}`
+FROM `{project}.{dataset}.{suffix}`
 CROSS JOIN UNNEST(user_properties) AS up
 WHERE up.value.string_value IS NOT NULL
 GROUP BY event_date, up.key, up.value.string_value
@@ -75,7 +75,7 @@ SELECT
     event_name,
     COUNT(*) AS event_count,
     COUNT(DISTINCT user_pseudo_id) AS unique_users
-FROM `{project}.{dataset}.events_{suffix}`
+FROM `{project}.{dataset}.{suffix}`
 WHERE event_name IN (
     'session_start', 'app_open', 'first_open',
     'user_engagement', 'screen_view'
@@ -89,13 +89,16 @@ def _suffix(d: date) -> str:
     return d.strftime("%Y%m%d")
 
 
-def _table_exists(client: bigquery.Client, suffix: str) -> bool:
-    table_id = f"{FIREBASE_PROJECT_ID}.{BIGQUERY_DATASET_ID}.events_{suffix}"
-    try:
-        client.get_table(table_id)
-        return True
-    except Exception:
-        return False
+def _find_table(client: bigquery.Client, suffix: str) -> str | None:
+    """Try events_YYYYMMDD first, then events_intraday_YYYYMMDD. Return table name or None."""
+    for prefix in ("events", "events_intraday"):
+        table_id = f"{FIREBASE_PROJECT_ID}.{BIGQUERY_DATASET_ID}.{prefix}_{suffix}"
+        try:
+            client.get_table(table_id)
+            return f"{prefix}_{suffix}"
+        except Exception:
+            continue
+    return None
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -118,22 +121,23 @@ def run(target_date: date | None = None) -> None:
     client = _get_bq_client()
     print(f"[firebase] authenticated as project: {FIREBASE_PROJECT_ID}")
 
-    # Fall back up to 3 days if the table isn't ready yet
-    suffix = None
-    for days_back in range(0, 4):
+    # Look back up to 30 days — covers intraday tables and slow exports
+    table_name = None
+    for days_back in range(0, 31):
         check_date = target_date - timedelta(days=days_back)
         s = _suffix(check_date)
-        if _table_exists(client, s):
-            suffix = s
+        found = _find_table(client, s)
+        if found:
+            table_name = found
             target_date = check_date
-            print(f"[firebase] using table events_{suffix}")
+            print(f"[firebase] using table {table_name}")
             break
 
-    if suffix is None:
-        print("[firebase] no events table found for past 4 days — skipping")
+    if table_name is None:
+        print("[firebase] no events table found for past 30 days — skipping")
         return
 
-    fmt = dict(project=FIREBASE_PROJECT_ID, dataset=BIGQUERY_DATASET_ID, suffix=suffix)
+    fmt = dict(project=FIREBASE_PROJECT_ID, dataset=BIGQUERY_DATASET_ID, suffix=table_name)
 
     # ── Events ──────────────────────────────────────────────────────────
     print("[firebase] querying events...")
