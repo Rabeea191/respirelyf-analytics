@@ -10,6 +10,7 @@ python-dotenv==1.0.1
 # ── Firebase / BigQuery (READY) ────────────────────────────
 google-auth==2.28.0
 google-cloud-bigquery==3.20.0
+pyarrow==15.0.2
 
 # ── YouTube + Google Ads (add credentials first) ──────────
 google-auth-oauthlib==1.2.0
