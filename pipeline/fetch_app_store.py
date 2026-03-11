@@ -57,8 +57,15 @@ def _hdr(token: str) -> dict:
 
 def _get_or_create_request(app_id: str, token: str) -> str:
     """Return the ID of the ONGOING analyticsReportRequest, creating one if needed."""
-    url = f"{BASE}/apps/{app_id}/analyticsReportRequests"
-    r = requests.get(url, headers=_hdr(token), params={"filter[accessType]": "ONGOING"}, timeout=30)
+    # Correct endpoint: /v1/analyticsReportRequests with filter[app], NOT /v1/apps/{id}/analyticsReportRequests
+    list_url   = f"{BASE}/analyticsReportRequests"
+    create_url = f"{BASE}/analyticsReportRequests"
+
+    r = requests.get(
+        list_url, headers=_hdr(token),
+        params={"filter[app]": app_id, "filter[accessType]": "ONGOING"},
+        timeout=30,
+    )
     r.raise_for_status()
     data = r.json().get("data", [])
     if data:
@@ -66,9 +73,17 @@ def _get_or_create_request(app_id: str, token: str) -> str:
         print(f"[app_store] existing report request: {req_id}")
         return req_id
 
-    # Create new
-    body = {"data": {"type": "analyticsReportRequests", "attributes": {"accessType": "ONGOING"}}}
-    r = requests.post(url, json=body, headers=_hdr(token), timeout=30)
+    # Create new — must include app relationship
+    body = {
+        "data": {
+            "type": "analyticsReportRequests",
+            "attributes": {"accessType": "ONGOING"},
+            "relationships": {
+                "app": {"data": {"type": "apps", "id": app_id}}
+            },
+        }
+    }
+    r = requests.post(create_url, json=body, headers=_hdr(token), timeout=30)
     r.raise_for_status()
     req_id = r.json()["data"]["id"]
     print(f"[app_store] created new report request: {req_id}")
