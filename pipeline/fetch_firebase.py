@@ -101,6 +101,16 @@ def _table_exists(client: bigquery.Client, suffix: str) -> bool:
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def run(target_date: date | None = None) -> None:
+    # Validate required creds at runtime (not import time)
+    missing = [k for k, v in {
+        "GCP_SERVICE_ACCOUNT_JSON": GCP_SERVICE_ACCOUNT_JSON,
+        "FIREBASE_PROJECT_ID":      FIREBASE_PROJECT_ID,
+        "BIGQUERY_DATASET_ID":      BIGQUERY_DATASET_ID,
+    }.items() if not v]
+    if missing:
+        print(f"[firebase] SKIP — missing credentials: {', '.join(missing)}")
+        return
+
     # Firebase BigQuery export is typically 1 day behind
     if target_date is None:
         target_date = date.today() - timedelta(days=1)

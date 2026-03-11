@@ -18,17 +18,19 @@ def _opt(key: str) -> str | None:
     return os.environ.get(key) or None
 
 # ── App Store Connect ──────────────────────────────────────
-APPSTORE_ISSUER_ID   = _req("APPSTORE_ISSUER_ID")
-APPSTORE_KEY_ID      = _req("APPSTORE_KEY_ID")
-APPSTORE_APP_ID      = _req("APPSTORE_APP_ID")
+# Optional at import — fetch_app_store.py validates these itself at runtime
+APPSTORE_ISSUER_ID   = _opt("APPSTORE_ISSUER_ID")
+APPSTORE_KEY_ID      = _opt("APPSTORE_KEY_ID")
+APPSTORE_APP_ID      = _opt("APPSTORE_APP_ID")
 # Private key may have literal \n from GitHub Secrets — normalise them
-_raw_appstore_key    = _req("APPSTORE_PRIVATE_KEY")
-APPSTORE_PRIVATE_KEY = _raw_appstore_key.replace("\\n", "\n")
+_raw_appstore_key    = _opt("APPSTORE_PRIVATE_KEY")
+APPSTORE_PRIVATE_KEY = _raw_appstore_key.replace("\\n", "\n") if _raw_appstore_key else None
 
 # ── Firebase / BigQuery ────────────────────────────────────
-GCP_SERVICE_ACCOUNT_JSON = _req("GCP_SERVICE_ACCOUNT_JSON")
-FIREBASE_PROJECT_ID      = _req("FIREBASE_PROJECT_ID")
-BIGQUERY_DATASET_ID      = _req("BIGQUERY_DATASET_ID")
+# Optional at import — fetch_firebase.py validates these itself at runtime
+GCP_SERVICE_ACCOUNT_JSON = _opt("GCP_SERVICE_ACCOUNT_JSON")
+FIREBASE_PROJECT_ID      = _opt("FIREBASE_PROJECT_ID")
+BIGQUERY_DATASET_ID      = _opt("BIGQUERY_DATASET_ID")
 
 # ── Apple Search Ads (optional until .p8 key added) ───────
 APPLE_ADS_CLIENT_ID   = _opt("APPLE_ADS_CLIENT_ID")

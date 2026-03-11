@@ -148,6 +148,16 @@ def _parse_acquisition(rows: list[dict], target_date: str) -> dict:
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def run(target_date: date | None = None) -> None:
+    missing = [k for k, v in {
+        "APPSTORE_ISSUER_ID":   APPSTORE_ISSUER_ID,
+        "APPSTORE_KEY_ID":      APPSTORE_KEY_ID,
+        "APPSTORE_PRIVATE_KEY": APPSTORE_PRIVATE_KEY,
+        "APPSTORE_APP_ID":      APPSTORE_APP_ID,
+    }.items() if not v]
+    if missing:
+        print(f"[app_store] SKIP — missing credentials: {', '.join(missing)}")
+        return
+
     # Default: yesterday; Apple typically has 1-2 day lag so fall back up to 3 days
     if target_date is None:
         target_date = date.today() - timedelta(days=1)
