@@ -51,5 +51,7 @@ META_AD_ACCOUNT_ID = _opt("META_AD_ACCOUNT_ID")
 META_PAGE_ID       = _opt("META_PAGE_ID")
 
 # ── Supabase ──────────────────────────────────────────────
-SUPABASE_URL         = _req("SUPABASE_URL")
-SUPABASE_SERVICE_KEY = _req("SUPABASE_SERVICE_KEY")
+# URL is hardcoded in workflow — keep as fallback for local dev
+SUPABASE_URL         = os.environ.get("SUPABASE_URL", "https://jxanvdhpqzxehupxkmee.supabase.co")
+# SERVICE_KEY is optional at import time — store.py will warn if missing when writing
+SUPABASE_SERVICE_KEY = _opt("SUPABASE_SERVICE_KEY")
