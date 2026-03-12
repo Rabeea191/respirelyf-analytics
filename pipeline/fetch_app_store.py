@@ -127,14 +127,20 @@ def run(target_date: date | None = None) -> None:
             print(f"[app_store] no report available for {date_str}")
             continue
 
+        # Debug: show all Apple Identifiers found in this report
+        all_ids = {str(r.get("Apple Identifier", "")).strip() for r in rows}
+        print(f"[app_store] report has {len(rows)} rows, identifiers: {all_ids}")
+
         # Filter to our app and sum units by product type
         downloads   = 0
         redownloads = 0
         for row in rows:
-            if str(row.get("Apple Identifier", "")).strip() != str(APPSTORE_APP_ID):
+            apple_id = str(row.get("Apple Identifier", "")).strip()
+            if apple_id != str(APPSTORE_APP_ID):
                 continue
             prod_type = row.get("Product Type Identifier", "").strip()
             units     = _safe_int(row.get("Units", "0"))
+            print(f"[app_store] matched row — type={prod_type!r} units={units}")
             if prod_type in DOWNLOAD_TYPES:
                 downloads += units
             elif prod_type in REDOWNLOAD_TYPES:
