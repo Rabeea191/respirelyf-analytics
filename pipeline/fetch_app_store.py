@@ -35,9 +35,16 @@ from pipeline.store import upsert
 
 BASE = "https://api.appstoreconnect.apple.com/v1"
 
-# Free download types we count as "downloads"
-DOWNLOAD_TYPES  = {"F", "1"}    # F=free, 1=paid
-REDOWNLOAD_TYPES = {"7"}         # 7=redownload
+# Apple Sales Report product type suffixes:
+#   *F  = free download  (1F=iPhone/iPad, 3F=tvOS/Mac, F=generic)
+#   *7  = redownload     (7, 17, 37 …)
+#   1   = paid download
+# We match by suffix to future-proof against new platform prefixes.
+def _is_download(t: str) -> bool:
+    return t.endswith("F") and not t.startswith("IA")  # exclude IAF (in-app free)
+
+def _is_redownload(t: str) -> bool:
+    return t.endswith("7") and not t.startswith("IA")  # exclude IA7
 
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
@@ -141,9 +148,9 @@ def run(target_date: date | None = None) -> None:
             prod_type = row.get("Product Type Identifier", "").strip()
             units     = _safe_int(row.get("Units", "0"))
             print(f"[app_store] matched row — type={prod_type!r} units={units}")
-            if prod_type in DOWNLOAD_TYPES:
+            if _is_download(prod_type):
                 downloads += units
-            elif prod_type in REDOWNLOAD_TYPES:
+            elif _is_redownload(prod_type):
                 redownloads += units
 
         record = {"date": date_str, "downloads": downloads, "redownloads": redownloads}
