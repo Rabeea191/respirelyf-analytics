@@ -19,9 +19,10 @@ def _opt(key: str) -> str | None:
 
 # ── App Store Connect ──────────────────────────────────────
 # Optional at import — fetch_app_store.py validates these itself at runtime
-APPSTORE_ISSUER_ID   = _opt("APPSTORE_ISSUER_ID")
-APPSTORE_KEY_ID      = _opt("APPSTORE_KEY_ID")
-APPSTORE_APP_ID      = _opt("APPSTORE_APP_ID")
+APPSTORE_ISSUER_ID     = _opt("APPSTORE_ISSUER_ID")
+APPSTORE_KEY_ID        = _opt("APPSTORE_KEY_ID")
+APPSTORE_APP_ID        = _opt("APPSTORE_APP_ID")
+APPSTORE_VENDOR_NUMBER = os.environ.get("APPSTORE_VENDOR_NUMBER", "93247691")
 # Private key may have literal \n from GitHub Secrets — normalise them
 _raw_appstore_key    = _opt("APPSTORE_PRIVATE_KEY")
 APPSTORE_PRIVATE_KEY = _raw_appstore_key.replace("\\n", "\n") if _raw_appstore_key else None

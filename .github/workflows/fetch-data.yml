@@ -23,12 +23,13 @@ jobs:
       # ── READY: App Store Connect ───────────────────────────
       - name: App Store Connect
         run: python -m pipeline.fetch_app_store
-        continue-on-error: true   # 403 permissions issue being investigated
+        continue-on-error: true
         env:
           APPSTORE_ISSUER_ID:       ${{ secrets.APPSTORE_ISSUER_ID }}
           APPSTORE_KEY_ID:          ${{ secrets.APPSTORE_KEY_ID }}
           APPSTORE_PRIVATE_KEY:     ${{ secrets.APPSTORE_PRIVATE_KEY }}
           APPSTORE_APP_ID:          ${{ secrets.APPSTORE_APP_ID }}
+          APPSTORE_VENDOR_NUMBER:   "93247691"
           SUPABASE_URL:             https://jxanvdhpqzxehupxkmee.supabase.co
           SUPABASE_SERVICE_KEY:     ${{ secrets.SUPABASE_SERVICE_KEY }}
 
