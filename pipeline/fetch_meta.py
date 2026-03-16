@@ -156,12 +156,14 @@ def _detect_fb_post_type(post: dict) -> str:
 def _fetch_fb_posts(page_token: str, page_id: str, since_date: str) -> list[dict]:
     """Fetch FB posts since given date + per-post engagement metrics."""
     r = requests.get(f"{GRAPH}/{page_id}/posts", params={
-        "fields":       "id,message,created_time,story,attachments",
+        "fields":       "id,message,created_time,attachments",
         "since":        since_date,
         "limit":        50,
         "access_token": page_token,
     }, timeout=30)
-    r.raise_for_status()
+    if r.status_code != 200:
+        print(f"[meta] FB posts error {r.status_code}: {r.text[:400]}")
+        return []
     posts = r.json().get("data", [])
     print(f"[meta] FB posts found: {len(posts)}")
 
