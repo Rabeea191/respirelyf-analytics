@@ -49,6 +49,8 @@ GOOGLE_ADS_CUSTOMER_ID = _opt("GOOGLE_ADS_CUSTOMER_ID")
 GOOGLE_ADS_DEV_TOKEN   = _opt("GOOGLE_ADS_DEV_TOKEN")
 
 # ── Meta ──────────────────────────────────────────────────
+META_APP_ID        = _opt("META_APP_ID")        # for token exchange
+META_APP_SECRET    = _opt("META_APP_SECRET")    # for token exchange
 META_ACCESS_TOKEN  = _opt("META_ACCESS_TOKEN")
 META_AD_ACCOUNT_ID = _opt("META_AD_ACCOUNT_ID")
 META_PAGE_ID       = _opt("META_PAGE_ID")

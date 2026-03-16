@@ -61,6 +61,25 @@ CREATE TABLE IF NOT EXISTS google_ads_daily (
     PRIMARY KEY (date, campaign)
 );
 
+-- ── Meta Post Insights (FB + IG per-post) ──────────────────
+CREATE TABLE IF NOT EXISTS meta_post_insights (
+    post_id      TEXT        NOT NULL,
+    platform     TEXT        NOT NULL,   -- 'facebook' or 'instagram'
+    date         DATE        NOT NULL,
+    post_type    TEXT,                   -- 'photo', 'video', 'reel', 'status'
+    message      TEXT,                   -- caption (truncated to 200 chars)
+    impressions  INTEGER     NOT NULL DEFAULT 0,
+    reach        INTEGER     NOT NULL DEFAULT 0,
+    likes        INTEGER     NOT NULL DEFAULT 0,
+    comments     INTEGER     NOT NULL DEFAULT 0,
+    shares       INTEGER     NOT NULL DEFAULT 0,
+    saves        INTEGER     NOT NULL DEFAULT 0,
+    engagement   INTEGER     NOT NULL DEFAULT 0,
+    video_views  INTEGER     NOT NULL DEFAULT 0,
+    updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (post_id, date)
+);
+
 -- ── Meta Ads ───────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS meta_ads_daily (
     date         DATE NOT NULL,
@@ -151,6 +170,7 @@ ALTER TABLE apple_ads_keywords   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE youtube_channel_daily ENABLE ROW LEVEL SECURITY;
 ALTER TABLE youtube_videos       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE google_ads_daily     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE meta_post_insights   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE meta_ads_daily       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE meta_page_daily      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE firebase_events      ENABLE ROW LEVEL SECURITY;
@@ -161,6 +181,7 @@ CREATE POLICY "anon_read" ON apple_ads_keywords    FOR SELECT TO anon USING (tru
 CREATE POLICY "anon_read" ON youtube_channel_daily FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON youtube_videos        FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON google_ads_daily      FOR SELECT TO anon USING (true);
+CREATE POLICY "anon_read" ON meta_post_insights    FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON meta_ads_daily        FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON meta_page_daily       FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON firebase_events       FOR SELECT TO anon USING (true);
