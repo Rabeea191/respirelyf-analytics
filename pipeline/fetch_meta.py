@@ -72,17 +72,20 @@ def _get_long_lived_token(user_token: str) -> str:
 
 
 def _get_page_token(long_user_token: str, page_id: str) -> str:
-    """Get permanent Page Access Token from long-lived user token."""
-    r = requests.get(f"{GRAPH}/{page_id}", params={
-        "fields":       "access_token",
+    """Get permanent Page Access Token via /me/accounts."""
+    r = requests.get(f"{GRAPH}/me/accounts", params={
         "access_token": long_user_token,
     }, timeout=30)
     if r.status_code != 200:
-        print(f"[meta] Could not get page token — using user token")
+        print(f"[meta] Could not get page token ({r.status_code}) — using user token")
         return long_user_token
-    page_token = r.json().get("access_token", long_user_token)
-    print("[meta] Page Access Token obtained (permanent) ✓")
-    return page_token
+    pages = r.json().get("data", [])
+    for page in pages:
+        if str(page.get("id")) == str(page_id):
+            print("[meta] Page Access Token obtained (permanent) ✓")
+            return page["access_token"]
+    print(f"[meta] Page {page_id} not found in /me/accounts ({len(pages)} pages returned) — using user token")
+    return long_user_token
 
 
 def _get_instagram_id(page_token: str, page_id: str) -> str | None:
@@ -105,25 +108,29 @@ def _get_instagram_id(page_token: str, page_id: str) -> str | None:
 # ── Facebook Page daily insights ───────────────────────────────────────────────
 
 def _fetch_page_insights(page_token: str, page_id: str, date_str: str) -> dict | None:
-    metrics = "page_impressions,page_reach,page_engaged_users,page_views_total"
+    metrics = "page_impressions,page_reach,page_engaged_users,page_post_engagements"
+    # Facebook requires until > since by at least 1 day
+    until_str = (date.fromisoformat(date_str) + timedelta(days=1)).isoformat()
     r = requests.get(f"{GRAPH}/{page_id}/insights", params={
         "metric":       metrics,
         "period":       "day",
         "since":        date_str,
-        "until":        date_str,
+        "until":        until_str,
         "access_token": page_token,
     }, timeout=30)
-    r.raise_for_status()
+    if r.status_code != 200:
+        print(f"[meta] Page insights error {r.status_code}: {r.text[:300]}")
+        return None
     data = r.json().get("data", [])
     if not data:
         return None
     result = {"date": date_str, "reach": 0, "impressions": 0,
               "engaged_users": 0, "page_views": 0}
     key_map = {
-        "page_impressions":   "impressions",
-        "page_reach":         "reach",
-        "page_engaged_users": "engaged_users",
-        "page_views_total":   "page_views",
+        "page_impressions":      "impressions",
+        "page_reach":            "reach",
+        "page_engaged_users":    "engaged_users",
+        "page_post_engagements": "page_views",
     }
     for item in data:
         field = key_map.get(item.get("name"))
