@@ -300,7 +300,12 @@ def _fetch_ad_insights(token: str, date_str: str) -> list[dict]:
     rows = []
     while url:
         r = requests.get(url, params=params, timeout=30)
-        r.raise_for_status()
+        if r.status_code == 403:
+            print(f"[meta] Ads insights 403 — token missing 'ads_read' permission. Skipping ads.")
+            return []
+        if r.status_code != 200:
+            print(f"[meta] Ads insights error {r.status_code}: {r.text[:300]}")
+            return []
         body = r.json()
         for item in body.get("data", []):
             rows.append({
