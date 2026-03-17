@@ -72,19 +72,41 @@ def _get_long_lived_token(user_token: str) -> str:
 
 
 def _get_page_token(long_user_token: str, page_id: str) -> str:
-    """Get permanent Page Access Token via /me/accounts."""
+    """Get Page Access Token.
+    Attempt 1: /me/accounts  (requires pages_show_list + pages_manage_metadata)
+    Attempt 2: direct /{page_id}?fields=access_token  (works for NPE pages)
+    """
+    # ── Attempt 1: /me/accounts ───────────────────────────────────────────────
     r = requests.get(f"{GRAPH}/me/accounts", params={
         "access_token": long_user_token,
     }, timeout=30)
-    if r.status_code != 200:
-        print(f"[meta] Could not get page token ({r.status_code}) — using user token")
-        return long_user_token
-    pages = r.json().get("data", [])
-    for page in pages:
-        if str(page.get("id")) == str(page_id):
-            print("[meta] Page Access Token obtained (permanent) ✓")
-            return page["access_token"]
-    print(f"[meta] Page {page_id} not found in /me/accounts ({len(pages)} pages returned) — using user token")
+    if r.status_code == 200:
+        pages = r.json().get("data", [])
+        for page in pages:
+            if str(page.get("id")) == str(page_id):
+                print("[meta] Page Access Token obtained via /me/accounts ✓")
+                return page["access_token"]
+        print(f"[meta] Page {page_id} not found in /me/accounts "
+              f"({len(pages)} pages returned) — trying direct page node...")
+    else:
+        print(f"[meta] /me/accounts error {r.status_code} — trying direct page node...")
+
+    # ── Attempt 2: direct page node (bypasses /me/accounts, works for NPE) ────
+    r2 = requests.get(f"{GRAPH}/{page_id}", params={
+        "fields":       "id,name,access_token",
+        "access_token": long_user_token,
+    }, timeout=30)
+    if r2.status_code == 200:
+        token = r2.json().get("access_token")
+        if token:
+            print("[meta] Page Access Token obtained via direct page node ✓")
+            return token
+        print("[meta] Direct page node returned no access_token — "
+              "add 'pages_manage_metadata' permission to your token")
+    else:
+        print(f"[meta] Direct page node error {r2.status_code}: {r2.text[:200]}")
+
+    print("[meta] WARNING: using user token — page insights may fail (New Page Experience)")
     return long_user_token
 
 
