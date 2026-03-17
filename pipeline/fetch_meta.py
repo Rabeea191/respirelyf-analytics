@@ -137,8 +137,9 @@ def _get_instagram_id(page_token: str, page_id: str) -> str | None:
 # ── Facebook Page daily insights ───────────────────────────────────────────────
 
 def _fetch_page_insights(page_token: str, page_id: str, date_str: str) -> dict | None:
-    # page_engaged_users deprecated for New Page Experience — use NPE-compatible metrics
-    metrics = "page_impressions,page_impressions_unique,page_post_engagements,page_views_total"
+    # page_impressions deprecated Nov 15 2025, page_impressions_unique deprecated Jun 15 2025
+    # Use new replacement metrics for New Page Experience (NPE) pages
+    metrics = "page_media_view,page_total_media_view_unique,page_post_engagements,page_views_total"
     # Facebook requires until > since by at least 1 day
     until_str = (date.fromisoformat(date_str) + timedelta(days=1)).isoformat()
     r = requests.get(f"{GRAPH}/{page_id}/insights", params={
@@ -157,10 +158,10 @@ def _fetch_page_insights(page_token: str, page_id: str, date_str: str) -> dict |
     result = {"date": date_str, "reach": 0, "impressions": 0,
               "engaged_users": 0, "page_views": 0}
     key_map = {
-        "page_impressions":      "impressions",
-        "page_reach":            "reach",
-        "page_engaged_users":    "engaged_users",
-        "page_post_engagements": "page_views",
+        "page_media_view":              "impressions",   # replaces page_impressions (Nov 2025)
+        "page_total_media_view_unique": "reach",         # replaces page_impressions_unique (Jun 2025)
+        "page_post_engagements":        "engaged_users",
+        "page_views_total":             "page_views",
     }
     for item in data:
         field = key_map.get(item.get("name"))
