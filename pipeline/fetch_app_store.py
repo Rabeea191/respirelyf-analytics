@@ -299,31 +299,29 @@ def run(target_date: date | None = None) -> None:
         return
 
     if target_date is None:
-        target_date = date.today() - timedelta(days=2)  # Analytics API has ~2 day processing lag
+        target_date = date.today() - timedelta(days=1)
 
     token = _make_token()
     print(f"[app_store] fetching for {target_date} ...")
 
-    # ── Analytics Reports API (only source — no fallback to avoid inaccurate data) ──
+    # ── Try Analytics Reports API first (exact unique-device count) ──────────
     request_id = _get_or_create_report_request(token)
-    if not request_id:
-        print("[app_store] Could not get/create report request — skipping")
-        return
+    if request_id:
+        instance_id, proc_date = _get_best_instance(token, request_id, target_date)
+        if instance_id:
+            rows = _download_instance(token, instance_id)
+            if rows:
+                downloads = _parse_app_units(rows, target_date)
+                print(f"[app_store] {proc_date}: {downloads} App Units (Analytics API ✓ exact)")
+                upsert("app_store_daily", [{"date": proc_date or target_date.isoformat(),
+                                            "downloads": downloads, "redownloads": 0}])
+                return
+        print("[app_store] Analytics instances not ready yet — using Sales Reports")
+    else:
+        print("[app_store] Analytics API unavailable — using Sales Reports")
 
-    instance_id, proc_date = _get_best_instance(token, request_id, target_date)
-    if not instance_id:
-        print("[app_store] No analytics instances ready yet (check again in ~24h) — skipping")
-        return
-
-    rows = _download_instance(token, instance_id)
-    if not rows:
-        print("[app_store] No data in instance — skipping")
-        return
-
-    downloads = _parse_app_units(rows, target_date)
-    print(f"[app_store] {proc_date}: {downloads} App Units (Analytics API ✓ exact)")
-    upsert("app_store_daily", [{"date": proc_date or target_date.isoformat(),
-                                "downloads": downloads, "redownloads": 0}])
+    # ── Sales Reports fallback (App Store Installs — may include re-installs) ─
+    _sales_reports_fallback(token, target_date)
 
 
 if __name__ == "__main__":
