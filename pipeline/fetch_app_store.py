@@ -1,20 +1,13 @@
 """
-App Store Connect — daily downloads via Sales Reports API.
+App Store Connect — daily downloads via Analytics Reports API.
 
-API: GET /v1/salesReports
-  filter[frequency]=DAILY
-  filter[reportType]=SALES
-  filter[reportSubType]=SUMMARY
-  filter[vendorNumber]={VENDOR_NUMBER}
-  filter[reportDate]=YYYY-MM-DD
-  filter[version]=1_0
+Primary:  analyticsReportRequests → instances → download (exact App Units)
+Fallback: salesReports API (if analytics not ready yet — first 24h)
 
-Returns gzip-compressed TSV. Filters by Apple Identifier == APPSTORE_APP_ID.
-Product Type F  = free download  → downloads
-Product Type 7  = redownload     → redownloads
+Analytics API matches App Store Connect dashboard exactly (unique devices).
+Sales Reports may overcount due to reinstalls/updates.
 
-Writes to: app_store_daily (date, downloads, redownloads)
-Run:  python -m pipeline.fetch_app_store
+Run: python -m pipeline.fetch_app_store
 """
 import gzip
 import sys
@@ -35,19 +28,8 @@ from pipeline.store import upsert
 
 BASE = "https://api.appstoreconnect.apple.com/v1"
 
-# Apple Sales Report product type suffixes:
-#   *F  = free download  (1F=iPhone/iPad, 3F=tvOS/Mac, F=generic)
-#   *7  = redownload     (7, 17, 37 …)
-#   1   = paid download
-# We match by suffix to future-proof against new platform prefixes.
-def _is_download(t: str) -> bool:
-    return t.endswith("F") and not t.startswith("IA")  # exclude IAF (in-app free)
 
-def _is_redownload(t: str) -> bool:
-    return t.endswith("7") and not t.startswith("IA")  # exclude IA7
-
-
-# ── Auth ──────────────────────────────────────────────────────────────────────
+# ── Auth ───────────────────────────────────────────────────────────────────────
 
 def _make_token() -> str:
     now = int(time.time())
@@ -65,47 +47,245 @@ def _make_token() -> str:
     )
 
 
-# ── Sales Report Fetch ─────────────────────────────────────────────────────────
+def _hdr(token: str) -> dict:
+    return {"Authorization": f"Bearer {token}"}
 
-def _fetch_report(date_str: str, token: str) -> list[dict] | None:
-    """Download daily SALES SUMMARY report. Returns rows list or None if not available."""
-    params = {
-        "filter[frequency]":     "DAILY",
-        "filter[reportType]":    "SALES",
-        "filter[reportSubType]": "SUMMARY",
-        "filter[vendorNumber]":  APPSTORE_VENDOR_NUMBER,
-        "filter[reportDate]":    date_str,
-        "filter[version]":       "1_0",
-    }
+
+# ── Analytics Reports API ──────────────────────────────────────────────────────
+
+def _get_or_create_report_request(token: str) -> str | None:
+    """Get existing ONGOING report request or create one. Returns request ID."""
     r = requests.get(
-        f"{BASE}/salesReports",
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Accept":        "application/a-gzip",
+        f"{BASE}/analyticsReportRequests",
+        headers=_hdr(token),
+        params={
+            "filter[app]":        str(APPSTORE_APP_ID),
+            "filter[accessType]": "ONGOING",
         },
-        params=params,
-        timeout=60,
+        timeout=30,
     )
-    if r.status_code in (404, 204):
-        return None   # Report not available yet for this date
-    r.raise_for_status()
+    if r.status_code == 403:
+        print(f"[app_store] Analytics API 403 — key may need Analytics access. Falling back.")
+        return None
+    if r.status_code == 200:
+        data = r.json().get("data", [])
+        if data:
+            req_id = data[0]["id"]
+            print(f"[app_store] Found existing report request ✓")
+            return req_id
+        print("[app_store] No existing requests — creating new ONGOING request...")
+    else:
+        print(f"[app_store] List requests error {r.status_code}: {r.text[:200]}")
+        return None
 
-    raw = gzip.decompress(r.content).decode("utf-8")
-    lines = raw.strip().splitlines()
-    if not lines:
+    # Create new ONGOING request
+    body = {
+        "data": {
+            "type": "analyticsReportRequests",
+            "attributes": {"accessType": "ONGOING"},
+            "relationships": {
+                "app": {"data": {"type": "apps", "id": str(APPSTORE_APP_ID)}}
+            },
+        }
+    }
+    r2 = requests.post(
+        f"{BASE}/analyticsReportRequests",
+        headers={**_hdr(token), "Content-Type": "application/json"},
+        json=body,
+        timeout=30,
+    )
+    if r2.status_code in (200, 201):
+        req_id = r2.json()["data"]["id"]
+        print(f"[app_store] Created report request ✓ (first data available in ~24h)")
+        return req_id
+    print(f"[app_store] Create request error {r2.status_code}: {r2.text[:200]}")
+    return None
+
+
+def _get_best_instance(token: str, request_id: str, target_date: date) -> tuple[str | None, str]:
+    """Find best report instance for target_date. Returns (instance_id, proc_date)."""
+    # List all report types for this request
+    r = requests.get(
+        f"{BASE}/analyticsReportRequests/{request_id}/reports",
+        headers=_hdr(token),
+        timeout=30,
+    )
+    if r.status_code != 200:
+        print(f"[app_store] Reports list error {r.status_code}: {r.text[:200]}")
+        return None, ""
+
+    reports = r.json().get("data", [])
+    if not reports:
+        print("[app_store] No report types available yet (may take ~24h after first request)")
+        return None, ""
+
+    report_names = [d.get("attributes", {}).get("name", "") for d in reports]
+    print(f"[app_store] Available report types: {report_names}")
+
+    # Prefer APP_USAGE (has App Units), fall back to first available
+    report_id = None
+    for rep in reports:
+        name = rep.get("attributes", {}).get("name", "")
+        if name in ("APP_USAGE", "APP_UNITS", "appUsage"):
+            report_id = rep["id"]
+            print(f"[app_store] Using report type: {name}")
+            break
+    if not report_id:
+        report_id = reports[0]["id"]
+        print(f"[app_store] Using first available report: {report_names[0]}")
+
+    # Get instances
+    r2 = requests.get(
+        f"{BASE}/analyticsReports/{report_id}/instances",
+        headers=_hdr(token),
+        timeout=30,
+    )
+    if r2.status_code != 200:
+        print(f"[app_store] Instances error {r2.status_code}: {r2.text[:200]}")
+        return None, ""
+
+    instances = r2.json().get("data", [])
+    if not instances:
+        print("[app_store] No instances available yet")
+        return None, ""
+
+    # Find exact date match first
+    for inst in instances:
+        proc_date = inst.get("attributes", {}).get("processingDate", "")
+        if proc_date == target_date.isoformat():
+            return inst["id"], proc_date
+
+    # Use most recent
+    inst = instances[0]
+    proc_date = inst.get("attributes", {}).get("processingDate", "?")
+    print(f"[app_store] No instance for {target_date}, using most recent: {proc_date}")
+    return inst["id"], proc_date
+
+
+def _download_instance(token: str, instance_id: str) -> list[dict]:
+    """Download all segments for an instance. Returns parsed TSV rows."""
+    r = requests.get(
+        f"{BASE}/analyticsReportInstances/{instance_id}/segments",
+        headers=_hdr(token),
+        timeout=30,
+    )
+    if r.status_code != 200:
+        print(f"[app_store] Segments error {r.status_code}: {r.text[:200]}")
         return []
-    headers = lines[0].split("\t")
-    return [dict(zip(headers, line.split("\t"))) for line in lines[1:] if line]
+
+    segments = r.json().get("data", [])
+    rows = []
+    for seg in segments:
+        url = seg.get("attributes", {}).get("url")
+        if not url:
+            continue
+        dl = requests.get(url, timeout=60)
+        if dl.status_code != 200:
+            continue
+        raw = gzip.decompress(dl.content).decode("utf-8")
+        lines = raw.strip().splitlines()
+        if not lines:
+            continue
+        headers = lines[0].split("\t")
+        for line in lines[1:]:
+            if line:
+                rows.append(dict(zip(headers, line.split("\t"))))
+    return rows
 
 
-def _safe_int(v: str) -> int:
-    try:
-        return int(float(str(v).replace(",", "")))
-    except (ValueError, AttributeError):
-        return 0
+def _parse_app_units(rows: list[dict], target_date: date) -> int:
+    """Extract App Units for our app. Tries multiple column name variants."""
+    date_str  = target_date.isoformat()
+    unit_cols = ["App Units", "AppUnits", "Units", "app_units"]
+    id_cols   = ["App Apple ID", "AppAppleId", "Apple ID", "app_apple_id"]
+    date_cols = ["Date", "date", "Report Date"]
+
+    total = 0
+    for row in rows:
+        # Filter by date if column exists
+        for dc in date_cols:
+            if dc in row and row[dc] and row[dc] != date_str:
+                break
+        # Filter by app ID if column exists
+        app_id = ""
+        for ic in id_cols:
+            if ic in row:
+                app_id = str(row[ic]).strip()
+                break
+        if app_id and app_id != str(APPSTORE_APP_ID):
+            continue
+        # Sum units
+        for uc in unit_cols:
+            if uc in row:
+                try:
+                    total += int(float(row[uc] or 0))
+                except (ValueError, TypeError):
+                    pass
+                break
+    return total
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# ── Sales Reports Fallback ─────────────────────────────────────────────────────
+
+def _sales_reports_fallback(token: str, target_date: date) -> None:
+    """Fallback: Sales Reports API. Note: may overcount (includes reinstalls)."""
+    print("[app_store] Falling back to Sales Reports API (may include reinstalls)...")
+
+    def _is_download(t: str) -> bool:
+        return t.endswith("F") and not t.startswith("IA")
+
+    def _is_redownload(t: str) -> bool:
+        return t.endswith("7") and not t.startswith("IA")
+
+    for days_back in range(0, 4):
+        check_date = target_date - timedelta(days=days_back)
+        date_str   = check_date.isoformat()
+        print(f"[app_store] trying sales report for {date_str} ...")
+
+        r = requests.get(
+            f"{BASE}/salesReports",
+            headers={"Authorization": f"Bearer {token}", "Accept": "application/a-gzip"},
+            params={
+                "filter[frequency]":     "DAILY",
+                "filter[reportType]":    "SALES",
+                "filter[reportSubType]": "SUMMARY",
+                "filter[vendorNumber]":  APPSTORE_VENDOR_NUMBER,
+                "filter[reportDate]":    date_str,
+                "filter[version]":       "1_0",
+            },
+            timeout=60,
+        )
+        if r.status_code in (404, 204):
+            print(f"[app_store] no sales report for {date_str}")
+            continue
+        r.raise_for_status()
+
+        raw   = gzip.decompress(r.content).decode("utf-8")
+        lines = raw.strip().splitlines()
+        if not lines:
+            continue
+        headers = lines[0].split("\t")
+        rows    = [dict(zip(headers, line.split("\t"))) for line in lines[1:] if line]
+
+        downloads = redownloads = 0
+        for row in rows:
+            if str(row.get("Apple Identifier", "")).strip() != str(APPSTORE_APP_ID):
+                continue
+            t = row.get("Product Type Identifier", "").strip()
+            u = int(float(str(row.get("Units", "0")).replace(",", "") or 0))
+            if _is_download(t):
+                downloads += u
+            elif _is_redownload(t):
+                redownloads += u
+
+        print(f"[app_store] {date_str}: {downloads} downloads (Sales Reports fallback)")
+        upsert("app_store_daily", [{"date": date_str, "downloads": downloads, "redownloads": redownloads}])
+        return
+
+    print("[app_store] no data available for past 4 days")
+
+
+# ── Main ───────────────────────────────────────────────────────────────────────
 
 def run(target_date: date | None = None) -> None:
     missing = [k for k, v in {
@@ -115,50 +295,30 @@ def run(target_date: date | None = None) -> None:
         "APPSTORE_APP_ID":      APPSTORE_APP_ID,
     }.items() if not v]
     if missing:
-        print(f"[app_store] SKIP — missing credentials: {', '.join(missing)}")
+        print(f"[app_store] SKIP — missing: {', '.join(missing)}")
         return
 
     if target_date is None:
         target_date = date.today() - timedelta(days=1)
 
     token = _make_token()
+    print(f"[app_store] fetching for {target_date} ...")
 
-    # Try yesterday, fall back up to 3 days (Apple has 1-2 day processing lag)
-    for days_back in range(0, 4):
-        check_date = target_date - timedelta(days=days_back)
-        date_str   = check_date.isoformat()
-        print(f"[app_store] trying sales report for {date_str} ...")
+    # ── Try Analytics Reports API first ──────────────────────────────────────
+    request_id = _get_or_create_report_request(token)
+    if request_id:
+        instance_id, proc_date = _get_best_instance(token, request_id, target_date)
+        if instance_id:
+            rows = _download_instance(token, instance_id)
+            if rows:
+                downloads = _parse_app_units(rows, target_date)
+                print(f"[app_store] {proc_date}: {downloads} App Units (Analytics API ✓ exact)")
+                upsert("app_store_daily", [{"date": proc_date or target_date.isoformat(),
+                                            "downloads": downloads, "redownloads": 0}])
+                return
 
-        rows = _fetch_report(date_str, token)
-        if rows is None:
-            print(f"[app_store] no report available for {date_str}")
-            continue
-
-        # Debug: show all Apple Identifiers found in this report
-        all_ids = {str(r.get("Apple Identifier", "")).strip() for r in rows}
-        print(f"[app_store] report has {len(rows)} rows, identifiers: {all_ids}")
-
-        # Filter to our app and sum units by product type
-        downloads   = 0
-        redownloads = 0
-        for row in rows:
-            apple_id = str(row.get("Apple Identifier", "")).strip()
-            if apple_id != str(APPSTORE_APP_ID):
-                continue
-            prod_type = row.get("Product Type Identifier", "").strip()
-            units     = _safe_int(row.get("Units", "0"))
-            print(f"[app_store] matched row — type={prod_type!r} units={units}")
-            if _is_download(prod_type):
-                downloads += units
-            elif _is_redownload(prod_type):
-                redownloads += units
-
-        record = {"date": date_str, "downloads": downloads, "redownloads": redownloads}
-        print(f"[app_store] {date_str}: {downloads} downloads, {redownloads} redownloads")
-        upsert("app_store_daily", [record])
-        return
-
-    print("[app_store] no sales report available for past 4 days — skipping")
+    # ── Fallback to Sales Reports ─────────────────────────────────────────────
+    _sales_reports_fallback(token, target_date)
 
 
 if __name__ == "__main__":
