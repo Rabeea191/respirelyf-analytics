@@ -304,21 +304,26 @@ def run(target_date: date | None = None) -> None:
     token = _make_token()
     print(f"[app_store] fetching for {target_date} ...")
 
-    # ── Try Analytics Reports API first ──────────────────────────────────────
+    # ── Analytics Reports API (only source — no fallback to avoid inaccurate data) ──
     request_id = _get_or_create_report_request(token)
-    if request_id:
-        instance_id, proc_date = _get_best_instance(token, request_id, target_date)
-        if instance_id:
-            rows = _download_instance(token, instance_id)
-            if rows:
-                downloads = _parse_app_units(rows, target_date)
-                print(f"[app_store] {proc_date}: {downloads} App Units (Analytics API ✓ exact)")
-                upsert("app_store_daily", [{"date": proc_date or target_date.isoformat(),
-                                            "downloads": downloads, "redownloads": 0}])
-                return
+    if not request_id:
+        print("[app_store] Could not get/create report request — skipping")
+        return
 
-    # ── Fallback to Sales Reports ─────────────────────────────────────────────
-    _sales_reports_fallback(token, target_date)
+    instance_id, proc_date = _get_best_instance(token, request_id, target_date)
+    if not instance_id:
+        print("[app_store] No analytics instances ready yet (check again in ~24h) — skipping")
+        return
+
+    rows = _download_instance(token, instance_id)
+    if not rows:
+        print("[app_store] No data in instance — skipping")
+        return
+
+    downloads = _parse_app_units(rows, target_date)
+    print(f"[app_store] {proc_date}: {downloads} App Units (Analytics API ✓ exact)")
+    upsert("app_store_daily", [{"date": proc_date or target_date.isoformat(),
+                                "downloads": downloads, "redownloads": 0}])
 
 
 if __name__ == "__main__":
