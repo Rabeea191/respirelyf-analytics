@@ -137,7 +137,8 @@ def _get_instagram_id(page_token: str, page_id: str) -> str | None:
 # ── Facebook Page daily insights ───────────────────────────────────────────────
 
 def _fetch_page_insights(page_token: str, page_id: str, date_str: str) -> dict | None:
-    metrics = "page_impressions,page_reach,page_engaged_users,page_post_engagements"
+    # page_engaged_users deprecated for New Page Experience — use NPE-compatible metrics
+    metrics = "page_impressions,page_impressions_unique,page_post_engagements,page_views_total"
     # Facebook requires until > since by at least 1 day
     until_str = (date.fromisoformat(date_str) + timedelta(days=1)).isoformat()
     r = requests.get(f"{GRAPH}/{page_id}/insights", params={
