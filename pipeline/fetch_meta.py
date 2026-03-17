@@ -86,6 +86,13 @@ def _get_page_token(long_user_token: str, page_id: str) -> str:
             if str(page.get("id")) == str(page_id):
                 print("[meta] Page Access Token obtained via /me/accounts ✓")
                 return page["access_token"]
+        # Log page names found (helps diagnose ID mismatch)
+        for p in pages:
+            print(f"[meta] Found page: name='{p.get('name')}' id={p.get('id')}")
+        # Fallback: if only one page exists, use it directly
+        if len(pages) == 1:
+            print(f"[meta] Using only available page token (ID mismatch — check META_PAGE_ID)")
+            return pages[0]["access_token"]
         print(f"[meta] Page {page_id} not found in /me/accounts "
               f"({len(pages)} pages returned) — trying direct page node...")
     else:
