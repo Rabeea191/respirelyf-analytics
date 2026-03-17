@@ -299,7 +299,7 @@ def run(target_date: date | None = None) -> None:
         return
 
     if target_date is None:
-        target_date = date.today() - timedelta(days=1)
+        target_date = date.today() - timedelta(days=2)  # Analytics API has ~2 day processing lag
 
     token = _make_token()
     print(f"[app_store] fetching for {target_date} ...")
