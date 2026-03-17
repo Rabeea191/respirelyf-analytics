@@ -298,11 +298,13 @@ def run(target_date: date | None = None) -> None:
         print(f"[app_store] SKIP — missing: {', '.join(missing)}")
         return
 
+    # Analytics API has ~2 day processing lag — try 2 days back first
+    analytics_date = date.today() - timedelta(days=2)  # March 15 today
     if target_date is None:
-        target_date = date.today() - timedelta(days=1)
+        target_date = analytics_date
 
     token = _make_token()
-    print(f"[app_store] fetching for {target_date} ...")
+    print(f"[app_store] fetching for {target_date} (Analytics lag: trying {analytics_date}) ...")
 
     # ── Try Analytics Reports API first (exact unique-device count) ──────────
     request_id = _get_or_create_report_request(token)
