@@ -96,16 +96,30 @@ def _create_report_request() -> str | None:
         print("[app_store] Analytics API 403 — skipping.")
         return None
     if r2.status_code == 409:
-        # Already exists but GET couldn't find it (cross-key visibility issue)
-        # Try listing without app filter to find any ONGOING request
-        r3 = requests.get(f"{BASE}/analyticsReportRequests", headers=_hdr(), timeout=30)
-        if r3.status_code == 200:
-            for item in r3.json().get("data", []):
-                if item.get("attributes", {}).get("accessType", "") == "ONGOING":
-                    req_id = item["id"]
-                    print(f"[app_store] Reusing ONGOING request (409 recovery): {req_id}")
-                    return req_id
-        print("[app_store] 409 on ONGOING — cannot locate existing request. Skipping.")
+        # Existing ONGOING owned by another (revoked) key — try to DELETE it using the error ID
+        err_body = r2.json()
+        print(f"[app_store] 409 error body: {err_body}")
+        errors = err_body.get("errors", [])
+        if errors:
+            conflict_id = errors[0].get("id", "")
+            if conflict_id:
+                print(f"[app_store] Attempting DELETE on conflicting request: {conflict_id}")
+                r_del = requests.delete(
+                    f"{BASE}/analyticsReportRequests/{conflict_id}",
+                    headers=_hdr(), timeout=30,
+                )
+                print(f"[app_store] DELETE status: {r_del.status_code}")
+                if r_del.status_code in (200, 204, 404):
+                    # Deleted (or didn't exist) — retry POST
+                    print("[app_store] Retrying POST after DELETE...")
+                    r_retry = requests.post(f"{BASE}/analyticsReportRequests",
+                                            headers=_hdr(), json=body, timeout=30)
+                    print(f"[app_store] Retry POST status: {r_retry.status_code}")
+                    if r_retry.status_code in (200, 201):
+                        req_id = r_retry.json()["data"]["id"]
+                        print(f"[app_store] ONGOING request created after DELETE: {req_id}")
+                        return req_id
+        print("[app_store] 409 unresolvable — Analytics API blocked. Skipping.")
         return None
     if r2.status_code not in (200, 201):
         print(f"[app_store] Create request error {r2.status_code}: {r2.text[:300]}")
