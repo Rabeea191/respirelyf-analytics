@@ -96,30 +96,44 @@ def _create_report_request() -> str | None:
         print("[app_store] Analytics API 403 — skipping.")
         return None
     if r2.status_code == 409:
-        # Existing ONGOING owned by another (revoked) key — try to DELETE it using the error ID
-        err_body = r2.json()
-        print(f"[app_store] 409 error body: {err_body}")
-        errors = err_body.get("errors", [])
-        if errors:
-            conflict_id = errors[0].get("id", "")
-            if conflict_id:
-                print(f"[app_store] Attempting DELETE on conflicting request: {conflict_id}")
-                r_del = requests.delete(
-                    f"{BASE}/analyticsReportRequests/{conflict_id}",
-                    headers=_hdr(), timeout=30,
-                )
-                print(f"[app_store] DELETE status: {r_del.status_code}")
-                if r_del.status_code in (200, 204, 404):
-                    # Deleted (or didn't exist) — retry POST
-                    print("[app_store] Retrying POST after DELETE...")
-                    r_retry = requests.post(f"{BASE}/analyticsReportRequests",
-                                            headers=_hdr(), json=body, timeout=30)
-                    print(f"[app_store] Retry POST status: {r_retry.status_code}")
-                    if r_retry.status_code in (200, 201):
-                        req_id = r_retry.json()["data"]["id"]
-                        print(f"[app_store] ONGOING request created after DELETE: {req_id}")
-                        return req_id
-        print("[app_store] 409 unresolvable — Analytics API blocked. Skipping.")
+        # Known stuck request IDs (orphaned from revoked keys) — DELETE and retry
+        known_stuck_ids = [
+            "1e8e364c-2a5f-4868-bfc6-d410d5111e79",  # found in logs 2026-03-18
+            "9a914566-8fe0-4610-9fcd-56ac187c3398",   # ONGOING created then lost
+        ]
+        # Also try ID from error body
+        err_errors = r2.json().get("errors", [])
+        if err_errors:
+            err_id = err_errors[0].get("id", "")
+            if err_id and err_id not in known_stuck_ids:
+                known_stuck_ids.insert(0, err_id)
+
+        for stuck_id in known_stuck_ids:
+            # First try using it directly (maybe our key CAN access it)
+            r_get = requests.get(f"{BASE}/analyticsReportRequests/{stuck_id}",
+                                 headers=_hdr(), timeout=30)
+            if r_get.status_code == 200:
+                print(f"[app_store] Found existing request directly: {stuck_id}")
+                return stuck_id
+
+            # Try DELETE
+            print(f"[app_store] Trying DELETE on {stuck_id}...")
+            r_del = requests.delete(f"{BASE}/analyticsReportRequests/{stuck_id}",
+                                    headers=_hdr(), timeout=30)
+            print(f"[app_store] DELETE {stuck_id}: {r_del.status_code}")
+            if r_del.status_code in (200, 204, 404):
+                # Retry POST
+                r_retry = requests.post(f"{BASE}/analyticsReportRequests",
+                                        headers=_hdr(), json=body, timeout=30)
+                print(f"[app_store] POST after DELETE: {r_retry.status_code}")
+                if r_retry.status_code in (200, 201):
+                    req_id = r_retry.json()["data"]["id"]
+                    print(f"[app_store] ONGOING created after DELETE: {req_id}")
+                    return req_id
+                if r_retry.status_code != 409:
+                    break  # unexpected error, stop trying
+
+        print("[app_store] 409 unresolvable — all DELETE attempts failed. Skipping.")
         return None
     if r2.status_code not in (200, 201):
         print(f"[app_store] Create request error {r2.status_code}: {r2.text[:300]}")
