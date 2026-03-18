@@ -121,6 +121,20 @@ CREATE TABLE IF NOT EXISTS firebase_user_props (
     PRIMARY KEY (date, property, value)
 );
 
+-- ── Reddit Ads ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS reddit_ads_daily (
+    date          DATE    NOT NULL,
+    campaign_id   TEXT    NOT NULL,
+    campaign_name TEXT    NOT NULL DEFAULT '',
+    impressions   INTEGER NOT NULL DEFAULT 0,
+    clicks        INTEGER NOT NULL DEFAULT 0,
+    spend_usd     NUMERIC(10,2) NOT NULL DEFAULT 0,
+    cpm           NUMERIC(10,4) NOT NULL DEFAULT 0,
+    cpc           NUMERIC(10,4) NOT NULL DEFAULT 0,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (date, campaign_id)
+);
+
 -- ── Unified daily view (for overview chart) ────────────────
 -- This VIEW joins all channels into one normalised row per date.
 -- Use it in the dashboard for the master trend chart.
@@ -175,6 +189,7 @@ ALTER TABLE meta_ads_daily       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE meta_page_daily      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE firebase_events      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE firebase_user_props  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reddit_ads_daily     ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "anon_read" ON app_store_daily       FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON apple_ads_keywords    FOR SELECT TO anon USING (true);
@@ -186,3 +201,4 @@ CREATE POLICY "anon_read" ON meta_ads_daily        FOR SELECT TO anon USING (tru
 CREATE POLICY "anon_read" ON meta_page_daily       FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON firebase_events       FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON firebase_user_props   FOR SELECT TO anon USING (true);
+CREATE POLICY "anon_read" ON reddit_ads_daily      FOR SELECT TO anon USING (true);

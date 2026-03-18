@@ -55,6 +55,10 @@ META_ACCESS_TOKEN  = _opt("META_ACCESS_TOKEN")
 META_AD_ACCOUNT_ID = _opt("META_AD_ACCOUNT_ID")
 META_PAGE_ID       = _opt("META_PAGE_ID")
 
+# ── Reddit Ads ────────────────────────────────────────────
+REDDIT_APP_ID     = _opt("REDDIT_APP_ID")
+REDDIT_APP_SECRET = _opt("REDDIT_APP_SECRET")
+
 # ── Supabase ──────────────────────────────────────────────
 # URL is hardcoded in workflow — keep as fallback for local dev
 SUPABASE_URL         = os.environ.get("SUPABASE_URL", "https://jxanvdhpqzxehupxkmee.supabase.co")

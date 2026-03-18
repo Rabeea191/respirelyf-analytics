@@ -90,3 +90,12 @@ jobs:
           META_PAGE_ID:         ${{ secrets.META_PAGE_ID }}
           SUPABASE_URL:         https://jxanvdhpqzxehupxkmee.supabase.co
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+
+      - name: Reddit Ads
+        run: python -m pipeline.fetch_reddit
+        continue-on-error: true
+        env:
+          REDDIT_APP_ID:        ${{ secrets.REDDIT_APP_ID }}
+          REDDIT_APP_SECRET:    ${{ secrets.REDDIT_APP_SECRET }}
+          SUPABASE_URL:         https://jxanvdhpqzxehupxkmee.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
