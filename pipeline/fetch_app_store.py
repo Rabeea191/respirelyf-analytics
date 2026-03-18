@@ -93,8 +93,23 @@ def _create_report_request() -> str | None:
         print("[app_store] Analytics API 403 — account needs Analytics entitlement. Skipping.")
         return None
     if r2.status_code == 409:
-        # Another key already created a ONE_TIME_SNAPSHOT for this app — find and reuse it
-        print("[app_store] 409 — snapshot exists (another key). Fetching existing request...")
+        print("[app_store] 409 — snapshot exists (another key). Trying to locate it...")
+
+        # Attempt 1: Apple sometimes puts the conflicting resource ID in the error body
+        errors = r2.json().get("errors", [])
+        if errors:
+            error_id = errors[0].get("id", "")
+            if error_id:
+                # Try using this ID directly as the request ID
+                r_check = requests.get(
+                    f"{BASE}/analyticsReportRequests/{error_id}",
+                    headers=_hdr(), timeout=30,
+                )
+                if r_check.status_code == 200:
+                    print(f"[app_store] Found existing request via error ID: {error_id}")
+                    return error_id
+
+        # Attempt 2: GET all requests for this app (no accessType filter)
         r3 = requests.get(
             f"{BASE}/analyticsReportRequests",
             headers=_hdr(),
@@ -107,7 +122,21 @@ def _create_report_request() -> str | None:
                 req_id = all_data[0]["id"]
                 print(f"[app_store] Reusing existing request: {req_id}")
                 return req_id
-        print("[app_store] 409 and cannot find existing request — skipping.")
+
+        # Attempt 3: GET with no filters at all
+        r4 = requests.get(f"{BASE}/analyticsReportRequests", headers=_hdr(), timeout=30)
+        if r4.status_code == 200:
+            all_data = r4.json().get("data", [])
+            for item in all_data:
+                rels = item.get("relationships", {})
+                app_data = rels.get("app", {}).get("data", {})
+                if str(app_data.get("id", "")) == str(APPSTORE_APP_ID):
+                    req_id = item["id"]
+                    print(f"[app_store] Found request (no-filter): {req_id}")
+                    return req_id
+
+        print("[app_store] 409 — employee's key owns the snapshot and it's not visible to our key.")
+        print("[app_store] Ask employee to delete their ONE_TIME_SNAPSHOT request, then retry.")
         return None
     if r2.status_code not in (200, 201):
         print(f"[app_store] Create request error {r2.status_code}: {r2.text[:300]}")
