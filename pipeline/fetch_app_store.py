@@ -57,31 +57,34 @@ def _hdr() -> dict:
     }
 
 
-# ── Step 1: Create ONE_TIME_SNAPSHOT request ───────────────────────────────────
+# ── Step 1: Get or create ONGOING report request ──────────────────────────────
+# ONGOING = Apple generates daily reports automatically — no per-app conflict.
+# ONE_TIME_SNAPSHOT was abandoned: Apple ties it to the app (not the key),
+# so any existing snapshot (even from a revoked key) blocks new POSTs with 409.
 
 def _create_report_request() -> str | None:
-    """Get existing ONE_TIME_SNAPSHOT or create new one. Returns request ID."""
-    # Check for existing request first (409 = already exists)
+    """Get existing ONGOING request or create one. Returns request ID."""
+    # Reuse existing ONGOING request if one exists for this app
     r = requests.get(
         f"{BASE}/analyticsReportRequests",
         headers=_hdr(),
         params={"filter[app]": str(APPSTORE_APP_ID),
-                "filter[accessType]": "ONE_TIME_SNAPSHOT"},
+                "filter[accessType]": "ONGOING"},
         timeout=30,
     )
     if r.status_code == 200:
         data = r.json().get("data", [])
         if data:
             req_id = data[0]["id"]
-            print(f"[app_store] Using existing ONE_TIME_SNAPSHOT request: {req_id}")
+            print(f"[app_store] Using existing ONGOING request: {req_id}")
             return req_id
 
-    # No existing request — create new one
-    print("[app_store] Creating ONE_TIME_SNAPSHOT analytics request...")
+    # No existing ONGOING — create one
+    print("[app_store] Creating ONGOING analytics request...")
     body = {
         "data": {
             "type": "analyticsReportRequests",
-            "attributes": {"accessType": "ONE_TIME_SNAPSHOT"},
+            "attributes": {"accessType": "ONGOING"},
             "relationships": {
                 "app": {"data": {"type": "apps", "id": str(APPSTORE_APP_ID)}}
             },
@@ -90,59 +93,13 @@ def _create_report_request() -> str | None:
     r2 = requests.post(f"{BASE}/analyticsReportRequests",
                        headers=_hdr(), json=body, timeout=30)
     if r2.status_code == 403:
-        print("[app_store] Analytics API 403 — account needs Analytics entitlement. Skipping.")
-        return None
-    if r2.status_code == 409:
-        print("[app_store] 409 — snapshot exists (another key). Trying to locate it...")
-
-        # Attempt 1: Apple sometimes puts the conflicting resource ID in the error body
-        errors = r2.json().get("errors", [])
-        if errors:
-            error_id = errors[0].get("id", "")
-            if error_id:
-                # Try using this ID directly as the request ID
-                r_check = requests.get(
-                    f"{BASE}/analyticsReportRequests/{error_id}",
-                    headers=_hdr(), timeout=30,
-                )
-                if r_check.status_code == 200:
-                    print(f"[app_store] Found existing request via error ID: {error_id}")
-                    return error_id
-
-        # Attempt 2: GET all requests for this app (no accessType filter)
-        r3 = requests.get(
-            f"{BASE}/analyticsReportRequests",
-            headers=_hdr(),
-            params={"filter[app]": str(APPSTORE_APP_ID)},
-            timeout=30,
-        )
-        if r3.status_code == 200:
-            all_data = r3.json().get("data", [])
-            if all_data:
-                req_id = all_data[0]["id"]
-                print(f"[app_store] Reusing existing request: {req_id}")
-                return req_id
-
-        # Attempt 3: GET with no filters at all
-        r4 = requests.get(f"{BASE}/analyticsReportRequests", headers=_hdr(), timeout=30)
-        if r4.status_code == 200:
-            all_data = r4.json().get("data", [])
-            for item in all_data:
-                rels = item.get("relationships", {})
-                app_data = rels.get("app", {}).get("data", {})
-                if str(app_data.get("id", "")) == str(APPSTORE_APP_ID):
-                    req_id = item["id"]
-                    print(f"[app_store] Found request (no-filter): {req_id}")
-                    return req_id
-
-        print("[app_store] 409 — employee's key owns the snapshot and it's not visible to our key.")
-        print("[app_store] Ask employee to delete their ONE_TIME_SNAPSHOT request, then retry.")
+        print("[app_store] Analytics API 403 — skipping.")
         return None
     if r2.status_code not in (200, 201):
         print(f"[app_store] Create request error {r2.status_code}: {r2.text[:300]}")
         return None
     req_id = r2.json()["data"]["id"]
-    print(f"[app_store] Report request created: {req_id}")
+    print(f"[app_store] ONGOING request created: {req_id}")
     return req_id
 
 
