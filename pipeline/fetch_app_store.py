@@ -64,20 +64,20 @@ def _hdr() -> dict:
 
 def _create_report_request() -> str | None:
     """Get existing ONGOING request or create one. Returns request ID."""
-    # Reuse existing ONGOING request if one exists for this app
+    # List all requests for this app (filter[accessType] is not a valid API filter)
     r = requests.get(
         f"{BASE}/analyticsReportRequests",
         headers=_hdr(),
-        params={"filter[app]": str(APPSTORE_APP_ID),
-                "filter[accessType]": "ONGOING"},
+        params={"filter[app]": str(APPSTORE_APP_ID)},
         timeout=30,
     )
     if r.status_code == 200:
-        data = r.json().get("data", [])
-        if data:
-            req_id = data[0]["id"]
-            print(f"[app_store] Using existing ONGOING request: {req_id}")
-            return req_id
+        for item in r.json().get("data", []):
+            access_type = item.get("attributes", {}).get("accessType", "")
+            if access_type == "ONGOING":
+                req_id = item["id"]
+                print(f"[app_store] Using existing ONGOING request: {req_id}")
+                return req_id
 
     # No existing ONGOING — create one
     print("[app_store] Creating ONGOING analytics request...")
@@ -94,6 +94,18 @@ def _create_report_request() -> str | None:
                        headers=_hdr(), json=body, timeout=30)
     if r2.status_code == 403:
         print("[app_store] Analytics API 403 — skipping.")
+        return None
+    if r2.status_code == 409:
+        # Already exists but GET couldn't find it (cross-key visibility issue)
+        # Try listing without app filter to find any ONGOING request
+        r3 = requests.get(f"{BASE}/analyticsReportRequests", headers=_hdr(), timeout=30)
+        if r3.status_code == 200:
+            for item in r3.json().get("data", []):
+                if item.get("attributes", {}).get("accessType", "") == "ONGOING":
+                    req_id = item["id"]
+                    print(f"[app_store] Reusing ONGOING request (409 recovery): {req_id}")
+                    return req_id
+        print("[app_store] 409 on ONGOING — cannot locate existing request. Skipping.")
         return None
     if r2.status_code not in (200, 201):
         print(f"[app_store] Create request error {r2.status_code}: {r2.text[:300]}")
