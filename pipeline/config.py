@@ -58,6 +58,8 @@ META_PAGE_ID       = _opt("META_PAGE_ID")
 # ── Reddit Ads ────────────────────────────────────────────
 REDDIT_APP_ID     = _opt("REDDIT_APP_ID")
 REDDIT_APP_SECRET = _opt("REDDIT_APP_SECRET")
+REDDIT_USERNAME   = _opt("REDDIT_USERNAME")   # Reddit account username
+REDDIT_PASSWORD   = _opt("REDDIT_PASSWORD")   # Reddit account password
 
 # ── Supabase ──────────────────────────────────────────────
 # URL is hardcoded in workflow — keep as fallback for local dev
