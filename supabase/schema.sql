@@ -39,6 +39,21 @@ CREATE TABLE IF NOT EXISTS youtube_channel_daily (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS youtube_video_daily (
+    video_id          TEXT        NOT NULL,
+    date              DATE        NOT NULL,
+    title             TEXT,
+    views             INTEGER     NOT NULL DEFAULT 0,
+    watch_time_min    NUMERIC(12,1) NOT NULL DEFAULT 0,
+    impressions       INTEGER     NOT NULL DEFAULT 0,
+    ctr               NUMERIC(6,2) NOT NULL DEFAULT 0,
+    likes             INTEGER     NOT NULL DEFAULT 0,
+    comments          INTEGER     NOT NULL DEFAULT 0,
+    avg_view_duration NUMERIC(8,1) NOT NULL DEFAULT 0,
+    updated_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (video_id, date)
+);
+
 CREATE TABLE IF NOT EXISTS youtube_videos (
     video_id     TEXT PRIMARY KEY,
     title        TEXT,
@@ -182,6 +197,7 @@ ORDER BY d.date ASC;
 ALTER TABLE app_store_daily      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE apple_ads_keywords   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE youtube_channel_daily ENABLE ROW LEVEL SECURITY;
+ALTER TABLE youtube_video_daily  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE youtube_videos       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE google_ads_daily     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE meta_post_insights   ENABLE ROW LEVEL SECURITY;
@@ -194,6 +210,7 @@ ALTER TABLE reddit_ads_daily     ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "anon_read" ON app_store_daily       FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON apple_ads_keywords    FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON youtube_channel_daily FOR SELECT TO anon USING (true);
+CREATE POLICY "anon_read" ON youtube_video_daily   FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON youtube_videos        FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON google_ads_daily      FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON meta_post_insights    FOR SELECT TO anon USING (true);
