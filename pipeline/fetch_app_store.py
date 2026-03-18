@@ -274,13 +274,13 @@ def run(target_date: date | None = None) -> None:
         print(f"[app_store] SKIP — missing credentials: {', '.join(missing)}")
         return
 
-    # Single date: most recent available (2-day processing lag)
-    end_date = date.today() - timedelta(days=2)
+    # Single date test: March 18
     if target_date is not None:
         start_date = target_date
         end_date = target_date
     else:
-        start_date = end_date  # fetch just the latest day for now
+        start_date = date(2026, 3, 18)
+        end_date = date(2026, 3, 18)
 
     print(f"[app_store] Fetching App Units {start_date} → {end_date} ...")
 
