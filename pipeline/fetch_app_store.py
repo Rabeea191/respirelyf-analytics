@@ -88,8 +88,9 @@ def _create_report_request() -> str | None:
 
 def _wait_for_report(request_id: str,
                      target_name: str = "App Downloads",
-                     max_attempts: int = 20) -> str | None:
-    """Poll reports endpoint until target report is READY. Returns report ID."""
+                     max_attempts: int = 10) -> str | None:
+    """Poll reports endpoint until target report appears. Returns report ID.
+    Apple's API has no 'state' field on reports — presence in list = available."""
     url = f"{BASE}/analyticsReportRequests/{request_id}/reports"
     for attempt in range(1, max_attempts + 1):
         r = requests.get(url, headers=_hdr(), timeout=30)
@@ -101,20 +102,19 @@ def _wait_for_report(request_id: str,
             return None
 
         reports = r.json().get("data", [])
+        # Find App Downloads Standard or Detailed (no state check — presence = available)
         for rep in reports:
-            attrs = rep.get("attributes", {})
-            name  = attrs.get("name", "")
-            state = attrs.get("state", "")
-            print(f"[app_store] [{attempt}/{max_attempts}] {name}: {state}")
-            if target_name.lower() in name.lower() and state == "READY":
-                print(f"[app_store] Report READY ✓  id={rep['id']}")
+            name = rep.get("attributes", {}).get("name", "")
+            if target_name.lower() in name.lower():
+                print(f"[app_store] [{attempt}/{max_attempts}] Found: {name} ✓")
                 return rep["id"]
 
+        count = len(reports)
+        print(f"[app_store] [{attempt}/{max_attempts}] {count} reports, App Downloads not yet — waiting 30s...")
         if attempt < max_attempts:
-            print(f"[app_store] Not ready yet — waiting 30s...")
             time.sleep(30)
 
-    print("[app_store] Report not ready after polling — skipping.")
+    print("[app_store] App Downloads report not found after polling — skipping.")
     return None
 
 
