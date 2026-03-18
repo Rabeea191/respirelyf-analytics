@@ -60,7 +60,23 @@ def _hdr() -> dict:
 # ── Step 1: Create ONE_TIME_SNAPSHOT request ───────────────────────────────────
 
 def _create_report_request() -> str | None:
-    """POST analyticsReportRequests with ONE_TIME_SNAPSHOT. Returns request ID."""
+    """Get existing ONE_TIME_SNAPSHOT or create new one. Returns request ID."""
+    # Check for existing request first (409 = already exists)
+    r = requests.get(
+        f"{BASE}/analyticsReportRequests",
+        headers=_hdr(),
+        params={"filter[app]": str(APPSTORE_APP_ID),
+                "filter[accessType]": "ONE_TIME_SNAPSHOT"},
+        timeout=30,
+    )
+    if r.status_code == 200:
+        data = r.json().get("data", [])
+        if data:
+            req_id = data[0]["id"]
+            print(f"[app_store] Using existing ONE_TIME_SNAPSHOT request: {req_id}")
+            return req_id
+
+    # No existing request — create new one
     print("[app_store] Creating ONE_TIME_SNAPSHOT analytics request...")
     body = {
         "data": {
@@ -71,15 +87,15 @@ def _create_report_request() -> str | None:
             },
         }
     }
-    r = requests.post(f"{BASE}/analyticsReportRequests",
-                      headers=_hdr(), json=body, timeout=30)
-    if r.status_code == 403:
+    r2 = requests.post(f"{BASE}/analyticsReportRequests",
+                       headers=_hdr(), json=body, timeout=30)
+    if r2.status_code == 403:
         print("[app_store] Analytics API 403 — account needs Analytics entitlement. Skipping.")
         return None
-    if r.status_code not in (200, 201):
-        print(f"[app_store] Create request error {r.status_code}: {r.text[:300]}")
+    if r2.status_code not in (200, 201):
+        print(f"[app_store] Create request error {r2.status_code}: {r2.text[:300]}")
         return None
-    req_id = r.json()["data"]["id"]
+    req_id = r2.json()["data"]["id"]
     print(f"[app_store] Report request created: {req_id}")
     return req_id
 
