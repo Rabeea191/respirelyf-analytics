@@ -18,7 +18,10 @@ from datetime import date, timedelta
 
 import requests
 
-from pipeline.config import REDDIT_APP_ID, REDDIT_APP_SECRET
+from pipeline.config import (
+    REDDIT_APP_ID, REDDIT_APP_SECRET,
+    REDDIT_USERNAME, REDDIT_PASSWORD,
+)
 from pipeline.store import upsert
 
 ADS_BASE  = "https://ads-api.reddit.com/api/v3"
@@ -29,11 +32,18 @@ USER_AGENT = "RespireLYF Analytics/1.0"
 # ── Auth ───────────────────────────────────────────────────────────────────────
 
 def _get_token() -> str | None:
-    """Get OAuth2 client_credentials token."""
+    """Get OAuth2 token via password grant (script app flow)."""
+    if not REDDIT_USERNAME or not REDDIT_PASSWORD:
+        print("[reddit] REDDIT_USERNAME / REDDIT_PASSWORD not set — skipping.")
+        return None
     r = requests.post(
         TOKEN_URL,
         auth=(REDDIT_APP_ID, REDDIT_APP_SECRET),
-        data={"grant_type": "client_credentials"},
+        data={
+            "grant_type": "password",
+            "username":   REDDIT_USERNAME,
+            "password":   REDDIT_PASSWORD,
+        },
         headers={"User-Agent": USER_AGENT},
         timeout=30,
     )
@@ -113,8 +123,8 @@ def _get_insights(token: str, account_id: str,
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 def run(start_date: date | None = None, end_date: date | None = None) -> None:
-    if not REDDIT_APP_ID or not REDDIT_APP_SECRET:
-        print("[reddit] SKIP — REDDIT_APP_ID / REDDIT_APP_SECRET not set.")
+    if not REDDIT_APP_ID or not REDDIT_APP_SECRET or not REDDIT_USERNAME or not REDDIT_PASSWORD:
+        print("[reddit] SKIP — REDDIT_APP_ID / REDDIT_APP_SECRET / REDDIT_USERNAME / REDDIT_PASSWORD not set.")
         return
 
     # Default: last 7 days

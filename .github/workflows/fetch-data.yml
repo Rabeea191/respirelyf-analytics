@@ -97,5 +97,7 @@ jobs:
         env:
           REDDIT_APP_ID:        ${{ secrets.REDDIT_APP_ID }}
           REDDIT_APP_SECRET:    ${{ secrets.REDDIT_APP_SECRET }}
+          REDDIT_USERNAME:      ${{ secrets.REDDIT_USERNAME }}
+          REDDIT_PASSWORD:      ${{ secrets.REDDIT_PASSWORD }}
           SUPABASE_URL:         https://jxanvdhpqzxehupxkmee.supabase.co
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
