@@ -1,5 +1,5 @@
 """
-YouTube Analytics — daily channel stats + top video performance.
+YouTube Analytics — daily channel stats + per-video depth data.
 
 Needs credentials:  GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
                     GOOGLE_REFRESH_TOKEN, YOUTUBE_CHANNEL_ID
@@ -7,6 +7,8 @@ Needs credentials:  GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
 Writes to:
   youtube_channel_daily  (date, views, impressions, ctr, watch_time_min, subscribers)
   youtube_videos         (video_id, title, views, impressions, ctr, published_at)
+  youtube_video_daily    (video_id, date, title, views, watch_time_min, impressions,
+                          ctr, likes, comments, avg_view_duration)  ← per-video depth
 
 Run:  python -m pipeline.fetch_youtube
 """
@@ -169,6 +171,66 @@ def _top_videos(access_token: str, start: str, end: str, limit: int = 20) -> lis
     return rows
 
 
+# ── Per-video daily depth ─────────────────────────────────────────────────────
+
+def _video_daily(
+    access_token: str,
+    start: str,
+    end: str,
+    title_map: dict[str, str],
+) -> list[dict]:
+    """
+    Fetch per-video per-day metrics: views, watch time, impressions, CTR,
+    likes, comments, avg view duration.
+
+    Uses dimensions=video,day — one API call returns all videos × all days.
+    """
+    params = {
+        "ids":        f"channel=={YOUTUBE_CHANNEL_ID}",
+        "startDate":  start,
+        "endDate":    end,
+        "metrics":    (
+            "views,estimatedMinutesWatched,"
+            "impressions,impressionsClickThroughRate,"
+            "likes,comments,averageViewDuration"
+        ),
+        "dimensions": "video,day",
+        "sort":       "day,-views",
+        "maxResults": 200,
+    }
+    r = requests.get(
+        YT_ANALYTICS, params=params,
+        headers={"Authorization": f"Bearer {access_token}"},
+        timeout=30,
+    )
+    if r.status_code == 403:
+        print("[youtube] per-video depth API not accessible — skipping")
+        return []
+    if r.status_code != 200:
+        print(f"[youtube] per-video depth error {r.status_code}: {r.text[:200]}")
+        return []
+
+    body = r.json()
+    cols = [h["name"] for h in body.get("columnHeaders", [])]
+    rows = []
+    for row in body.get("rows", []):
+        d = dict(zip(cols, row))
+        vid_id = d.get("video", "")
+        rows.append({
+            "video_id":          vid_id,
+            "date":              d.get("day", ""),
+            "title":             title_map.get(vid_id, ""),
+            "views":             int(d.get("views", 0)),
+            "watch_time_min":    round(float(d.get("estimatedMinutesWatched", 0)), 1),
+            "impressions":       int(d.get("impressions", 0)),
+            "ctr":               round(float(d.get("impressionsClickThroughRate", 0)) * 100, 2),
+            "likes":             int(d.get("likes", 0)),
+            "comments":          int(d.get("comments", 0)),
+            "avg_view_duration": round(float(d.get("averageViewDuration", 0)), 1),
+        })
+    return rows
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def run(target_date: date | None = None) -> None:
@@ -199,11 +261,18 @@ def run(target_date: date | None = None) -> None:
     upsert("youtube_channel_daily", daily)
     print(f"[youtube] {len(daily)} daily channel row(s)")
 
-    # Top videos
+    # Top videos (aggregated over window)
     videos = _top_videos(token, start, end)
     if videos:
         upsert("youtube_videos", videos)
         print(f"[youtube] {len(videos)} video(s) upserted")
+
+    # Per-video daily depth ← NEW
+    title_map = {v["video_id"]: v["title"] for v in videos} if videos else {}
+    video_daily = _video_daily(token, start, end, title_map)
+    if video_daily:
+        upsert("youtube_video_daily", video_daily)
+        print(f"[youtube] {len(video_daily)} per-video-day row(s) upserted")
 
 
 if __name__ == "__main__":
