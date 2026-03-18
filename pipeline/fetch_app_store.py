@@ -92,6 +92,23 @@ def _create_report_request() -> str | None:
     if r2.status_code == 403:
         print("[app_store] Analytics API 403 — account needs Analytics entitlement. Skipping.")
         return None
+    if r2.status_code == 409:
+        # Another key already created a ONE_TIME_SNAPSHOT for this app — find and reuse it
+        print("[app_store] 409 — snapshot exists (another key). Fetching existing request...")
+        r3 = requests.get(
+            f"{BASE}/analyticsReportRequests",
+            headers=_hdr(),
+            params={"filter[app]": str(APPSTORE_APP_ID)},
+            timeout=30,
+        )
+        if r3.status_code == 200:
+            all_data = r3.json().get("data", [])
+            if all_data:
+                req_id = all_data[0]["id"]
+                print(f"[app_store] Reusing existing request: {req_id}")
+                return req_id
+        print("[app_store] 409 and cannot find existing request — skipping.")
+        return None
     if r2.status_code not in (200, 201):
         print(f"[app_store] Create request error {r2.status_code}: {r2.text[:300]}")
         return None
@@ -231,34 +248,38 @@ def run(target_date: date | None = None) -> None:
         print(f"[app_store] SKIP — missing credentials: {', '.join(missing)}")
         return
 
-    if target_date is None:
-        target_date = date.today() - timedelta(days=2)  # 2-day processing lag
+    # Determine date range: last 7 days with 2-day processing lag
+    end_date = date.today() - timedelta(days=2)
+    if target_date is not None:
+        # Single-date mode (e.g. manual CLI override)
+        start_date = target_date
+        end_date = target_date
+    else:
+        start_date = end_date - timedelta(days=6)
 
-    print(f"[app_store] fetching App Units for {target_date} ...")
+    print(f"[app_store] Fetching App Units {start_date} → {end_date} ...")
 
-    # Step 1
+    # Step 1 — one shared request for all dates
     request_id = _create_report_request()
     if not request_id:
         return
 
-    # Step 2 — poll up to 10 min (20 × 30s)
+    # Step 2 — poll up to 10 min (10 × 30s)
     report_id = _wait_for_report(request_id)
     if not report_id:
         return
 
-    # Step 3
-    instance_id = _get_instance(report_id, target_date)
-    if not instance_id:
-        return
-
-    # Step 4
-    downloads = _download_and_parse(instance_id, target_date)
-    if downloads is None:
-        return
-
-    print(f"[app_store] {target_date}: {downloads} App Units (Analytics API ✓ exact)")
-    upsert("app_store_daily", [{"date": target_date.isoformat(),
-                                "downloads": downloads, "redownloads": 0}])
+    # Steps 3+4 — loop over each day in range
+    current = start_date
+    while current <= end_date:
+        instance_id = _get_instance(report_id, current)
+        if instance_id:
+            downloads = _download_and_parse(instance_id, current)
+            if downloads is not None:
+                print(f"[app_store] {current}: {downloads} App Units (Analytics API ✓ exact)")
+                upsert("app_store_daily", [{"date": current.isoformat(),
+                                            "downloads": downloads, "redownloads": 0}])
+        current += timedelta(days=1)
 
 
 if __name__ == "__main__":
