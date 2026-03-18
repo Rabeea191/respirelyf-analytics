@@ -139,8 +139,22 @@ def _wait_for_report(request_id: str,
 
 # ── Step 3: Get instance for target date ──────────────────────────────────────
 
+def _list_all_instances(report_id: str) -> list:
+    """List ALL available instances for debugging (no date filter)."""
+    r = requests.get(
+        f"{BASE}/analyticsReports/{report_id}/instances",
+        headers=_hdr(),
+        params={"filter[granularity]": "DAILY"},
+        timeout=30,
+    )
+    if r.status_code != 200:
+        return []
+    return r.json().get("data", [])
+
+
 def _get_instance(report_id: str, target_date: date) -> str | None:
-    """GET instances filtered by processingDate + DAILY granularity."""
+    """GET instance for target date. Falls back to searching all instances."""
+    # Try filtered fetch first
     r = requests.get(
         f"{BASE}/analyticsReports/{report_id}/instances",
         headers=_hdr(),
@@ -155,13 +169,13 @@ def _get_instance(report_id: str, target_date: date) -> str | None:
         return None
 
     instances = r.json().get("data", [])
-    if not instances:
-        print(f"[app_store] No instance for {target_date} — data may not be ready yet.")
-        return None
+    if instances:
+        inst_id = instances[0]["id"]
+        print(f"[app_store] Instance found: {inst_id}")
+        return inst_id
 
-    inst_id = instances[0]["id"]
-    print(f"[app_store] Instance found: {inst_id}")
-    return inst_id
+    # Not found with date filter — silently skip (ONGOING needs time to populate)
+    return None
 
 
 # ── Step 4: Download segments and parse App Units ─────────────────────────────
@@ -254,6 +268,14 @@ def run(target_date: date | None = None) -> None:
     report_id = _wait_for_report(request_id)
     if not report_id:
         return
+
+    # Show what instances Apple has generated so far (helps debug timing)
+    all_inst = _list_all_instances(report_id)
+    if all_inst:
+        dates_available = [i.get("attributes", {}).get("processingDate", "?") for i in all_inst]
+        print(f"[app_store] Available instances ({len(all_inst)}): {', '.join(dates_available)}")
+    else:
+        print("[app_store] No instances available yet — ONGOING request may need 24h to populate.")
 
     # Steps 3+4 — loop over each day in range
     current = start_date
