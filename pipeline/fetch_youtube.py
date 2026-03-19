@@ -72,6 +72,11 @@ def _channel_daily(access_token: str, start: str, end: str) -> list[dict]:
     }
     r = requests.get(YT_ANALYTICS, params=params,
                      headers={"Authorization": f"Bearer {access_token}"}, timeout=30)
+    if r.status_code == 403:
+        print(f"[youtube] channel daily 403 — YouTube Analytics API may not be enabled in Google Cloud Console")
+        print(f"[youtube] hint: console.cloud.google.com → APIs & Services → Library → 'YouTube Analytics API' → Enable")
+        print(f"[youtube] response: {r.text[:300]}")
+        return []
     r.raise_for_status()
     body = r.json()
     cols = [h["name"] for h in body.get("columnHeaders", [])]
