@@ -65,7 +65,7 @@ def _get_access_token() -> str:
 def _channel_daily(access_token: str, start: str, end: str) -> list[dict]:
     """Fetch views, estimatedMinutesWatched, subscribersGained per day."""
     params = {
-        "ids":        f"channel=={YOUTUBE_CHANNEL_ID}",
+        "ids":        "channel==MINE",
         "startDate":  start,
         "endDate":    end,
         "metrics":    "views,estimatedMinutesWatched,subscribersGained,subscribersLost",
@@ -97,7 +97,7 @@ def _channel_daily(access_token: str, start: str, end: str) -> list[dict]:
 def _impressions_daily(access_token: str, start: str, end: str) -> list[dict]:
     """Fetch impressions + CTR per day (requires YouTube Studio access level)."""
     params = {
-        "ids":        f"channel=={YOUTUBE_CHANNEL_ID}",
+        "ids":        "channel==MINE",
         "startDate":  start,
         "endDate":    end,
         "metrics":    "impressions,impressionsClickThroughRate",
@@ -126,7 +126,7 @@ def _impressions_daily(access_token: str, start: str, end: str) -> list[dict]:
 def _top_videos(access_token: str, start: str, end: str, limit: int = 20) -> list[dict]:
     """Fetch top videos by views over the period."""
     params = {
-        "ids":        f"channel=={YOUTUBE_CHANNEL_ID}",
+        "ids":        "channel==MINE",
         "startDate":  start,
         "endDate":    end,
         "metrics":    "views",
@@ -194,12 +194,11 @@ def _video_daily(
     Uses dimensions=video,day — one API call returns all videos × all days.
     """
     params = {
-        "ids":        f"channel=={YOUTUBE_CHANNEL_ID}",
+        "ids":        "channel==MINE",
         "startDate":  start,
         "endDate":    end,
         "metrics":    (
             "views,estimatedMinutesWatched,"
-            "impressions,impressionsClickThroughRate,"
             "likes,comments,averageViewDuration"
         ),
         "dimensions": "video,day",
@@ -230,8 +229,8 @@ def _video_daily(
             "title":             title_map.get(vid_id, ""),
             "views":             int(d.get("views", 0)),
             "watch_time_min":    round(float(d.get("estimatedMinutesWatched", 0)), 1),
-            "impressions":       int(d.get("impressions", 0)),
-            "ctr":               round(float(d.get("impressionsClickThroughRate", 0)) * 100, 2),
+            "impressions":       0,
+            "ctr":               0.0,
             "likes":             int(d.get("likes", 0)),
             "comments":          int(d.get("comments", 0)),
             "avg_view_duration": round(float(d.get("averageViewDuration", 0)), 1),
