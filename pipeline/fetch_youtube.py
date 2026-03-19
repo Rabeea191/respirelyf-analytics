@@ -129,13 +129,16 @@ def _top_videos(access_token: str, start: str, end: str, limit: int = 20) -> lis
         "ids":        f"channel=={YOUTUBE_CHANNEL_ID}",
         "startDate":  start,
         "endDate":    end,
-        "metrics":    "views,impressions,impressionsClickThroughRate",
+        "metrics":    "views",
         "dimensions": "video",
         "sort":       "-views",
         "maxResults": limit,
     }
     r = requests.get(YT_ANALYTICS, params=params,
                      headers={"Authorization": f"Bearer {access_token}"}, timeout=30)
+    if r.status_code in (400, 403):
+        print(f"[youtube] top_videos {r.status_code} — skipping: {r.text[:200]}")
+        return []
     r.raise_for_status()
     body = r.json()
     cols = [h["name"] for h in body.get("columnHeaders", [])]
@@ -144,9 +147,7 @@ def _top_videos(access_token: str, start: str, end: str, limit: int = 20) -> lis
         d = dict(zip(cols, row))
         vid_id = d["video"]
         analytics[vid_id] = {
-            "views":       int(d.get("views", 0)),
-            "impressions": int(d.get("impressions", 0)),
-            "ctr":         round(float(d.get("impressionsClickThroughRate", 0)) * 100, 2),
+            "views": int(d.get("views", 0)),
         }
 
     if not analytics:
@@ -172,8 +173,8 @@ def _top_videos(access_token: str, start: str, end: str, limit: int = 20) -> lis
             "title":        snip.get("title", ""),
             "published_at": snip.get("publishedAt", ""),
             "views":        stats.get("views", 0),
-            "impressions":  stats.get("impressions", 0),
-            "ctr":          stats.get("ctr", 0.0),
+            "impressions":  0,
+            "ctr":          0.0,
         })
     return rows
 
