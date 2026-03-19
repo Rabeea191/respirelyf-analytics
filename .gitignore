@@ -1,0 +1,19 @@
+# Local credentials — never commit
+KEYS.md
+.env
+*.env
+*.p8
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
