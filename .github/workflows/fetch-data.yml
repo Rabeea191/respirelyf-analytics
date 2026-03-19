@@ -56,6 +56,21 @@ jobs:
           SUPABASE_URL:          https://jxanvdhpqzxehupxkmee.supabase.co
           SUPABASE_SERVICE_KEY:  ${{ secrets.SUPABASE_SERVICE_KEY }}
 
+      - name: Debug Google credentials
+        run: |
+          python -c "
+          import os
+          print('CLIENT_ID length:', len(os.environ.get('GOOGLE_CLIENT_ID', '')))
+          print('CLIENT_ID starts:', os.environ.get('GOOGLE_CLIENT_ID', '')[:30])
+          print('SECRET length:', len(os.environ.get('GOOGLE_CLIENT_SECRET', '')))
+          print('REFRESH_TOKEN length:', len(os.environ.get('GOOGLE_REFRESH_TOKEN', '')))
+          print('REFRESH_TOKEN starts:', os.environ.get('GOOGLE_REFRESH_TOKEN', '')[:10])
+          "
+        env:
+          GOOGLE_CLIENT_ID:     ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+
       - name: YouTube Analytics
         run: python -m pipeline.fetch_youtube
         continue-on-error: true

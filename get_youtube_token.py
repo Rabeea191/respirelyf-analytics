@@ -2,37 +2,54 @@
 One-time script to get Google OAuth Refresh Token for YouTube Analytics.
 
 Steps:
-  1. Fill in CLIENT_ID and CLIENT_SECRET below (from Google Cloud Console)
-  2. Run:  python get_youtube_token.py
-  3. Browser opens → login with YouTube channel owner account → Allow
-  4. Paste the code shown in browser → script prints REFRESH_TOKEN
-  5. Add REFRESH_TOKEN to GitHub Secrets
+  1. Run:  python get_youtube_token.py
+  2. Browser opens → login with YouTube channel owner account → Allow
+  3. Script auto-captures the code and prints REFRESH_TOKEN
+  4. Add REFRESH_TOKEN to GitHub Secrets
 
 Scopes needed:
   - youtube.readonly        (channel + video data)
   - yt-analytics.readonly   (analytics metrics)
 """
 
+import http.server
+import json
+import threading
 import urllib.parse
+import urllib.request
 import webbrowser
 
-# ── Fill these in ─────────────────────────────────────────────────────────────
-CLIENT_ID     = "111765701895-bsff6q29nrgdmk1oh9p2md4027mmhlat.apps.googleusercontent.com"  # see KEYS.md
-CLIENT_SECRET = "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"  # see KEYS.md
+# ── Credentials ───────────────────────────────────────────────────────────────
+CLIENT_ID     = "111765701895-4v50taonu9qgqs4aaojqpjj6g5c1ib2q.apps.googleusercontent.com"
+CLIENT_SECRET = "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"
 # ─────────────────────────────────────────────────────────────────────────────
 
-REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob"
+PORT = 8080
+REDIRECT_URI = f"http://localhost:{PORT}"
 SCOPES = [
     "https://www.googleapis.com/auth/youtube.readonly",
     "https://www.googleapis.com/auth/yt-analytics.readonly",
 ]
 
-def main():
-    if not CLIENT_ID or not CLIENT_SECRET:
-        print("❌ Fill in CLIENT_ID and CLIENT_SECRET at the top of this file first.")
-        return
+auth_code = None
 
-    # Step 1: Open browser for auth
+
+class _Handler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        global auth_code
+        params = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+        auth_code = params.get("code", [None])[0]
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(b"<h2>Authorization complete! You can close this tab.</h2>")
+
+    def log_message(self, *args):
+        pass  # suppress server logs
+
+
+def main():
+    # Step 1: Build auth URL (localhost redirect — works in production)
     auth_url = (
         "https://accounts.google.com/o/oauth2/v2/auth?"
         + urllib.parse.urlencode({
@@ -44,16 +61,25 @@ def main():
             "prompt":        "consent",
         })
     )
-    print(f"\n🌐 Opening browser...\n{auth_url}\n")
-    webbrowser.open(auth_url)
 
-    # Step 2: Get auth code from user
-    code = input("📋 Paste the authorization code from the browser here:\n> ").strip()
+    # Step 2: Start local server to catch redirect
+    server = http.server.HTTPServer(("localhost", PORT), _Handler)
+    thread = threading.Thread(target=server.handle_request)
+    thread.start()
+
+    print(f"\n🔗 Open this URL in your browser:\n\n{auth_url}\n")
+    print("⏳ Waiting for authorization (login in browser and click Allow)...")
+
+    thread.join(timeout=120)
+    server.server_close()
+
+    if not auth_code:
+        print("❌ No authorization code received. Did you allow access in the browser?")
+        return
 
     # Step 3: Exchange code for tokens
-    import urllib.request, json
     data = urllib.parse.urlencode({
-        "code":          code,
+        "code":          auth_code,
         "client_id":     CLIENT_ID,
         "client_secret": CLIENT_SECRET,
         "redirect_uri":  REDIRECT_URI,
@@ -65,8 +91,12 @@ def main():
         data=data,
         method="POST",
     )
-    with urllib.request.urlopen(req) as resp:
-        tokens = json.loads(resp.read())
+    try:
+        with urllib.request.urlopen(req) as resp:
+            tokens = json.loads(resp.read())
+    except Exception as e:
+        print(f"❌ Token exchange failed: {e}")
+        return
 
     refresh_token = tokens.get("refresh_token", "")
     if not refresh_token:
@@ -74,10 +104,8 @@ def main():
         return
 
     print(f"""
-✅ Success! Add these to GitHub Secrets:
+✅ Success! Add to GitHub Secrets:
 
-  GOOGLE_CLIENT_ID     = {CLIENT_ID}
-  GOOGLE_CLIENT_SECRET = {CLIENT_SECRET}
   GOOGLE_REFRESH_TOKEN = {refresh_token}
 """)
 
