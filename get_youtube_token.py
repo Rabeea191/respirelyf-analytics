@@ -17,8 +17,8 @@ import urllib.parse
 import webbrowser
 
 # ── Fill these in ─────────────────────────────────────────────────────────────
-CLIENT_ID     = ""   # from Google Cloud Console
-CLIENT_SECRET = ""   # from Google Cloud Console
+CLIENT_ID     = "111765701895-bsff6q29nrgdmk1oh9p2md4027mmhlat.apps.googleusercontent.com"  # see KEYS.md
+CLIENT_SECRET = "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"  # see KEYS.md
 # ─────────────────────────────────────────────────────────────────────────────
 
 REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob"
