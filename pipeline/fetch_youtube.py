@@ -54,6 +54,8 @@ def _get_access_token() -> str:
         "client_secret": GOOGLE_CLIENT_SECRET,
         "refresh_token": GOOGLE_REFRESH_TOKEN,
     }, timeout=30)
+    if not r.ok:
+        print(f"[youtube] token exchange failed {r.status_code}: {r.text}")
     r.raise_for_status()
     return r.json()["access_token"]
 
