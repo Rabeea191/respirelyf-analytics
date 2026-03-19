@@ -188,22 +188,18 @@ def _video_daily(
     title_map: dict[str, str],
 ) -> list[dict]:
     """
-    Fetch per-video per-day metrics: views, watch time, impressions, CTR,
-    likes, comments, avg view duration.
-
-    Uses dimensions=video,day — one API call returns all videos × all days.
+    Fetch per-video aggregated metrics over the window (dimensions=video).
+    dimensions=video,day is not a supported report type in YouTube Analytics API.
+    Stores with date=end so each daily run upserts that day's 30-day window totals.
     """
     params = {
         "ids":        "channel==MINE",
         "startDate":  start,
         "endDate":    end,
-        "metrics":    (
-            "views,estimatedMinutesWatched,"
-            "likes,comments,averageViewDuration"
-        ),
-        "dimensions": "video,day",
-        "sort":       "day,-views",
-        "maxResults": 200,
+        "metrics":    "views,estimatedMinutesWatched,averageViewDuration,likes,comments",
+        "dimensions": "video",
+        "sort":       "-views",
+        "maxResults": 50,
     }
     r = requests.get(
         YT_ANALYTICS, params=params,
@@ -225,7 +221,7 @@ def _video_daily(
         vid_id = d.get("video", "")
         rows.append({
             "video_id":          vid_id,
-            "date":              d.get("day", ""),
+            "date":              end,   # period end date — upserts on each run
             "title":             title_map.get(vid_id, ""),
             "views":             int(d.get("views", 0)),
             "watch_time_min":    round(float(d.get("estimatedMinutesWatched", 0)), 1),
