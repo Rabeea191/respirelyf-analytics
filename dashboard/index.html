@@ -264,7 +264,8 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   <nav class="hnav">
     <button class="hn act" data-tab="t-overview">🏠 Overview</button>
     <button class="hn" data-tab="t-paid">💰 Paid Ads</button>
-    <button class="hn" data-tab="t-organic">▶ Organic</button>
+    <button class="hn" data-tab="t-youtube">▶ YouTube</button>
+    <button class="hn" data-tab="t-organic">📱 Organic</button>
     <button class="hn" data-tab="t-appstore">🍎 App Store</button>
     <button class="hn" data-tab="t-firebase">🔥 Firebase</button>
     <button class="hn" data-tab="t-social">📱 Social</button>
@@ -509,6 +510,60 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 
 </div><!-- /t-paid -->
 
+
+<!-- ══════════════════════════════════════
+  ▶ YOUTUBE ANALYTICS TAB
+══════════════════════════════════════ -->
+<div id="t-youtube" class="tab-pane">
+  <div class="stitle">
+    <div class="snum" style="background:#d42b2b">▶</div>
+    <div><h2>YouTube Analytics</h2><p>Channel performance · Organic reach · Video metrics</p></div>
+  </div>
+
+  <!-- KPI Band -->
+  <div class="kband">
+    <div class="kpi" style="--kc:#d42b2b"><div class="klbl">Total Views</div><div class="kval" id="yt2TotalViews">—</div><div class="ksub">Last 30 days</div></div>
+    <div class="kpi" style="--kc:#d42b2b"><div class="klbl">Watch Time</div><div class="kval" id="yt2WatchTime">—</div><div class="ksub">Minutes watched</div></div>
+    <div class="kpi" style="--kc:#d42b2b"><div class="klbl">Avg View Duration</div><div class="kval" id="yt2AvgDuration">—</div><div class="ksub">Seconds per view</div></div>
+    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Subs Gained</div><div class="kval" id="yt2SubsGained">—</div><div class="ksub">New subscribers</div></div>
+    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg Daily Views</div><div class="kval" id="yt2AvgDaily">—</div><div class="ksub">Per day average</div></div>
+    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Peak Day Views</div><div class="kval" id="yt2PeakDay">—</div><div class="ksub">Best single day</div></div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="g2">
+    <div class="card data-ok">
+      <div class="ch"><div><h3>Daily Views</h3><p id="yt2ViewsSub">Organic channel views over time</p></div><span class="ctag cty">LIVE DATA</span></div>
+      <div class="cm"><canvas id="yt2ViewsChart"></canvas></div>
+    </div>
+    <div class="card data-ok">
+      <div class="ch"><div><h3>Daily Watch Time</h3><p>Minutes watched per day</p></div><span class="ctag cty">LIVE DATA</span></div>
+      <div class="cm"><canvas id="yt2WatchChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Videos Table -->
+  <div class="card data-ok" style="margin-top:16px">
+    <div class="ch"><div><h3>Video Performance</h3><p>All published videos · sorted by views</p></div><span class="ctag cty">YOUTUBE</span></div>
+    <div style="overflow-x:auto">
+      <table class="tbl" id="yt2VidTable">
+        <thead><tr><th>Title</th><th>Views</th><th>Watch Time (min)</th><th>Likes</th><th>Comments</th><th>Avg Duration (s)</th><th>Published</th></tr></thead>
+        <tbody id="yt2VidBody"><tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Subs chart -->
+  <div class="card data-ok" style="margin-top:16px">
+    <div class="ch"><div><h3>Daily Subscribers Gained</h3><p>New subscribers per day</p></div></div>
+    <div class="csm"><canvas id="yt2SubsChart"></canvas></div>
+  </div>
+
+  <div class="box bblue" style="margin-top:16px">
+    <div class="bico">ℹ️</div>
+    <div><strong>CTR & Impressions:</strong> YouTube restricts impression data to channels with 1,000+ subscribers via API. Data will appear automatically once the threshold is reached.</div>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════
   ③ ORGANIC SOCIAL MEDIA
@@ -1213,11 +1268,12 @@ function _fmtDate(iso) {
 
 async function _loadFromSupabase() {
   try {
-    const [appStore, kwds, ytDaily, ytVideos, events] = await Promise.all([
+    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events] = await Promise.all([
       _sb('app_store_daily?order=date.asc&limit=90'),
       _sb('apple_ads_keywords?order=impressions.desc&limit=50'),
       _sb('youtube_channel_daily?order=date.asc&limit=90'),
-      _sb('youtube_videos?order=views.desc&limit=10'),
+      _sb('youtube_videos?order=views.desc&limit=50'),
+      _sb('youtube_video_daily?order=date.asc&limit=500'),
       _sb('firebase_events?order=date.asc'),
     ]);
 
@@ -1240,11 +1296,33 @@ async function _loadFromSupabase() {
     const dl  = hasAppStore ? appStore.map(r => r.downloads   || 0) : [];
 
     // ── YouTube ─────────────────────────────────────────────
+    const hasVidDaily = Array.isArray(ytVidDaily) && ytVidDaily.length > 0;
     const ytVw = hasYT ? ytDaily.map(r => r.views || 0) : [];
     if (hasYT) {
       const ctrs = ytDaily.filter(r => r.ctr > 0).map(r => r.ctr);
       const avgCTR = ctrs.length ? (ctrs.reduce((a,b)=>a+b,0)/ctrs.length).toFixed(2) : null;
       if (avgCTR) document.getElementById('ytCtrKpi').textContent = avgCTR + '%';
+
+      // ── YouTube Tab KPIs ──────────────────────────────────
+      const totalViews   = ytVw.reduce((a,b)=>a+b,0);
+      const totalWatch   = ytDaily.reduce((a,r)=>a+(r.watch_time_min||0),0);
+      const avgDur       = ytDaily.filter(r=>r.avg_view_duration>0);
+      const avgDurVal    = avgDur.length ? Math.round(avgDur.reduce((a,r)=>a+(r.avg_view_duration||0),0)/avgDur.length) : null;
+      const subsGained   = ytDaily.reduce((a,r)=>a+(r.subscribers_gained||0),0);
+      const avgDaily     = ytVw.length ? Math.round(totalViews/ytVw.length) : 0;
+      const peakDay      = ytVw.length ? Math.max(...ytVw) : 0;
+
+      const _set = (id, val) => { const el=document.getElementById(id); if(el&&val!==null) el.textContent=val; };
+      _set('yt2TotalViews',  totalViews.toLocaleString());
+      _set('yt2WatchTime',   totalWatch >= 1000 ? (totalWatch/1000).toFixed(1)+'k min' : Math.round(totalWatch)+' min');
+      _set('yt2AvgDuration', avgDurVal ? avgDurVal+'s' : '—');
+      _set('yt2SubsGained',  subsGained > 0 ? '+'+subsGained : '—');
+      _set('yt2AvgDaily',    avgDaily);
+      _set('yt2PeakDay',     peakDay);
+
+      // date range sub
+      const sub = document.getElementById('yt2ViewsSub');
+      if(sub) sub.textContent = ytDaily[0]?.date + ' → ' + ytDaily[ytDaily.length-1]?.date;
     }
 
     // ── Firebase ────────────────────────────────────────────
@@ -1607,6 +1685,55 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids }) {
   mkLine('ytViewsChart', FL,
     [{label:'YouTube Views', data:ytVw, borderColor:'#d42b2b', backgroundColor:'rgba(212,43,43,.1)', fill:true, borderWidth:2}]
   );
+
+  // ─── YT TAB — VIEWS + WATCH TIME + SUBS CHARTS ──────────
+  const ytFL   = hasYT ? ytDaily.map(r=>_fmtDate(r.date)) : [];
+  const ytWt   = hasYT ? ytDaily.map(r=>+(r.watch_time_min||0).toFixed(1)) : [];
+  const ytSubs = hasYT ? ytDaily.map(r=>r.subscribers_gained||0) : [];
+  mkLine('yt2ViewsChart', ytFL, [{label:'Views', data:ytVw, borderColor:'#d42b2b', backgroundColor:'rgba(212,43,43,.1)', fill:true, borderWidth:2}]);
+  mkLine('yt2WatchChart', ytFL, [{label:'Watch Time (min)', data:ytWt, borderColor:'#e8743b', backgroundColor:'rgba(232,116,59,.1)', fill:true, borderWidth:2}]);
+  mkBar('yt2SubsChart', ytFL, [{label:'Subs Gained', data:ytSubs, backgroundColor:'rgba(16,185,129,.7)', borderRadius:4}]);
+
+  // ─── YT TAB — VIDEO TABLE ───────────────────────────────
+  {
+    // Aggregate per-video stats from youtube_video_daily
+    const vidMap = {};
+    if(hasVidDaily) {
+      ytVidDaily.forEach(r => {
+        if(!vidMap[r.video_id]) vidMap[r.video_id] = {views:0, watch:0, likes:0, comments:0, dur:[], title:r.title||''};
+        vidMap[r.video_id].views   += r.views||0;
+        vidMap[r.video_id].watch   += r.watch_time_min||0;
+        vidMap[r.video_id].likes   += r.likes||0;
+        vidMap[r.video_id].comments+= r.comments||0;
+        if(r.avg_view_duration>0) vidMap[r.video_id].dur.push(r.avg_view_duration);
+      });
+    }
+    const tbody = document.getElementById('yt2VidBody');
+    if(tbody && hasVideos) {
+      tbody.innerHTML = '';
+      ytVideos.forEach((v,i) => {
+        const agg    = vidMap[v.video_id] || {};
+        const wt     = agg.watch ? Math.round(agg.watch) : '—';
+        const likes  = agg.likes || (v.likes||0);
+        const cmts   = agg.comments || (v.comments||0);
+        const durArr = agg.dur||[];
+        const dur    = durArr.length ? Math.round(durArr.reduce((a,b)=>a+b,0)/durArr.length) : '—';
+        const pub    = v.published_at ? _fmtDate(v.published_at.slice(0,10)) : '—';
+        const views  = (agg.views||v.views||0).toLocaleString();
+        tbody.innerHTML += `<tr class="${i%2===0?'ra':''}">
+          <td style="max-width:260px"><div style="font-size:11px;font-weight:500;color:var(--t1);line-height:1.4">${v.title||'—'}</div></td>
+          <td class="num"><strong>${views}</strong></td>
+          <td class="num">${wt}</td>
+          <td class="num">${likes||'—'}</td>
+          <td class="num">${cmts||'—'}</td>
+          <td class="num">${dur}</td>
+          <td style="font-size:11px;color:var(--t3)">${pub}</td>
+        </tr>`;
+      });
+    } else if(tbody) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">No video data yet</td></tr>';
+    }
+  }
 
   // ─── APP STORE IMPRESSIONS SPLIT ────────────────────────
   const totalImp   = imp.reduce((a,b)=>a+b,0);
