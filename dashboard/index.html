@@ -1370,7 +1370,7 @@ async function _loadFromSupabase() {
       );
     }
 
-    return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos };
+    return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily, hasYT, ytVidDaily, hasVidDaily };
   } catch(e) {
     console.warn('[dashboard] Supabase load failed:', e.message);
     return null;
@@ -1437,7 +1437,7 @@ function mkDonut(id, labels, data, colors) {
 }
 
 // ── Render all charts with given data ─────────────────────
-function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos }) {
+function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily = [], hasYT = false, ytVidDaily = [], hasVidDaily = false }) {
 
   const hasData  = FL.length > 0;
   const hasKw    = kwData.length > 0;
@@ -2035,7 +2035,7 @@ async function boot() {
 
   // No data — show empty state (no fake static fallback)
   if (!data) {
-    data = { FL: [], imp: [], pv: [], dl: [], sess: [], actD: [], ytVw: [], kwData: [], vids: [] };
+    data = { FL: [], imp: [], pv: [], dl: [], sess: [], actD: [], ytVw: [], kwData: [], vids: [], ytDaily: [], hasYT: false, ytVidDaily: [], hasVidDaily: false };
     if (lastEl) {
       lastEl.textContent = 'No pipeline data — connect platforms to see live data';
       lastEl.style.color = '#c97209';
