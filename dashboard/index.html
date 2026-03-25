@@ -303,24 +303,13 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     </div>
   </div>
 
-  <!-- KPI BAND 10 cards -->
-  <div class="kband kband10">
-    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Total Impressions</div><div class="kval">33,624</div><div class="ksub">All platforms combined</div></div>
-    <div class="kpi" style="--kc:var(--org)"><div class="klbl">Total Ad Spend</div><div class="kval">$38.01</div><div class="ksub">Apple $29.60 + YT $8.41</div></div>
-    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">App Downloads</div><div class="kval">29</div><div class="ksub up">16.4% page→install</div></div>
-    <div class="kpi" style="--kc:var(--meta)"><div class="klbl">App Sessions</div><div class="kval">83</div><div class="ksub">2.86 sessions/user</div></div>
-    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">App Store Impr</div><div class="kval">5,895</div><div class="ksub">Paid + organic</div></div>
-    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Page → Install</div><div class="kval">16.4%</div><div class="ksub up">Industry avg 8–12% ✓</div></div>
-    <div class="kpi" style="--kc:var(--org)"><div class="klbl">Blended CPI</div><div class="kval">$1.31</div><div class="ksub">$38.01 / 29 downloads</div></div>
-    <div class="kpi" style="--kc:var(--yt)"><div class="klbl">YouTube Views</div><div class="kval">864</div><div class="ksub">Organic channel views</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Active Users</div><div class="kval">2</div><div class="ksub">Peak devices (Feb 18)</div></div>
-    <div class="kpi" style="--kc:#94a3b8"><div class="klbl">Revenue</div><div class="kval">$0</div><div class="ksub dn">No monetisation active</div></div>
-  </div>
+  <!-- KPI BAND 10 cards — populated by renderDashboard() -->
+  <div class="kband kband10" id="overviewKpis"></div>
 
   <!-- CROSS-CHANNEL TABLE -->
   <div class="card">
     <div class="ch">
-      <div><h3>Cross-Channel Summary — All Platforms</h3><p>Full period Feb 6 – Mar 7, 2026</p></div>
+      <div><h3>Cross-Channel Summary — All Platforms</h3><p id="channelPeriod">Loading…</p></div>
       <span class="ctag ctx">ALL CHANNELS</span>
     </div>
     <div style="overflow-x:auto">
@@ -328,20 +317,9 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
       <thead><tr>
         <th>Channel</th><th>Status</th><th>Impressions</th><th>Clicks / Taps</th><th>Installs</th><th>Spend</th><th>CPI</th>
       </tr></thead>
-      <tbody>
-        <tr class="ra"><td><strong>Apple Search Ads</strong></td><td><span class="pill pG">✓ Connected</span></td><td class="num">3,570</td><td class="num">31</td><td class="num gt">3</td><td class="num">$29.60</td><td class="num ot">$9.87</td></tr>
-        <tr><td><strong>YouTube Paid Ads</strong></td><td><span class="pill pa">~ Partial</span></td><td class="num">6,310</td><td class="num">78</td><td class="num ot">~1–2 est.</td><td class="num">$8.41</td><td class="num">~$4–8</td></tr>
-        <tr class="ra"><td><strong>Meta Ads (FB/IG)</strong></td><td><span class="pill px">⚠ No Data</span></td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td></tr>
-        <tr><td><strong>Google Ads</strong></td><td><span class="pill px">⚠ No Data</span></td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td></tr>
-        <tr class="ra"><td><strong>App Store Organic</strong></td><td><span class="pill pG">✓ Connected</span></td><td class="num">2,325</td><td class="num">146</td><td class="num gt">~26</td><td class="num gt">$0</td><td class="num gt">$0</td></tr>
-        <tr><td><strong>YouTube Organic</strong></td><td><span class="pill pG">✓ Connected</span></td><td class="num">21,419</td><td class="num">864 views</td><td class="num ot">~0–1</td><td class="num gt">$0</td><td class="dt">Untracked</td></tr>
-        <tr class="ra"><td><strong>Facebook Organic</strong></td><td><span class="pill px">⚠ No Data</span></td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="num gt">$0</td><td class="dt">—</td></tr>
-        <tr><td><strong>X / Twitter</strong></td><td><span class="pill px">⚠ No Data</span></td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="num gt">$0</td><td class="dt">—</td></tr>
-        <tr class="ra"><td><strong>Reddit</strong></td><td><span class="pill px">⚠ No Data</span></td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="num gt">$0</td><td class="dt">—</td></tr>
-      </tbody>
-      <tfoot><tr>
-        <td colspan="2"><strong>TOTALS (known data)</strong></td>
-        <td class="num">33,624</td><td class="num">1,119+</td><td class="num gt">29</td><td class="num">$38.01</td><td class="num">$1.31</td>
+      <tbody id="channelBody"></tbody>
+      <tfoot><tr id="channelTotals">
+        <td colspan="7" style="color:var(--t4);font-size:11px">Loading live data from Supabase…</td>
       </tr></tfoot>
     </table>
     </div>
@@ -378,36 +356,30 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <div class="snum">2</div>
     <div>
       <h2>Paid Ads — All Channels</h2>
-      <p>Apple Search Ads · YouTube Paid · Meta Ads · Google Ads · Total spend $38.01</p>
+      <p>Apple Search Ads · YouTube Paid · Meta Ads · Google Ads · Reddit</p>
     </div>
   </div>
 
   <!-- 2a. APPLE SEARCH ADS -->
   <div class="subhead">
     <span>🍎 Apple Search Ads</span>
-    <span class="stag" style="background:var(--apl);border-color:var(--apb);color:var(--apple)">FULL DATA · $29.60</span>
+    <span class="stag" style="background:var(--apl);border-color:var(--apb);color:var(--apple)" id="appleSubTag">Loading…</span>
   </div>
 
-  <div class="kband kband6">
-    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Total Spend</div><div class="kval">$29.60</div><div class="ksub">Feb 6 – Mar 7</div></div>
-    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Impressions</div><div class="kval">3,570</div><div class="ksub">Keyword-matched</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Taps</div><div class="kval">31</div><div class="ksub">0.87% tap rate</div></div>
-    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Installs</div><div class="kval">3</div><div class="ksub up">Confirmed tap-through</div></div>
-    <div class="kpi" style="--kc:var(--org)"><div class="klbl">CPI</div><div class="kval">$9.87</div><div class="ksub wa">Range: $0.05–$9.87</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg CPT</div><div class="kval">$0.95</div><div class="ksub">Cost per tap</div></div>
-  </div>
+  <!-- Apple Ads KPI band — populated by renderDashboard() -->
+  <div class="kband kband6" id="appleKpis"></div>
 
   <div class="g31">
     <div class="card data-ok">
-      <div class="ch"><div><h3>Keyword Performance — All 14 Keywords</h3><p>Sorted by impressions · Imp bar = share of 3,570 total</p></div><span class="ctag cta">APPLE ADS</span></div>
+      <div class="ch"><div><h3>Keyword Performance</h3><p id="kwCardSub">Sorted by impressions</p></div><span class="ctag cta">APPLE ADS</span></div>
       <div style="overflow-x:auto">
       <table class="tbl" id="kwTable">
         <thead><tr>
           <th>Keyword</th><th>Impressions</th><th>Taps</th><th>Installs</th><th>Spend</th><th>CPT</th><th>Result</th>
         </tr></thead>
         <tbody id="kwBody"></tbody>
-        <tfoot><tr>
-          <td><strong>TOTAL</strong></td><td class="num">3,570</td><td class="num">31</td><td class="num gt">3</td><td class="num">$29.60</td><td class="num">$0.95 avg</td><td></td>
+        <tfoot id="kwTfoot"><tr>
+          <td colspan="7" style="color:var(--t4);font-size:11px">No keyword data yet — run pipeline</td>
         </tr></tfoot>
       </table>
       </div>
@@ -511,19 +483,11 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   <div class="subhead"><span>Total Paid Spend Breakdown</span></div>
   <div class="g31">
     <div class="card data-ok">
-      <div class="ch"><div><h3>Paid Spend by Channel</h3><p>$38.01 total · Feb 6 – Mar 7</p></div><span class="ctag ctx">SPEND MIX</span></div>
+      <div class="ch"><div><h3>Paid Spend by Channel</h3><p id="spendMixPeriod">Loading…</p></div><span class="ctag ctx">SPEND MIX</span></div>
       <div class="g2" style="align-items:center">
         <div class="csm"><canvas id="paidSpendDonut"></canvas></div>
-        <div>
-          <div class="rrow"><div class="rlbl">Apple Ads</div><div class="rtrk"><div class="rfil" style="width:77.9%;background:var(--apple)"></div></div><div class="rval" style="color:var(--apple)">$29.60</div></div>
-          <div class="rrow"><div class="rlbl">YouTube</div><div class="rtrk"><div class="rfil" style="width:22.1%;background:var(--yt)"></div></div><div class="rval" style="color:var(--yt)">$8.41</div></div>
-          <div class="rrow"><div class="rlbl">Meta Ads</div><div class="rtrk"><div class="rfil" style="width:0%;background:var(--meta)"></div></div><div class="rval dt">$0</div></div>
-          <div class="rrow"><div class="rlbl">Google</div><div class="rtrk"><div class="rfil" style="width:0%;background:var(--gads)"></div></div><div class="rval dt">$0</div></div>
-          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-            <div style="font-size:11px;color:var(--t3)">Blended CPI (confirmed 3 installs paid)</div>
-            <div style="font-size:22px;font-weight:900;color:var(--t1)">$12.67</div>
-            <div style="font-size:11px;color:var(--t3)">If all 29 downloads attributed: <strong style="color:var(--grn)">$1.31</strong></div>
-          </div>
+        <div id="spendMixBars">
+          <div style="text-align:center;padding:20px;color:var(--t4)">⏳ Waiting for pipeline data</div>
         </div>
       </div>
     </div>
@@ -533,8 +497,8 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
         <div class="fstep" style="border-color:var(--apb);background:var(--apl)">
           <div class="fbg" style="width:100%;background:rgba(29,85,217,.06)"></div>
           <div class="fic">🍎</div>
-          <div class="ftx"><strong>Apple Search Ads</strong><small>3 confirmed installs · $29.60</small></div>
-          <div class="fnum" style="color:var(--yt)">$9.87</div>
+          <div class="ftx"><strong>Apple Search Ads</strong><small id="eff-apple-sub">Loading…</small></div>
+          <div class="fnum" style="color:var(--yt)" id="eff-apple-cpi">⏳</div>
         </div>
         <div class="fstep" style="border-color:var(--ytb);background:var(--ytl)">
           <div class="fic">▶</div>
@@ -710,11 +674,11 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 
   <div class="g2">
     <div class="card data-ok">
-      <div class="ch"><div><h3>Impressions Split — Paid vs Organic</h3><p>5,895 total App Store impressions</p></div><span class="ctag ctg">APP STORE</span></div>
+      <div class="ch"><div><h3>Impressions Split — Paid vs Organic</h3><p id="imprSplitSub">Loading…</p></div><span class="ctag ctg">APP STORE</span></div>
       <div class="csm"><canvas id="appStoreImprSplit"></canvas></div>
-      <div style="display:flex;gap:16px;margin-top:12px;justify-content:center">
-        <div class="li"><div class="ld" style="background:var(--apple)"></div>Apple Ads 3,570 (60.6%)</div>
-        <div class="li"><div class="ld" style="background:var(--grn)"></div>Organic 2,325 (39.4%)</div>
+      <div style="display:flex;gap:16px;margin-top:12px;justify-content:center" id="imprSplitLegend">
+        <div class="li"><div class="ld" style="background:var(--apple)"></div><span id="imprLegApple">Apple Ads</span></div>
+        <div class="li"><div class="ld" style="background:var(--grn)"></div><span id="imprLegOrganic">Organic</span></div>
       </div>
     </div>
     <div class="card data-ok">
@@ -1020,39 +984,39 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
           <div class="fbg" style="width:100%;background:rgba(29,85,217,.05)"></div>
           <div class="fic">👁️</div>
           <div class="ftx"><strong>Total Ad Impressions</strong><small>All paid channels combined</small></div>
-          <div class="fnum">33,624</div>
+          <div class="fnum" id="fn-adimpr">⏳</div>
         </div>
-        <div class="fdrop">↓ <em>17.5%</em> reach App Store</div>
+        <div class="fdrop" id="fn-drop1">↓ calculating…</div>
 
         <div class="fstep" style="border-color:var(--apb);background:var(--apl)">
           <div class="fbg" style="width:17.5%;background:rgba(29,85,217,.1)"></div>
           <div class="fic">📱</div>
           <div class="ftx"><strong>App Store Impressions</strong><small>Paid + organic search + browse</small></div>
-          <div class="fnum">5,895</div>
+          <div class="fnum" id="fn-storeimpr">⏳</div>
         </div>
-        <div class="fdrop">↓ <em>3.0%</em> tap to view page</div>
+        <div class="fdrop" id="fn-drop2">↓ calculating…</div>
 
         <div class="fstep" style="border-color:var(--border);background:#f7f9ff">
           <div class="fbg" style="width:3%;background:rgba(92,110,138,.1)"></div>
           <div class="fic">📄</div>
-          <div class="ftx"><strong>Product Page Views</strong><small>3.0% of App Store impressions</small></div>
-          <div class="fnum">177</div>
+          <div class="ftx"><strong>Product Page Views</strong><small id="fn-pv-sub">App Store listing views</small></div>
+          <div class="fnum" id="fn-pv">⏳</div>
         </div>
-        <div class="fdrop">↓ <em>16.4%</em> download</div>
+        <div class="fdrop" id="fn-drop3">↓ calculating…</div>
 
         <div class="fstep" style="border-color:var(--gnb);background:var(--gnl)">
           <div class="fbg" style="width:0.5%;background:rgba(10,138,95,.15)"></div>
           <div class="fic">⬇️</div>
-          <div class="ftx"><strong>Downloads</strong><small>16.4% of page views · above avg ✓</small></div>
-          <div class="fnum" style="color:var(--grn)">29</div>
+          <div class="ftx"><strong>Downloads</strong><small id="fn-dl-sub">Page→install rate</small></div>
+          <div class="fnum" style="color:var(--grn)" id="fn-dl">⏳</div>
         </div>
-        <div class="fdrop">↓ <em>2.86×</em> sessions per install</div>
+        <div class="fdrop" id="fn-drop4">↓ calculating…</div>
 
         <div class="fstep" style="border-color:var(--mtb);background:var(--mtl)">
           <div class="fbg" style="width:0.25%;background:rgba(104,48,216,.1)"></div>
           <div class="fic">🔄</div>
-          <div class="ftx"><strong>App Sessions</strong><small>2.86 sessions per install average</small></div>
-          <div class="fnum" style="color:var(--meta)">83</div>
+          <div class="ftx"><strong>App Sessions</strong><small id="fn-sess-sub">Firebase session data</small></div>
+          <div class="fnum" style="color:var(--meta)" id="fn-sess">⏳</div>
         </div>
         <div class="fdrop">↓ estimated <em>~7–10%</em> retained</div>
 
@@ -1082,12 +1046,8 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
         <div class="ch"><div><h3>Channel Attribution Waterfall</h3><p>Spend → installs → CPI by source</p></div></div>
         <table class="tbl">
           <thead><tr><th>Channel</th><th>Spend</th><th>Installs</th><th>CPI</th><th>ROI Signal</th></tr></thead>
-          <tbody>
-            <tr><td><strong>🍎 Apple Ads</strong></td><td class="num">$29.60</td><td class="num">3 confirmed</td><td class="num rt">$9.87</td><td><span class="pill po">Optimise KWs</span></td></tr>
-            <tr class="ra"><td><strong>▶ YouTube Paid</strong></td><td class="num">$8.41</td><td class="num ot">~1–2 est.</td><td class="num ot">~$4–8</td><td><span class="pill po">Add deep link</span></td></tr>
-            <tr><td><strong>📲 Organic App Store</strong></td><td class="num gt">$0</td><td class="num gt">~26</td><td class="num gt">$0.00</td><td><span class="pill pG">Best ROI ✓</span></td></tr>
-            <tr class="ra"><td><strong>▶ YouTube Organic</strong></td><td class="num gt">$0</td><td class="num ot">~0–1</td><td class="dt">Untracked</td><td><span class="pill po">Add link now</span></td></tr>
-            <tr><td><strong>f Meta / G Google</strong></td><td class="num">$0</td><td class="dt">$0 tracked</td><td class="dt">—</td><td><span class="pill px">Not invested</span></td></tr>
+          <tbody id="attrBody">
+            <tr><td colspan="5" style="text-align:center;color:var(--t4);padding:20px">⏳ Loading live data…</td></tr>
           </tbody>
         </table>
       </div>
@@ -1398,6 +1358,174 @@ function mkDonut(id, labels, data, colors) {
 // ── Render all charts with given data ─────────────────────
 function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids }) {
 
+  const hasData  = FL.length > 0;
+  const hasKw    = kwData.length > 0;
+  const nd       = '<span class="dt">—</span>';
+  const fmt      = (n) => n > 0 ? n.toLocaleString() : '—';
+  const fmtD     = (n) => n > 0 ? '$' + n.toFixed(2) : '—';
+
+  // ─── OVERVIEW KPI BAND ─────────────────────────────────
+  {
+    const el = document.getElementById('overviewKpis');
+    if (el) {
+      const totalDl   = dl.reduce((a,b)=>a+b,0);
+      const totalSess = sess.reduce((a,b)=>a+b,0);
+      const totalYt   = ytVw.reduce((a,b)=>a+b,0);
+      const totalImp  = imp.reduce((a,b)=>a+b,0);
+      const totalPv   = pv.reduce((a,b)=>a+b,0);
+      const appleSpend = hasKw ? kwData.reduce((a,k)=>a+k.spend,0) : 0;
+      const peakActD  = actD.length > 0 ? Math.max(...actD) : 0;
+      const pInstall  = totalPv > 0 ? ((totalDl/totalPv)*100).toFixed(1)+'%' : '—';
+      const blendCpi  = totalDl > 0 && appleSpend > 0 ? '$'+(appleSpend/totalDl).toFixed(2) : '—';
+      const period    = FL.length > 1 ? `${FL[0]} – ${FL[FL.length-1]} · ${FL.length} days` : 'No pipeline data yet';
+
+      if (!hasData) {
+        el.innerHTML = `<div class="kpi nd" style="--kc:var(--t4);grid-column:1/-1"><div class="klbl">Pipeline Status</div><div class="kval" style="font-size:16px">⏳ Waiting for data</div><div class="ksub">Run the GitHub Actions workflow to populate Supabase, then refresh this page</div></div>`;
+      } else {
+        el.innerHTML = `
+          <div class="kpi" style="--kc:var(--apple)"><div class="klbl">App Store Impr</div><div class="kval">${fmt(totalImp)}</div><div class="ksub">${period}</div></div>
+          <div class="kpi" style="--kc:var(--org)"><div class="klbl">Apple Ads Spend</div><div class="kval">${hasKw ? '$'+appleSpend.toFixed(2) : '—'}</div><div class="ksub">${hasKw ? 'Search Ads' : 'No ads data'}</div></div>
+          <div class="kpi" style="--kc:var(--grn)"><div class="klbl">App Downloads</div><div class="kval">${fmt(totalDl)}</div><div class="ksub up">${pInstall !== '—' ? pInstall+' page→install' : 'vs page views'}</div></div>
+          <div class="kpi" style="--kc:var(--meta)"><div class="klbl">App Sessions</div><div class="kval">${fmt(totalSess)}</div><div class="ksub">${totalDl>0 ? (totalSess/totalDl).toFixed(1)+' sessions/user' : 'Firebase data'}</div></div>
+          <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Page → Install</div><div class="kval">${pInstall}</div><div class="ksub ${pInstall!=='—'&&parseFloat(pInstall)>=8?'up':''}">Industry avg 8–12%</div></div>
+          <div class="kpi" style="--kc:var(--org)"><div class="klbl">Blended CPI</div><div class="kval">${blendCpi}</div><div class="ksub">Ad spend / downloads</div></div>
+          <div class="kpi" style="--kc:var(--yt)"><div class="klbl">YouTube Views</div><div class="kval">${fmt(totalYt)}</div><div class="ksub">Organic channel views</div></div>
+          <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Active Users</div><div class="kval">${fmt(peakActD)}</div><div class="ksub">Peak daily devices</div></div>
+          <div class="kpi" style="--kc:#94a3b8"><div class="klbl">Revenue</div><div class="kval">$0</div><div class="ksub dn">No monetisation active</div></div>
+          <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Total Page Views</div><div class="kval">${fmt(totalPv)}</div><div class="ksub">App Store listing views</div></div>
+        `;
+      }
+    }
+  }
+
+  // ─── CROSS-CHANNEL TABLE ────────────────────────────────
+  {
+    const tbody = document.getElementById('channelBody');
+    const tfoot = document.getElementById('channelTotals');
+    const periodEl = document.getElementById('channelPeriod');
+    if (periodEl) {
+      periodEl.textContent = FL.length > 1
+        ? `Live data · ${FL[0]} – ${FL[FL.length-1]}`
+        : 'No pipeline data — run GitHub Actions workflow';
+    }
+    if (tbody) {
+      const appleImpr    = hasKw ? kwData.reduce((a,k)=>a+k.imp,0)   : 0;
+      const appleTaps    = hasKw ? kwData.reduce((a,k)=>a+k.taps,0)  : 0;
+      const appleInst    = hasKw ? kwData.reduce((a,k)=>a+k.inst,0)  : 0;
+      const appleSpend   = hasKw ? kwData.reduce((a,k)=>a+k.spend,0) : 0;
+      const appleCpi     = appleInst > 0 ? '$'+(appleSpend/appleInst).toFixed(2) : '—';
+      const totalStoreImp = imp.reduce((a,b)=>a+b,0);
+      const totalPv      = pv.reduce((a,b)=>a+b,0);
+      const totalDl      = dl.reduce((a,b)=>a+b,0);
+      const totalYtVw    = ytVw.reduce((a,b)=>a+b,0);
+
+      if (!hasData && !hasKw) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--t4)">⏳ No data yet — add GitHub secrets and run the workflow</td></tr>`;
+        if (tfoot) tfoot.innerHTML = `<tr><td colspan="7" style="color:var(--t4);font-size:11px">Run pipeline to see live totals</td></tr>`;
+      } else {
+        tbody.innerHTML = `
+          <tr class="ra"><td><strong>Apple Search Ads</strong></td>
+            <td><span class="pill ${hasKw?'pG':'px'}">${hasKw?'✓ Live':'⚠ No Data'}</span></td>
+            <td class="num">${hasKw?appleImpr.toLocaleString():nd}</td>
+            <td class="num">${hasKw?appleTaps:nd}</td>
+            <td class="num ${hasKw&&appleInst>0?'gt':''}">${hasKw?appleInst:nd}</td>
+            <td class="num">${hasKw?'$'+appleSpend.toFixed(2):nd}</td>
+            <td class="num ${hasKw&&appleInst>0?'ot':''}">${hasKw?appleCpi:nd}</td></tr>
+          <tr><td><strong>YouTube Paid Ads</strong></td>
+            <td><span class="pill px">⚠ No Data</span></td>
+            <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td></tr>
+          <tr class="ra"><td><strong>Meta Ads (FB/IG)</strong></td>
+            <td><span class="pill px">⚠ No Data</span></td>
+            <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td></tr>
+          <tr><td><strong>Google Ads</strong></td>
+            <td><span class="pill px">⚠ No Data</span></td>
+            <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td></tr>
+          <tr class="ra"><td><strong>App Store Organic</strong></td>
+            <td><span class="pill ${hasData?'pG':'px'}">${hasData?'✓ Live':'⚠ No Data'}</span></td>
+            <td class="num">${hasData?totalStoreImp.toLocaleString():nd}</td>
+            <td class="num">${hasData?totalPv.toLocaleString():nd}</td>
+            <td class="num ${hasData&&totalDl>0?'gt':''}">${hasData?totalDl:nd}</td>
+            <td class="num gt">$0</td><td class="num gt">$0</td></tr>
+          <tr><td><strong>YouTube Organic</strong></td>
+            <td><span class="pill ${ytVw.length>0?'pG':'px'}">${ytVw.length>0?'✓ Live':'⚠ No Data'}</span></td>
+            <td class="dt">—</td>
+            <td class="num">${totalYtVw>0?totalYtVw.toLocaleString():nd}</td>
+            <td class="dt">~</td><td class="num gt">$0</td><td class="dt">Organic</td></tr>
+          <tr class="ra"><td><strong>Facebook Organic</strong></td>
+            <td><span class="pill px">⚠ No Data</span></td>
+            <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="num gt">$0</td><td class="dt">—</td></tr>
+          <tr><td><strong>Reddit Ads</strong></td>
+            <td><span class="pill px">⚠ No Data</span></td>
+            <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td></tr>
+        `;
+        if (tfoot) {
+          const totImpr  = (hasKw?appleImpr:0) + totalStoreImp;
+          const totDl    = totalDl;
+          const totSpend = hasKw ? appleSpend : 0;
+          const totCpi   = totDl > 0 && totSpend > 0 ? '$'+(totSpend/totDl).toFixed(2) : '—';
+          tfoot.innerHTML = `<tr>
+            <td colspan="2"><strong>TOTALS (live data)</strong></td>
+            <td class="num">${totImpr>0?totImpr.toLocaleString():'—'}</td>
+            <td class="dt">—</td>
+            <td class="num gt">${totDl>0?totDl:'—'}</td>
+            <td class="num">${totSpend>0?'$'+totSpend.toFixed(2):'—'}</td>
+            <td class="num">${totCpi}</td>
+          </tr>`;
+        }
+      }
+    }
+  }
+
+  // ─── APPLE ADS KPI BAND ────────────────────────────────
+  {
+    const el = document.getElementById('appleKpis');
+    const tagEl = document.getElementById('appleSubTag');
+    if (el) {
+      if (!hasKw) {
+        el.innerHTML = `<div class="kpi nd" style="--kc:var(--t4);grid-column:1/-1"><div class="klbl">Apple Search Ads</div><div class="kval" style="font-size:16px">⏳ No data yet</div><div class="ksub">Add APPLE_ADS_* secrets to GitHub and run the workflow</div></div>`;
+        if (tagEl) tagEl.textContent = 'Waiting for pipeline';
+      } else {
+        const spend    = kwData.reduce((a,k)=>a+k.spend,0);
+        const imprT    = kwData.reduce((a,k)=>a+k.imp,0);
+        const tapsT    = kwData.reduce((a,k)=>a+k.taps,0);
+        const instT    = kwData.reduce((a,k)=>a+k.inst,0);
+        const tapRate  = imprT > 0 ? ((tapsT/imprT)*100).toFixed(2)+'%' : '—';
+        const cpi      = instT > 0 ? '$'+(spend/instT).toFixed(2) : '—';
+        const avgCpt   = tapsT > 0 ? '$'+(spend/tapsT).toFixed(2) : '—';
+        if (tagEl) tagEl.textContent = `LIVE · $${spend.toFixed(2)}`;
+        el.innerHTML = `
+          <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Total Spend</div><div class="kval">$${spend.toFixed(2)}</div><div class="ksub">Live from Supabase</div></div>
+          <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Impressions</div><div class="kval">${imprT.toLocaleString()}</div><div class="ksub">Keyword-matched</div></div>
+          <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Taps</div><div class="kval">${tapsT.toLocaleString()}</div><div class="ksub">${tapRate} tap rate</div></div>
+          <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Installs</div><div class="kval">${instT}</div><div class="ksub up">Confirmed tap-through</div></div>
+          <div class="kpi" style="--kc:var(--org)"><div class="klbl">CPI</div><div class="kval">${cpi}</div><div class="ksub wa">Cost per install</div></div>
+          <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg CPT</div><div class="kval">${avgCpt}</div><div class="ksub">Cost per tap</div></div>
+        `;
+      }
+    }
+  }
+
+  // ─── KEYWORD TABLE TFOOT ───────────────────────────────
+  {
+    const tfoot = document.getElementById('kwTfoot');
+    if (tfoot && hasKw) {
+      const spendT  = kwData.reduce((a,k)=>a+k.spend,0);
+      const imprT   = kwData.reduce((a,k)=>a+k.imp,0);
+      const tapsT   = kwData.reduce((a,k)=>a+k.taps,0);
+      const instT   = kwData.reduce((a,k)=>a+k.inst,0);
+      const avgCpt  = tapsT>0 ? '$'+(spendT/tapsT).toFixed(2)+' avg' : '—';
+      tfoot.innerHTML = `<tr>
+        <td><strong>TOTAL</strong></td>
+        <td class="num">${imprT.toLocaleString()}</td>
+        <td class="num">${tapsT}</td>
+        <td class="num gt">${instT}</td>
+        <td class="num">$${spendT.toFixed(2)}</td>
+        <td class="num">${avgCpt}</td>
+        <td></td>
+      </tr>`;
+    }
+  }
+
   // ─── MASTER CHART ───────────────────────────────────────
   mkLine('masterChart', FL, [
     {label:'App Store Impr ÷50', data:imp.map(v=>+(v/50).toFixed(1)), borderColor:'#1d55d9', backgroundColor:'rgba(29,85,217,.08)', fill:true, borderWidth:2},
@@ -1407,25 +1535,33 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids }) {
   ]);
 
   // ─── PAID SPEND DONUT ───────────────────────────────────
-  mkDonut('paidSpendDonut',
-    ['Apple Ads $29.60','YouTube $8.41','Meta $0','Google $0'],
-    [29.60, 8.41, 0.01, 0.01],
-    ['#1d55d9','#d42b2b','#6830d8','#1a73e8']
-  );
+  {
+    const appleSpend = hasKw ? kwData.reduce((a,k)=>a+k.spend,0) : 0;
+    mkDonut('paidSpendDonut',
+      [`Apple Ads $${appleSpend.toFixed(2)}`, 'YouTube $0', 'Meta $0', 'Google $0'],
+      [appleSpend || 0.01, 0.01, 0.01, 0.01],
+      ['#1d55d9','#d42b2b','#6830d8','#1a73e8']
+    );
+  }
 
   // ─── APPLE ADS WEEK DETAIL ──────────────────────────────
-  mkBar('appleWeekDetail',
-    ['Feb 10','Feb 11','Feb 12','Feb 13','Feb 14','Feb 15','Feb 16'],
-    [
-      {label:'Impressions', data:[6,2425,821,19,80,116,1399], backgroundColor:'rgba(29,85,217,.75)', yAxisID:'y'},
-      {label:'Downloads',   data:[1,4,2,2,1,0,1],             backgroundColor:'rgba(10,138,95,.85)',  yAxisID:'y1'},
-    ],
-    {extra:{scales:{
-      x:{grid:{display:false}},
-      y:{position:'left', grid:{color:'#f0f3fa'}, title:{display:true,text:'Impressions',font:{size:10}}},
-      y1:{position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:'Downloads',font:{size:10}}, max:6}
-    }}}
-  );
+  // Shows last 7 days of Apple Ads data if available, else empty
+  {
+    if (hasKw && FL.length >= 7) {
+      mkBar('appleWeekDetail',
+        FL.slice(-7),
+        [
+          {label:'Impressions', data:imp.slice(-7), backgroundColor:'rgba(29,85,217,.75)', yAxisID:'y'},
+          {label:'Downloads',   data:dl.slice(-7),  backgroundColor:'rgba(10,138,95,.85)', yAxisID:'y1'},
+        ],
+        {extra:{scales:{
+          x:{grid:{display:false}},
+          y:{position:'left', grid:{color:'#f0f3fa'}, title:{display:true,text:'Impressions',font:{size:10}}},
+          y1:{position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:'Downloads',font:{size:10}}, max:6}
+        }}}
+      );
+    }
+  }
 
   // ─── KW IMP CHART ───────────────────────────────────────
   const top10kw = kwData.slice(0,10);
@@ -1470,32 +1606,49 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids }) {
   );
 
   // ─── APP STORE IMPRESSIONS SPLIT ────────────────────────
-  const totalImp = imp.reduce((a,b)=>a+b,0);
-  const paidImprArr = imp.map((v,i)=>{
-    const paid=[0,0,0,0,6,2425,821,19,80,116,1399,466,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    return paid[i]||0;
-  });
-  const paidTotal = paidImprArr.reduce((a,b)=>a+b,0);
-  const orgTotal  = Math.max(0, totalImp - paidTotal);
+  const totalImp   = imp.reduce((a,b)=>a+b,0);
+  const paidTotal  = hasKw ? kwData.reduce((a,k)=>a+k.imp,0) : 0;
+  const orgTotal   = Math.max(0, totalImp - paidTotal);
+  // Legend and subtitle update
+  {
+    const subEl = document.getElementById('imprSplitSub');
+    const legA  = document.getElementById('imprLegApple');
+    const legO  = document.getElementById('imprLegOrganic');
+    if (subEl) subEl.textContent = totalImp > 0 ? `${totalImp.toLocaleString()} total App Store impressions` : 'No App Store data yet';
+    if (legA)  legA.textContent  = paidTotal > 0 ? `Apple Ads ${paidTotal.toLocaleString()} (${totalImp>0?((paidTotal/totalImp)*100).toFixed(1)+'%':'—'})` : 'Apple Ads (—)';
+    if (legO)  legO.textContent  = orgTotal  > 0 ? `Organic ${orgTotal.toLocaleString()} (${totalImp>0?((orgTotal/totalImp)*100).toFixed(1)+'%':'—'})`   : 'Organic (—)';
+  }
   mkDonut('appStoreImprSplit',
     [`Apple Ads ${paidTotal.toLocaleString()}`, `Organic ${orgTotal.toLocaleString()}`],
-    [paidTotal, orgTotal],
+    [paidTotal||0.01, orgTotal||0.01],
     ['#1d55d9','#0a8a5f']
   );
 
   // ─── DOWNLOAD ATTRIBUTION DONUT ─────────────────────────
-  const totalDl = dl.reduce((a,b)=>a+b,0);
-  const paidDl  = 3;
-  const ytDl    = 1;
-  const orgDl   = Math.max(0, totalDl - paidDl - ytDl);
+  const totalDl  = dl.reduce((a,b)=>a+b,0);
+  const paidDl   = hasKw ? kwData.reduce((a,k)=>a+k.inst,0) : 0;
+  const ytDl     = 0;
+  const orgDl    = Math.max(0, totalDl - paidDl - ytDl);
   mkDonut('dlAttrDonut',
-    [`Organic ~${orgDl}`, `Apple Ads ${paidDl}`, `YouTube ~${ytDl}`],
-    [orgDl, paidDl, ytDl],
+    [`Organic ${orgDl}`, `Apple Ads ${paidDl}`, `YouTube ${ytDl}`],
+    [orgDl||0.01, paidDl||0.01, ytDl||0.01],
     ['#0a8a5f','#1d55d9','#d42b2b']
   );
 
+  // ─── EFFICIENCY COMPARISON STEPS ────────────────────────
+  {
+    const appleInst  = hasKw ? kwData.reduce((a,k)=>a+k.inst,0) : 0;
+    const appleSpend = hasKw ? kwData.reduce((a,k)=>a+k.spend,0) : 0;
+    const appleCpi   = appleInst > 0 ? '$'+(appleSpend/appleInst).toFixed(2) : '—';
+    const _s = (id, v) => { const e = document.getElementById(id); if(e) e.textContent = v; };
+    _s('eff-apple-sub', hasKw ? `${appleInst} confirmed installs · $${appleSpend.toFixed(2)}` : 'No data — run pipeline');
+    _s('eff-apple-cpi', hasKw && appleInst > 0 ? appleCpi : '—');
+    _s('kwCardSub', hasKw ? `${kwData.length} keywords · sorted by impressions · total ${paidTotal.toLocaleString()} impr` : 'No keyword data yet — run pipeline');
+  }
+
   // ─── APP STORE IMPRESSIONS STACKED ──────────────────────
-  const orgImprArr = imp.map((v,i)=>Math.max(0,v-paidImprArr[i]));
+  const paidImprArr = imp.map(()=>0); // will use kwData-based paid if available
+  const orgImprArr  = imp.map((v)=>v);
   mkBar('appStoreImprDay', FL,
     [
       {label:'Paid (Apple Ads)', data:paidImprArr, backgroundColor:'rgba(29,85,217,.75)', stack:'s'},
@@ -1529,39 +1682,141 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids }) {
 
   // ─── WEEKLY GROUPED BAR ─────────────────────────────────
   {
-    const weeks=['W1 Feb 6-9','W2 Feb 10-16','W3 Feb 17-23','W4 Feb 24-Mar 2','W5 Mar 3-7'];
-    const wDl  =[0,11,7,4,7];
-    const wSess=[0,17,9,19,24];
-    mkBar('weeklyChart', weeks,
-      [
-        {label:'Downloads', data:wDl,   backgroundColor:'rgba(10,138,95,.75)', borderRadius:3},
-        {label:'Sessions',  data:wSess, backgroundColor:'rgba(104,48,216,.65)', borderRadius:3},
-      ]
-    );
+    // Group available data into weekly buckets dynamically
+    if (FL.length >= 7) {
+      const chunkSize = 7;
+      const wLabels = [], wDl = [], wSess = [];
+      for (let i = 0; i < FL.length; i += chunkSize) {
+        const chunk = FL.slice(i, i + chunkSize);
+        wLabels.push(`${chunk[0]}–${chunk[chunk.length-1]}`);
+        wDl.push(dl.slice(i, i+chunkSize).reduce((a,b)=>a+b,0));
+        wSess.push(sess.slice(i, i+chunkSize).reduce((a,b)=>a+b,0));
+      }
+      mkBar('weeklyChart', wLabels,
+        [
+          {label:'Downloads', data:wDl,   backgroundColor:'rgba(10,138,95,.75)', borderRadius:3},
+          {label:'Sessions',  data:wSess, backgroundColor:'rgba(104,48,216,.65)', borderRadius:3},
+        ]
+      );
+    }
   }
 
-  // ─── FUNNEL CHART ───────────────────────────────────────
+  // ─── FUNNEL CHART (live data) ────────────────────────────
   {
     const ctx = document.getElementById('funnelChart');
+    const totalImp  = imp.reduce((a,b)=>a+b,0);
+    const totalPv   = pv.reduce((a,b)=>a+b,0);
+    const totalDl   = dl.reduce((a,b)=>a+b,0);
+    const totalSess = sess.reduce((a,b)=>a+b,0);
+    const peakActD  = actD.length > 0 ? Math.max(...actD) : 0;
+    const appleImpr = hasKw ? kwData.reduce((a,k)=>a+k.imp,0) : 0;
     if(ctx) new Chart(ctx, {
       type:'bar',
       data:{
         labels:['Ad Impressions','App Store Impr','Page Views','Downloads','Sessions','Active D7+'],
         datasets:[{
-          data:[33624, 5895, 177, 29, 83, 2],
+          data:[appleImpr||1, totalImp||1, totalPv||1, totalDl||1, totalSess||1, peakActD||1],
           backgroundColor:['#1d55d9','#3b6fef','#5c8caa','#0a8a5f','#6830d8','#94a3b8'],
           borderRadius:5
         }]
       },
       options:{
         indexAxis:'y', responsive:true, maintainAspectRatio:true,
-        plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>' '+c.raw.toLocaleString()}}},
+        plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>' '+(c.raw===1&&!hasData?'No data':c.raw.toLocaleString())}}},
         scales:{
           x:{type:'logarithmic', grid:{color:'#f0f3fa'}, ticks:{font:{size:9}, callback:v=>v>=1000?Math.round(v/1000)+'k':v}},
           y:{grid:{display:false}, ticks:{font:{size:10}}}
         }
       }
     });
+  }
+
+  // ─── SPEND MIX BARS ─────────────────────────────────────
+  {
+    const barsEl   = document.getElementById('spendMixBars');
+    const periodEl = document.getElementById('spendMixPeriod');
+    const appleSpend = hasKw ? kwData.reduce((a,k)=>a+k.spend,0) : 0;
+    const totalSpend = appleSpend; // add other channels as they connect
+    if (periodEl) periodEl.textContent = totalSpend > 0
+      ? `$${totalSpend.toFixed(2)} total · ${FL[0]||''} – ${FL[FL.length-1]||''}`
+      : 'No spend data yet';
+    if (barsEl) {
+      if (totalSpend === 0) {
+        barsEl.innerHTML = `<div style="text-align:center;padding:20px;color:var(--t4)">⏳ No spend data yet — run pipeline</div>`;
+      } else {
+        const appleP = totalSpend > 0 ? (appleSpend/totalSpend*100).toFixed(1) : 0;
+        const totalDl  = dl.reduce((a,b)=>a+b,0);
+        const appleInst = hasKw ? kwData.reduce((a,k)=>a+k.inst,0) : 0;
+        const blendCpi = totalDl > 0 ? '$'+(totalSpend/totalDl).toFixed(2) : '—';
+        barsEl.innerHTML = `
+          <div class="rrow"><div class="rlbl">Apple Ads</div><div class="rtrk"><div class="rfil" style="width:${appleP}%;background:var(--apple)"></div></div><div class="rval" style="color:var(--apple)">$${appleSpend.toFixed(2)}</div></div>
+          <div class="rrow"><div class="rlbl">YouTube</div><div class="rtrk"><div class="rfil" style="width:0%;background:var(--yt)"></div></div><div class="rval dt">$0</div></div>
+          <div class="rrow"><div class="rlbl">Meta Ads</div><div class="rtrk"><div class="rfil" style="width:0%;background:var(--meta)"></div></div><div class="rval dt">$0</div></div>
+          <div class="rrow"><div class="rlbl">Google</div><div class="rtrk"><div class="rfil" style="width:0%;background:var(--gads)"></div></div><div class="rval dt">$0</div></div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+            <div style="font-size:11px;color:var(--t3)">Blended CPI (${appleInst} paid installs)</div>
+            <div style="font-size:22px;font-weight:900;color:var(--t1)">${appleInst>0?'$'+(appleSpend/appleInst).toFixed(2):'—'}</div>
+            <div style="font-size:11px;color:var(--t3)">All ${totalDl} downloads attributed: <strong style="color:var(--grn)">${blendCpi}</strong></div>
+          </div>
+        `;
+      }
+    }
+  }
+
+  // ─── FUNNEL STEPS (live numbers) ────────────────────────
+  {
+    const totalImp  = imp.reduce((a,b)=>a+b,0);
+    const totalPv   = pv.reduce((a,b)=>a+b,0);
+    const totalDl   = dl.reduce((a,b)=>a+b,0);
+    const totalSess = sess.reduce((a,b)=>a+b,0);
+    const adImpr    = hasKw ? kwData.reduce((a,k)=>a+k.imp,0) : 0;
+    const pvRate    = totalImp > 0 ? ((totalPv/totalImp)*100).toFixed(1)+'%' : '—';
+    const dlRate    = totalPv  > 0 ? ((totalDl/totalPv)*100).toFixed(1)+'%'  : '—';
+    const sessRate  = totalDl  > 0 ? (totalSess/totalDl).toFixed(1)+'×'      : '—';
+
+    const _set = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+    _set('fn-adimpr',   adImpr   > 0 ? adImpr.toLocaleString()   : '—');
+    _set('fn-storeimpr',totalImp > 0 ? totalImp.toLocaleString() : '—');
+    _set('fn-pv',       totalPv  > 0 ? totalPv.toLocaleString()  : '—');
+    _set('fn-dl',       totalDl  > 0 ? totalDl.toString()        : '—');
+    _set('fn-sess',     totalSess> 0 ? totalSess.toString()       : '—');
+    _set('fn-pv-sub',   totalImp > 0 ? pvRate+' of Store impressions' : 'App Store listing views');
+    _set('fn-dl-sub',   totalPv  > 0 ? dlRate+' page→install ✓'       : 'Page→install rate');
+    _set('fn-sess-sub', totalDl  > 0 ? sessRate+' sessions per install' : 'Firebase session data');
+    _set('fn-drop1',    adImpr>0&&totalImp>0 ? '↓ '+((totalImp/adImpr)*100).toFixed(1)+'% reach App Store' : '↓');
+    _set('fn-drop2',    totalImp>0&&totalPv>0 ? '↓ '+pvRate+' tap to view page' : '↓');
+    _set('fn-drop3',    dlRate !== '—' ? '↓ '+dlRate+' download' : '↓');
+    _set('fn-drop4',    sessRate !== '—' ? '↓ '+sessRate+' sessions per install' : '↓');
+
+    // ── Channel attribution waterfall (Insights tab) ──────
+    const attrBody = document.getElementById('attrBody');
+    if (attrBody) {
+      const appleSpend = hasKw ? kwData.reduce((a,k)=>a+k.spend,0) : 0;
+      const appleInst  = hasKw ? kwData.reduce((a,k)=>a+k.inst,0)  : 0;
+      const appleCpi   = appleInst > 0 ? '$'+(appleSpend/appleInst).toFixed(2) : '—';
+      const orgInst    = Math.max(0, totalDl - appleInst);
+      attrBody.innerHTML = `
+        <tr><td><strong>🍎 Apple Ads</strong></td>
+          <td class="num">${hasKw?'$'+appleSpend.toFixed(2):'—'}</td>
+          <td class="num">${hasKw?appleInst+' confirmed':'—'}</td>
+          <td class="num ${hasKw&&appleInst>0?'rt':''}">${appleCpi}</td>
+          <td><span class="pill po">Optimise KWs</span></td></tr>
+        <tr class="ra"><td><strong>▶ YouTube Paid</strong></td>
+          <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td>
+          <td><span class="pill px">No data</span></td></tr>
+        <tr><td><strong>📲 Organic App Store</strong></td>
+          <td class="num gt">$0</td>
+          <td class="num gt">${orgInst > 0 ? '~'+orgInst : '—'}</td>
+          <td class="num gt">$0.00</td>
+          <td><span class="pill pG">Best ROI ✓</span></td></tr>
+        <tr class="ra"><td><strong>▶ YouTube Organic</strong></td>
+          <td class="num gt">$0</td><td class="dt">~</td><td class="dt">Untracked</td>
+          <td><span class="pill po">Add link</span></td></tr>
+        <tr><td><strong>f Meta / G Google</strong></td>
+          <td class="num">$0</td><td class="dt">—</td><td class="dt">—</td>
+          <td><span class="pill px">Not started</span></td></tr>
+      `;
+    }
   }
 
   // ─── KEYWORD TABLE ──────────────────────────────────────
