@@ -107,7 +107,7 @@ def _impressions_daily(access_token: str, start: str, end: str) -> list[dict]:
     r = requests.get(YT_ANALYTICS, params=params,
                      headers={"Authorization": f"Bearer {access_token}"}, timeout=30)
     if r.status_code in (400, 403):
-        print(f"[youtube] impressions API {r.status_code} — skipping CTR data")
+        print(f"[youtube] impressions API {r.status_code} — skipping CTR data: {r.text[:300]}")
         return []
     r.raise_for_status()
     body = r.json()
