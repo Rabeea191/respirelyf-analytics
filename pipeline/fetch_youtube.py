@@ -100,7 +100,7 @@ def _impressions_daily(access_token: str, start: str, end: str) -> list[dict]:
         "ids":        "channel==MINE",
         "startDate":  start,
         "endDate":    end,
-        "metrics":    "impressions,impressionsClickThroughRate",
+        "metrics":    "videoThumbnailImpressions,videoThumbnailImpressionsClickRate",
         "dimensions": "day",
         "sort":       "day",
     }
@@ -117,8 +117,8 @@ def _impressions_daily(access_token: str, start: str, end: str) -> list[dict]:
         d = dict(zip(cols, row))
         rows.append({
             "date":        d["day"],
-            "impressions": int(d.get("impressions", 0)),
-            "ctr":         round(float(d.get("impressionsClickThroughRate", 0)) * 100, 2),
+            "impressions": int(d.get("videoThumbnailImpressions", 0)),
+            "ctr":         round(float(d.get("videoThumbnailImpressionsClickRate", 0)) * 100, 2),
         })
     return rows
 
@@ -250,8 +250,14 @@ def run(target_date: date | None = None) -> None:
     token = _get_access_token()
     print(f"[youtube] fetching {start} → {end}")
 
-    # Daily channel stats (impressions/CTR not available via YouTube Analytics API)
+    # Daily channel stats + impressions/CTR
     daily = _channel_daily(token, start, end)
+    impr  = _impressions_daily(token, start, end)
+    impr_map = {r["date"]: r for r in impr}
+    for row in daily:
+        d = row["date"]
+        row["impressions"] = impr_map.get(d, {}).get("impressions", 0)
+        row["ctr"]         = impr_map.get(d, {}).get("ctr", 0.0)
 
     upsert("youtube_channel_daily", daily)
     print(f"[youtube] {len(daily)} daily channel row(s)")
