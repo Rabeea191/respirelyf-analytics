@@ -23,7 +23,7 @@
   --sh:0 1px 4px rgba(13,21,38,.06); --sh2:0 6px 24px rgba(13,21,38,.10); --sh3:0 2px 8px rgba(13,21,38,.08);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;font-size:13px}
+html{font-size:13px}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);line-height:1.55;-webkit-font-smoothing:antialiased}
 
 /* HEADER */
@@ -38,6 +38,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .hn{display:flex;align-items:center;padding:0 13px;font-size:10.5px;font-weight:600;color:var(--t3);text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent;transition:color .15s,border-color .15s}
 .hn:hover{color:var(--t1)}
 .hn.act{color:var(--apple);border-bottom-color:var(--apple)}
+
+/* TAB PANES */
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+/* Button reset for nav tabs */
+button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-bottom:3px solid transparent}
 .hright{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;padding:10px 0;flex-wrap:wrap}
 .hchip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;border:1px solid}
 .hca{background:var(--apl);border-color:var(--apb);color:var(--apple)}
@@ -262,14 +268,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   </div>
 
   <nav class="hnav">
-    <a href="#s1" class="hn act">① Overview</a>
-    <a href="#s2" class="hn">② Paid Ads</a>
-    <a href="#s3" class="hn">③ Organic Social</a>
-    <a href="#s4" class="hn">④ App Store</a>
-    <a href="#s5" class="hn">⑤ Firebase</a>
-    <a href="#s6" class="hn">⑥ Social Platforms</a>
-    <a href="#s7" class="hn">⑦ Full Funnel</a>
-    <a href="#s8" class="hn">⑧ Insights</a>
+    <button class="hn act" data-tab="t-overview">🏠 Overview</button>
+    <button class="hn" data-tab="t-paid">💰 Paid Ads</button>
+    <button class="hn" data-tab="t-organic">▶ Organic</button>
+    <button class="hn" data-tab="t-appstore">🍎 App Store</button>
+    <button class="hn" data-tab="t-firebase">🔥 Firebase</button>
+    <button class="hn" data-tab="t-social">📱 Social</button>
+    <button class="hn" data-tab="t-funnel">🔄 Funnel</button>
+    <button class="hn" data-tab="t-insights">💡 Insights</button>
   </nav>
 
   <div class="hright">
@@ -288,7 +294,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 <!-- ══════════════════════════════════════
   ① OVERVIEW — EXECUTIVE SUMMARY
 ══════════════════════════════════════ -->
-<div id="s1" class="sec">
+<div id="t-overview" class="tab-pane active">
   <div class="stitle">
     <div class="snum">1</div>
     <div>
@@ -361,13 +367,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <div class="bico">ℹ️</div>
     <div><strong>Data Status:</strong> Apple Search Ads, App Store Connect, YouTube Analytics, and Firebase session data are real and verified for this period. YouTube Paid campaign has partial data (only 2 of 4 planned days ran). Meta Ads, Google Ads, Facebook organic, X/Twitter, and Reddit have <strong>no data connected yet</strong> — those sections show structure and will auto-populate when exports are connected.</div>
   </div>
-</div><!-- /s1 -->
+</div><!-- /t-overview -->
 
 
 <!-- ══════════════════════════════════════
   ② PAID ADS — ALL CHANNELS
 ══════════════════════════════════════ -->
-<div id="s2" class="sec">
+<div id="t-paid" class="tab-pane">
   <div class="stitle">
     <div class="snum">2</div>
     <div>
@@ -549,13 +555,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
   </div>
 
-</div><!-- /s2 -->
+</div><!-- /t-paid -->
 
 
 <!-- ══════════════════════════════════════
   ③ ORGANIC SOCIAL MEDIA
 ══════════════════════════════════════ -->
-<div id="s3" class="sec">
+<div id="t-organic" class="tab-pane">
   <div class="stitle">
     <div class="snum">3</div>
     <div>
@@ -679,13 +685,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
   </div>
 
-</div><!-- /s3 -->
+</div><!-- /t-organic -->
 
 
 <!-- ══════════════════════════════════════
   ④ APP STORE PERFORMANCE
 ══════════════════════════════════════ -->
-<div id="s4" class="sec">
+<div id="t-appstore" class="tab-pane">
   <div class="stitle">
     <div class="snum">4</div>
     <div>
@@ -764,14 +770,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
   </div>
 
-</div><!-- /s4 -->
+</div><!-- /t-appstore -->
 
 
 
 <!-- ══════════════════════════════════════
   ⑤ FIREBASE & BIGQUERY — IN-APP ANALYTICS
 ══════════════════════════════════════ -->
-<div id="s5" class="sec">
+<div id="t-firebase" class="tab-pane">
   <div class="stitle">
     <div class="snum">5</div>
     <div>
@@ -911,13 +917,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
   </div>
 
-</div><!-- /s5 -->
+</div><!-- /t-firebase -->
 
 
 <!-- ══════════════════════════════════════
   ⑥ SOCIAL PLATFORM DEEP DIVE
 ══════════════════════════════════════ -->
-<div id="s6" class="sec">
+<div id="t-social" class="tab-pane">
   <div class="stitle">
     <div class="snum">6</div>
     <div>
@@ -991,13 +997,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
   </div>
 
-</div><!-- /s6 -->
+</div><!-- /t-social -->
 
 
 <!-- ══════════════════════════════════════
   ⑦ FULL CONVERSION FUNNEL
 ══════════════════════════════════════ -->
-<div id="s7" class="sec">
+<div id="t-funnel" class="tab-pane">
   <div class="stitle">
     <div class="snum">7</div>
     <div>
@@ -1098,13 +1104,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
   </div>
 
-</div><!-- /s7 -->
+</div><!-- /t-funnel -->
 
 
 <!-- ══════════════════════════════════════
   ⑧ INSIGHTS & NEXT STEPS
 ══════════════════════════════════════ -->
-<div id="s8" class="sec">
+<div id="t-insights" class="tab-pane">
   <div class="stitle">
     <div class="snum">8</div>
     <div>
@@ -1235,55 +1241,17 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     </div>
   </div>
 
-</div><!-- /s8 -->
+</div><!-- /t-insights -->
 
 </div><!-- /page -->
 
 <script>
 // ══════════════════════════════════════════════════════════
-//  SUPABASE CONFIG — fill in after creating your free project
-//  at supabase.com → Project Settings → API
+//  SUPABASE CONFIG
 // ══════════════════════════════════════════════════════════
 const SUPABASE_URL  = 'https://jxanvdhpqzxehupxkmee.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_Y1PLmqV5ZTcOcPwm2xub8Q_3C5uLnj-';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp4YW52ZGhwcXp4ZWh1cHhrbWVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTkwNTgsImV4cCI6MjA4ODczNTA1OH0.h6qE5jP6Mca8Y3coiJhZWyI5ijHJedk-wnlTMR-P6xY';
 
-// ── Static fallback — used until Supabase is configured ───
-// These are the original verified data points (Feb 6 – Mar 7)
-const STATIC_FL   = ['Feb 6','Feb 7','Feb 8','Feb 9','Feb 10','Feb 11','Feb 12','Feb 13','Feb 14','Feb 15','Feb 16','Feb 17','Feb 18','Feb 19','Feb 20','Feb 21','Feb 22','Feb 23','Feb 24','Feb 25','Feb 26','Feb 27','Feb 28','Mar 1','Mar 2','Mar 3','Mar 4','Mar 5','Mar 6','Mar 7'];
-const STATIC_IMP  = [3,6,2,8,6,2425,821,19,80,116,1399,466,29,25,72,74,35,33,32,22,21,25,19,9,34,16,13,9,28,48];
-const STATIC_PV   = [0,2,0,2,2,10,4,2,8,4,10,8,2,2,24,37,1,1,0,5,3,1,2,0,4,1,1,5,17,19];
-const STATIC_DL   = [0,0,0,0,1,4,2,2,1,0,1,1,2,3,3,0,0,1,0,0,1,0,0,1,1,1,0,2,1,1];
-const STATIC_SESS = [0,0,0,0,1,2,12,0,0,0,0,3,25,6,10,0,0,0,0,0,0,0,0,0,19,0,0,0,0,5];
-const STATIC_YTVW = [7,4,16,31,8,31,37,34,7,17,40,51,55,40,127,56,51,11,12,7,5,14,5,1,11,18,10,9,8,15];
-const STATIC_ACTD = [0,0,0,0,1,1,2,0,0,0,0,1,1,2,2,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1];
-const STATIC_KWDATA = [
-  {kw:'vitals app',imp:917,taps:3,inst:0,spend:2.21,cpt:.74},
-  {kw:'ai',imp:660,taps:3,inst:0,spend:2.65,cpt:.88},
-  {kw:'health app',imp:491,taps:3,inst:0,spend:2.38,cpt:.79},
-  {kw:'health insights',imp:280,taps:2,inst:1,spend:1.27,cpt:.64},
-  {kw:'health monitoring',imp:235,taps:3,inst:1,spend:2.63,cpt:.88},
-  {kw:'apple watch',imp:220,taps:2,inst:0,spend:1.87,cpt:.93},
-  {kw:'tracking app',imp:206,taps:3,inst:0,spend:4.20,cpt:1.40},
-  {kw:'pollen',imp:66,taps:1,inst:0,spend:1.67,cpt:.67},
-  {kw:'peak flow',imp:45,taps:1,inst:1,spend:.05,cpt:.05},
-  {kw:'asthma tracker',imp:48,taps:6,inst:0,spend:7.41,cpt:1.23},
-  {kw:'respiratory rate',imp:8,taps:1,inst:0,spend:.97,cpt:.97},
-  {kw:'symptom tracker',imp:7,taps:1,inst:0,spend:.92,cpt:.92},
-  {kw:'copd tracker',imp:43,taps:0,inst:0,spend:0,cpt:0},
-  {kw:'breathing tracker',imp:16,taps:0,inst:0,spend:0,cpt:0},
-];
-const STATIC_VIDS = [
-  {t:'Want to MAXIMIZE Your Respire LYF Experience',v:108,imp:180,ctr:14.44,pub:'Feb 9'},
-  {t:'Why Everything You Know About HYDRATION Is WRONG',v:77,imp:4856,ctr:0.97,pub:'Feb 16'},
-  {t:"You Won't Believe the DIFFERENCE: Dry vs Wet Coughs",v:42,imp:474,ctr:3.80,pub:'Feb 17'},
-  {t:"My Asthma Was Under Control — Why Coughing at 3 AM?",v:38,imp:571,ctr:2.28,pub:'Feb 16'},
-  {t:'Millions do not realize their lungs are screaming for help',v:31,imp:96,ctr:8.33,pub:'Jan 17'},
-  {t:'Asthma & COPD Management Feels Like the Wrong Map',v:29,imp:275,ctr:5.09,pub:'Feb 8'},
-  {t:'7 Days to EASIER BREATHING with This Asthma App Trick',v:26,imp:293,ctr:0.68,pub:'Feb 19'},
-  {t:'Asthma & COPD Just Got a MAJOR Upgrade',v:18,imp:498,ctr:2.01,pub:'Feb 20'},
-  {t:'I Took Supplements for Asthma & COPD — 30 Days Results',v:24,imp:1106,ctr:0.81,pub:'Feb 21'},
-  {t:'Chronic Stress Is SLOWLY KILLING Your Lungs!',v:22,imp:1795,ctr:0.72,pub:'Feb 16'},
-];
 
 // ── Supabase helpers ──────────────────────────────────────
 const _H = { headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` } };
@@ -1305,56 +1273,65 @@ async function _loadFromSupabase() {
       _sb('firebase_events?order=date.asc'),
     ]);
 
-    if (!Array.isArray(appStore) || appStore.length === 0) return null;
+    // Each platform has independent fallback — no early return if one is empty
 
-    // Build date-indexed maps
-    const sessMap  = {};
-    const actDMap  = {};
-    for (const e of events) {
-      if (e.event_name === 'session_start') sessMap[e.date]  = (sessMap[e.date]  || 0) + e.event_count;
-      if (e.event_name === 'app_open')      actDMap[e.date]  = e.unique_users || 0;
+    const hasYT       = Array.isArray(ytDaily)  && ytDaily.length  > 0;
+    const hasAppStore = Array.isArray(appStore)  && appStore.length > 0;
+    const hasFirebase = Array.isArray(events)    && events.length   > 0;
+    const hasKwds     = Array.isArray(kwds)      && kwds.length     > 0;
+    const hasVideos   = Array.isArray(ytVideos)  && ytVideos.length > 0;
+
+    const masterDates = hasYT ? ytDaily : hasAppStore ? appStore : null;
+
+    // ── Master date labels (empty if no data) ───────────────
+    const FL = masterDates ? masterDates.map(r => _fmtDate(r.date)) : [];
+
+    // ── App Store ───────────────────────────────────────────
+    const imp = hasAppStore ? appStore.map(r => r.impressions || 0) : [];
+    const pv  = hasAppStore ? appStore.map(r => r.page_views  || 0) : [];
+    const dl  = hasAppStore ? appStore.map(r => r.downloads   || 0) : [];
+
+    // ── YouTube ─────────────────────────────────────────────
+    const ytVw = hasYT ? ytDaily.map(r => r.views || 0) : [];
+
+    // ── Firebase ────────────────────────────────────────────
+    const sessMap = {}, actDMap = {};
+    if (hasFirebase) {
+      events.forEach(e => {
+        if (e.event_name === 'session_start') sessMap[e.date] = (sessMap[e.date] || 0) + e.event_count;
+        if (e.event_name === 'app_open')      actDMap[e.date] = e.unique_users || 0;
+      });
     }
-    const ytMap = {};
-    for (const r of ytDaily) ytMap[r.date] = r;
+    const hasSessData = Object.keys(sessMap).length > 0;
+    const sess = hasSessData ? FL.map((_, i) => sessMap[(masterDates||[])[i]?.date] || 0) : [];
+    const actD = hasSessData ? FL.map((_, i) => actDMap[(masterDates||[])[i]?.date] || 0) : [];
 
-    // Align all arrays to appStore dates
-    const FL   = appStore.map(r => _fmtDate(r.date));
-    const imp  = appStore.map(r => r.impressions  || 0);
-    const pv   = appStore.map(r => r.page_views   || 0);
-    const dl   = appStore.map(r => r.downloads    || 0);
-    const sess = appStore.map(r => sessMap[r.date] || 0);
-    const actD = appStore.map(r => actDMap[r.date] || 0);
-    const ytVw = appStore.map(r => ytMap[r.date]?.views || 0);
+    // ── Keywords ────────────────────────────────────────────
+    const kwData = hasKwds
+      ? kwds.map(k => ({ kw: k.keyword, imp: k.impressions, taps: k.taps, inst: k.installs, spend: parseFloat(k.spend), cpt: parseFloat(k.cpt) }))
+      : [];
 
-    // Keywords
-    const kwData = kwds.map(k => ({
-      kw:   k.keyword,
-      imp:  k.impressions,
-      taps: k.taps,
-      inst: k.installs,
-      spend: parseFloat(k.spend),
-      cpt:   parseFloat(k.cpt),
-    }));
+    // ── Videos ──────────────────────────────────────────────
+    const vids = hasVideos
+      ? ytVideos.map(v => ({ t: v.title, v: v.views, imp: v.impressions, ctr: v.ctr, pub: v.published_at ? _fmtDate(v.published_at.slice(0,10)) : '—' }))
+      : [];
 
-    // Videos
-    const vids = ytVideos.map(v => ({
-      t:   v.title,
-      v:   v.views,
-      imp: v.impressions,
-      ctr: v.ctr,
-      pub: v.published_at ? _fmtDate(v.published_at.slice(0, 10)) : '—',
-    }));
-
-    // Update the "Last updated" chip
-    const lastDate = appStore[appStore.length - 1]?.date;
-    if (lastDate) {
-      const el = document.querySelector('.hlast');
-      if (el) el.textContent = 'Live data · Last updated: ' + _fmtDate(lastDate);
+    // ── Update "Last updated" chip ──────────────────────────
+    const lastDate = masterDates ? masterDates[masterDates.length - 1]?.date : null;
+    const el = document.querySelector('.hlast');
+    if (el) {
+      if (lastDate) {
+        el.textContent = 'Live data · Last updated: ' + _fmtDate(lastDate);
+        el.style.color = '';
+      } else {
+        el.textContent = 'No pipeline data yet — run the workflow';
+        el.style.color = '#c97209';
+      }
     }
 
     return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids };
   } catch(e) {
-    console.warn('[dashboard] Supabase load failed, using static data:', e.message);
+    console.warn('[dashboard] Supabase load failed:', e.message);
     return null;
   }
 }
@@ -1634,47 +1611,42 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids }) {
   }
 }
 
-// ─── Sticky nav ──────────────────────────────────────────
-{
-  const secs = ['s1','s2','s3','s4','s5','s6','s7','s8'];
-  const links = document.querySelectorAll('.hn');
-  const obs = new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        links.forEach(l=>l.classList.remove('act'));
-        const link = document.querySelector(`.hn[href="#${e.target.id}"]`);
-        if(link) link.classList.add('act');
-      }
-    });
-  },{threshold:0.2,rootMargin:'-80px 0px -60% 0px'});
-  secs.forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) obs.observe(el);
+// ─── Tab switcher ─────────────────────────────────────────
+document.querySelectorAll('.hn[data-tab]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.hn[data-tab]').forEach(b => b.classList.remove('act'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('act');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    // Resize charts in newly visible tab
+    if (typeof Chart !== 'undefined') {
+      Object.values(Chart.instances).forEach(c => { try { c.resize(); } catch(e){} });
+    }
   });
-}
+});
 
 // ─── Boot ────────────────────────────────────────────────
 async function boot() {
-  const isConfigured = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON.length > 10;
+  // Show loading indicator
+  const lastEl = document.querySelector('.hlast');
+  if (lastEl) lastEl.textContent = 'Loading live data…';
+
+  const isConfigured = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON.startsWith('eyJ');
   let data = null;
+  let isLive = false;
 
   if (isConfigured) {
     data = await _loadFromSupabase();
+    if (data) isLive = true;
   }
 
-  // Fall back to static data if Supabase not configured or returned empty
+  // No data — show empty state (no fake static fallback)
   if (!data) {
-    data = {
-      FL:     STATIC_FL,
-      imp:    STATIC_IMP,
-      pv:     STATIC_PV,
-      dl:     STATIC_DL,
-      sess:   STATIC_SESS,
-      actD:   STATIC_ACTD,
-      ytVw:   STATIC_YTVW,
-      kwData: STATIC_KWDATA,
-      vids:   STATIC_VIDS,
-    };
+    data = { FL: [], imp: [], pv: [], dl: [], sess: [], actD: [], ytVw: [], kwData: [], vids: [] };
+    if (lastEl) {
+      lastEl.textContent = 'No pipeline data — connect platforms to see live data';
+      lastEl.style.color = '#c97209';
+    }
   }
 
   renderDashboard(data);

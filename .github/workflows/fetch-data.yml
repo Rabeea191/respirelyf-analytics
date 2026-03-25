@@ -20,9 +20,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # ── PAUSED: App Store Connect (waiting 24h for ONGOING instances to populate) ──
+      # ── READY: App Store Connect ─────────────────────────────
       - name: App Store Connect
-        if: false  # ← remove this line after 24 hours
         run: python -m pipeline.fetch_app_store
         continue-on-error: true
         env:
