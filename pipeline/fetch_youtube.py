@@ -250,14 +250,11 @@ def run(target_date: date | None = None) -> None:
     token = _get_access_token()
     print(f"[youtube] fetching {start} → {end}")
 
-    # Daily channel stats + impressions/CTR
+    # Daily channel stats (impressions/CTR not available via YouTube Analytics API)
     daily = _channel_daily(token, start, end)
-    impr  = _impressions_daily(token, start, end)
-    impr_map = {r["date"]: r for r in impr}
     for row in daily:
-        d = row["date"]
-        row["impressions"] = impr_map.get(d, {}).get("impressions", 0)
-        row["ctr"]         = impr_map.get(d, {}).get("ctr", 0.0)
+        row["impressions"] = 0
+        row["ctr"]         = 0.0
 
     upsert("youtube_channel_daily", daily)
     print(f"[youtube] {len(daily)} daily channel row(s)")
