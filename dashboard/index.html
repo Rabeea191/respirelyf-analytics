@@ -534,11 +534,11 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   <div class="g2">
     <div class="card data-ok">
       <div class="ch"><div><h3>Daily Views</h3><p id="yt2ViewsSub">Organic channel views over time</p></div><span class="ctag cty">LIVE DATA</span></div>
-      <div class="cm"><canvas id="yt2ViewsChart"></canvas></div>
+      <div class="cmd"><canvas id="yt2ViewsChart"></canvas></div>
     </div>
     <div class="card data-ok">
       <div class="ch"><div><h3>Daily Watch Time</h3><p>Minutes watched per day</p></div><span class="ctag cty">LIVE DATA</span></div>
-      <div class="cm"><canvas id="yt2WatchChart"></canvas></div>
+      <div class="cmd"><canvas id="yt2WatchChart"></canvas></div>
     </div>
   </div>
 
@@ -1709,9 +1709,10 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids }) {
       });
     }
     const tbody = document.getElementById('yt2VidBody');
-    if(tbody && hasVideos) {
+    const ytVidArr = Array.isArray(ytVideos) ? ytVideos : [];
+    if(tbody && ytVidArr.length > 0) {
       tbody.innerHTML = '';
-      ytVideos.forEach((v,i) => {
+      ytVidArr.forEach((v,i) => {
         const agg    = vidMap[v.video_id] || {};
         const wt     = agg.watch ? Math.round(agg.watch) : '—';
         const likes  = agg.likes || (v.likes||0);
@@ -1731,7 +1732,7 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids }) {
         </tr>`;
       });
     } else if(tbody) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">No video data yet</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">No video data in Supabase yet — run GitHub Actions workflow</td></tr>';
     }
   }
 
