@@ -95,7 +95,8 @@ def _channel_daily(access_token: str, start: str, end: str) -> list[dict]:
 
 
 def _impressions_daily(access_token: str, start: str, end: str) -> list[dict]:
-    """Fetch impressions + CTR per day (requires YouTube Studio access level)."""
+    """Fetch impressions + CTR per day using correct metric names."""
+    # Try with day dimension first
     params = {
         "ids":        "channel==MINE",
         "startDate":  start,
@@ -106,8 +107,26 @@ def _impressions_daily(access_token: str, start: str, end: str) -> list[dict]:
     }
     r = requests.get(YT_ANALYTICS, params=params,
                      headers={"Authorization": f"Bearer {access_token}"}, timeout=30)
-    if r.status_code in (400, 403):
-        print(f"[youtube] impressions API {r.status_code} — skipping CTR data: {r.text[:300]}")
+    if r.status_code == 400:
+        # Try without day dimension (aggregate for period)
+        params2 = {k: v for k, v in params.items() if k not in ("dimensions", "sort")}
+        r2 = requests.get(YT_ANALYTICS, params=params2,
+                          headers={"Authorization": f"Bearer {access_token}"}, timeout=30)
+        if r2.status_code != 200:
+            print(f"[youtube] impressions API not available ({r2.status_code}) — skipping CTR")
+            return []
+        body = r2.json()
+        cols = [h["name"] for h in body.get("columnHeaders", [])]
+        rows_raw = body.get("rows", [])
+        if not rows_raw:
+            return []
+        d = dict(zip(cols, rows_raw[0]))
+        total_impr = int(d.get("videoThumbnailImpressions", 0))
+        total_ctr  = round(float(d.get("videoThumbnailImpressionsClickRate", 0)) * 100, 2)
+        print(f"[youtube] impressions aggregate: {total_impr} impr, {total_ctr}% CTR")
+        return [{"date": None, "impressions": total_impr, "ctr": total_ctr}]
+    if r.status_code == 403:
+        print(f"[youtube] impressions API 403 — insufficient scope")
         return []
     r.raise_for_status()
     body = r.json()
@@ -120,6 +139,7 @@ def _impressions_daily(access_token: str, start: str, end: str) -> list[dict]:
             "impressions": int(d.get("videoThumbnailImpressions", 0)),
             "ctr":         round(float(d.get("videoThumbnailImpressionsClickRate", 0)) * 100, 2),
         })
+    print(f"[youtube] impressions daily: {len(rows)} rows")
     return rows
 
 
@@ -250,11 +270,14 @@ def run(target_date: date | None = None) -> None:
     token = _get_access_token()
     print(f"[youtube] fetching {start} → {end}")
 
-    # Daily channel stats (impressions/CTR not available via YouTube Analytics API)
+    # Daily channel stats + impressions/CTR
     daily = _channel_daily(token, start, end)
+    impr  = _impressions_daily(token, start, end)
+    impr_map = {r["date"]: r for r in impr if r.get("date")}
     for row in daily:
-        row["impressions"] = 0
-        row["ctr"]         = 0.0
+        d = row["date"]
+        row["impressions"] = impr_map.get(d, {}).get("impressions", 0)
+        row["ctr"]         = impr_map.get(d, {}).get("ctr", 0.0)
 
     upsert("youtube_channel_daily", daily)
     print(f"[youtube] {len(daily)} daily channel row(s)")
