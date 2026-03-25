@@ -45,13 +45,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 /* Button reset for nav tabs */
 button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-bottom:3px solid transparent}
 .hright{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;padding:10px 0;flex-wrap:wrap}
-.hchip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;border:1px solid}
-.hca{background:var(--apl);border-color:var(--apb);color:var(--apple)}
-.hcy{background:var(--ytl);border-color:var(--ytb);color:var(--yt)}
-.hcm{background:var(--ogl);border-color:var(--ogb);color:var(--org)}
-.hcg{background:var(--gnl);border-color:var(--gnb);color:var(--grn)}
-.hcf{background:var(--fbl);border-color:var(--fbb);color:var(--fb)}
-.hlast{font-size:10px;color:var(--t4);margin-left:8px;white-space:nowrap}
+.hlast{font-size:10px;color:var(--t4);white-space:nowrap}
 
 /* PAGE */
 .page{padding:32px 40px;max-width:1760px}
@@ -75,7 +69,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 .ksub.up{color:var(--grn);font-weight:600}
 .ksub.dn{color:var(--yt);font-weight:600}
 .ksub.wa{color:var(--org);font-weight:600}
-.kpi.nd{opacity:.5;filter:grayscale(.7)}
+.kpi.nd{opacity:.35;pointer-events:none}
 .kpi.nd .kval{color:var(--t4)}
 
 /* CARD */
@@ -279,13 +273,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   </nav>
 
   <div class="hright">
-    <span class="hchip hca">🍎 Apple Ads ✓</span>
-    <span class="hchip hcy">▶ YouTube ✓</span>
-    <span class="hchip hcm">f Meta ⚠️</span>
-    <span class="hchip hcm">G Google Ads ⚠️</span>
-    <span class="hchip hcg">🔥 Firebase ✓</span>
-    <span class="hchip hcf">📱 App Store ✓</span>
-    <span class="hlast">Last updated: Mar 7, 2026</span>
+    <span class="hlast">Last updated: —</span>
   </div>
 </header>
 
@@ -299,7 +287,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <div class="snum">1</div>
     <div>
       <h2>Overview — Executive Summary</h2>
-      <p>Feb 6 – Mar 7, 2026 · 30 days · iOS · Asthma &amp; COPD · All channels combined</p>
+      <p><span class="dateRange">—</span></p>
     </div>
   </div>
 
@@ -328,7 +316,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   <!-- MASTER TIMELINE CHART -->
   <div class="card data-ok">
     <div class="ch">
-      <div><h3>30-Day Master Timeline — All Key Metrics</h3><p>Feb 6 – Mar 7, 2026 · App Store Impressions scaled ÷50 for readability</p></div>
+      <div><h3>Master Timeline — All Key Metrics</h3><p><span class="dateRange">—</span> · App Store Impressions scaled ÷50 for readability</p></div>
       <span class="ctag ctg">REAL DATA</span>
     </div>
     <div class="leg">
@@ -1287,6 +1275,16 @@ async function _loadFromSupabase() {
         el.textContent = 'No pipeline data yet — run the workflow';
         el.style.color = '#c97209';
       }
+    }
+
+    // ── Update dynamic date range spans ─────────────────────
+    if (masterDates && masterDates.length > 1) {
+      const first = _fmtDate(masterDates[0].date);
+      const last  = _fmtDate(masterDates[masterDates.length - 1].date);
+      const days  = masterDates.length;
+      document.querySelectorAll('.dateRange').forEach(span =>
+        span.textContent = `${first} – ${last} · ${days} days · iOS · Asthma & COPD`
+      );
     }
 
     return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids };
