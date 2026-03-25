@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python build_live_dashboard.py)"
+      "Bash(python build_live_dashboard.py)",
+      "Bash(where vercel:*)",
+      "Bash(npm list:*)",
+      "Bash(vercel --version)",
+      "Bash(python -m http.server 8080)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/index.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/)"
     ]
   }
 }
