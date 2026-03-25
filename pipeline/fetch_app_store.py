@@ -288,15 +288,10 @@ def run(target_date: date | None = None) -> None:
         print(f"[app_store] SKIP — missing credentials: {', '.join(missing)}")
         return
 
-    # Single date test: March 18
     if target_date is not None:
-        start_date = target_date
-        end_date = target_date
+        print(f"[app_store] Fetching App Units for {target_date} ...")
     else:
-        start_date = date(2026, 3, 18)
-        end_date = date(2026, 3, 18)
-
-    print(f"[app_store] Fetching App Units {start_date} → {end_date} ...")
+        print(f"[app_store] Fetching all available App Units instances ...")
 
     # Step 1 — one shared request for all dates
     request_id = _create_report_request()
@@ -308,25 +303,30 @@ def run(target_date: date | None = None) -> None:
     if not report_id:
         return
 
-    # Show what instances Apple has generated so far (helps debug timing)
+    # Step 3 — get all available instances from Apple
     all_inst = _list_all_instances(report_id)
-    if all_inst:
-        dates_available = [i.get("attributes", {}).get("processingDate", "?") for i in all_inst]
-        print(f"[app_store] Available instances ({len(all_inst)}): {', '.join(dates_available)}")
-    else:
+    if not all_inst:
         print("[app_store] No instances available yet — ONGOING request may need 24h to populate.")
+        return
 
-    # Steps 3+4 — loop over each day in range
-    current = start_date
-    while current <= end_date:
-        instance_id = _get_instance(report_id, current)
+    dates_available = [i.get("attributes", {}).get("processingDate", "?") for i in all_inst]
+    print(f"[app_store] Available instances ({len(all_inst)}): {', '.join(dates_available)}")
+
+    # Step 4 — fetch each available instance (or just target_date if specified)
+    for inst in all_inst:
+        proc_date_str = inst.get("attributes", {}).get("processingDate")
+        if not proc_date_str:
+            continue
+        proc_date = date.fromisoformat(proc_date_str)
+        if target_date is not None and proc_date != target_date:
+            continue
+        instance_id = _get_instance(report_id, proc_date)
         if instance_id:
-            downloads = _download_and_parse(instance_id, current)
+            downloads = _download_and_parse(instance_id, proc_date)
             if downloads is not None:
-                print(f"[app_store] {current}: {downloads} App Units (Analytics API ✓ exact)")
-                upsert("app_store_daily", [{"date": current.isoformat(),
+                print(f"[app_store] {proc_date}: {downloads} App Units (Analytics API ✓ exact)")
+                upsert("app_store_daily", [{"date": proc_date.isoformat(),
                                             "downloads": downloads, "redownloads": 0}])
-        current += timedelta(days=1)
 
 
 if __name__ == "__main__":
