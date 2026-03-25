@@ -316,11 +316,11 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   <!-- MASTER TIMELINE CHART -->
   <div class="card data-ok">
     <div class="ch">
-      <div><h3>Master Timeline — All Key Metrics</h3><p><span class="dateRange">—</span> · App Store Impressions scaled ÷50 for readability</p></div>
+      <div><h3>Master Timeline — All Key Metrics</h3><p><span class="dateRange">—</span></p></div>
       <span class="ctag ctg">REAL DATA</span>
     </div>
     <div class="leg">
-      <div class="li"><div class="ld" style="background:#1d55d9"></div>App Store Impr ÷50</div>
+      <div class="li"><div class="ld" style="background:#1d55d9"></div>App Store Impressions</div>
       <div class="li"><div class="ld" style="background:#0a8a5f"></div>Downloads</div>
       <div class="li"><div class="ld" style="background:#6830d8"></div>Sessions</div>
       <div class="li"><div class="ld" style="background:#d42b2b"></div>YouTube Views</div>
@@ -1526,7 +1526,7 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids }) {
 
   // ─── MASTER CHART ───────────────────────────────────────
   mkLine('masterChart', FL, [
-    {label:'App Store Impr ÷50', data:imp.map(v=>+(v/50).toFixed(1)), borderColor:'#1d55d9', backgroundColor:'rgba(29,85,217,.08)', fill:true, borderWidth:2},
+    {label:'App Store Impressions', data:imp, borderColor:'#1d55d9', backgroundColor:'rgba(29,85,217,.08)', fill:true, borderWidth:2},
     {label:'Downloads',          data:dl,   borderColor:'#0a8a5f', backgroundColor:'rgba(10,138,95,.1)', fill:true,  borderWidth:2},
     {label:'Sessions',           data:sess, borderColor:'#6830d8', backgroundColor:'rgba(104,48,216,.08)',fill:true, borderWidth:2},
     {label:'YouTube Views',      data:ytVw, borderColor:'#d42b2b', backgroundColor:'rgba(212,43,43,.07)', fill:true, borderWidth:2},
