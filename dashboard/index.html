@@ -1370,7 +1370,7 @@ async function _loadFromSupabase() {
       );
     }
 
-    return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids };
+    return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos };
   } catch(e) {
     console.warn('[dashboard] Supabase load failed:', e.message);
     return null;
@@ -1437,7 +1437,7 @@ function mkDonut(id, labels, data, colors) {
 }
 
 // ── Render all charts with given data ─────────────────────
-function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids }) {
+function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos }) {
 
   const hasData  = FL.length > 0;
   const hasKw    = kwData.length > 0;
