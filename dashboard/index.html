@@ -268,6 +268,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <button class="hn" data-tab="t-youtube">▶ YouTube</button>
     <button class="hn" data-tab="t-appstore">🍎 App Store</button>
     <button class="hn" data-tab="t-firebase">🔥 Firebase</button>
+    <button class="hn" data-tab="t-meta">📘 Meta</button>
     <button class="hn" data-tab="t-funnel">🔄 Funnel</button>
     <button class="hn" data-tab="t-insights">💡 Insights</button>
   </nav>
@@ -567,6 +568,103 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 </div><!-- /t-firebase -->
 
 
+<!-- ══════════════════════════════════════
+  META — FACEBOOK & INSTAGRAM
+══════════════════════════════════════ -->
+<div id="t-meta" class="tab-pane">
+  <div class="stitle">
+    <div class="snum" style="background:var(--meta)">M</div>
+    <div>
+      <h2>Meta — Facebook &amp; Instagram</h2>
+      <p>Page daily metrics · per-post engagement · FB + IG combined</p>
+    </div>
+  </div>
+
+  <!-- KPI Band: summary totals -->
+  <div class="kband kband4" style="margin-bottom:22px">
+    <div class="kpi" style="--kc:var(--meta)">
+      <div class="klbl">Total Reach</div>
+      <div class="kval" id="mtTotalReach">—</div>
+      <div class="ksub">unique accounts reached</div>
+    </div>
+    <div class="kpi" style="--kc:var(--meta)">
+      <div class="klbl">Total Impressions</div>
+      <div class="kval" id="mtTotalImpr">—</div>
+      <div class="ksub">views across all posts</div>
+    </div>
+    <div class="kpi" style="--kc:var(--meta)">
+      <div class="klbl">Total Engagement</div>
+      <div class="kval" id="mtTotalEng">—</div>
+      <div class="ksub">likes + comments + shares + saves</div>
+    </div>
+    <div class="kpi" style="--kc:var(--meta)">
+      <div class="klbl">Total Posts</div>
+      <div class="kval" id="mtTotalPosts">—</div>
+      <div class="ksub" id="mtPostsSub">FB + IG</div>
+    </div>
+  </div>
+
+  <!-- FB vs IG split KPIs -->
+  <div class="kband kband4" style="margin-bottom:28px">
+    <div class="kpi" style="--kc:var(--fb)">
+      <div class="klbl">FB Posts</div>
+      <div class="kval" id="mtFbPosts">—</div>
+      <div class="ksub">Facebook</div>
+    </div>
+    <div class="kpi" style="--kc:var(--fb)">
+      <div class="klbl">FB Reach</div>
+      <div class="kval" id="mtFbReach">—</div>
+      <div class="ksub">from page daily</div>
+    </div>
+    <div class="kpi" style="--kc:var(--meta)">
+      <div class="klbl">IG Posts</div>
+      <div class="kval" id="mtIgPosts">—</div>
+      <div class="ksub">Instagram</div>
+    </div>
+    <div class="kpi" style="--kc:var(--meta)">
+      <div class="klbl">IG Avg Watch Time</div>
+      <div class="kval" id="mtIgAvgWatch">—</div>
+      <div class="ksub">reels only (seconds)</div>
+    </div>
+  </div>
+
+  <!-- Posts table -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1)">All Posts — Last 30 Days</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:2px">FB &amp; IG combined · sorted by date</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="mtFilter('all')"  id="mtBtn-all"  style="padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:var(--meta);color:#fff;font-size:11px;font-weight:600;cursor:pointer">All</button>
+        <button onclick="mtFilter('facebook')" id="mtBtn-facebook" style="padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:var(--white);color:var(--t2);font-size:11px;font-weight:600;cursor:pointer">FB</button>
+        <button onclick="mtFilter('instagram')" id="mtBtn-instagram" style="padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:var(--white);color:var(--t2);font-size:11px;font-weight:600;cursor:pointer">IG</button>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:11.5px">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border)">
+            <th style="text-align:left;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Date</th>
+            <th style="text-align:left;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Platform</th>
+            <th style="text-align:left;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px;max-width:220px">Caption</th>
+            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Reach</th>
+            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Views</th>
+            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Likes</th>
+            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Comments</th>
+            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Shares</th>
+            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Saves</th>
+            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Eng.</th>
+            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Avg Watch (s)</th>
+          </tr>
+        </thead>
+        <tbody id="mtPostsTbody"></tbody>
+      </table>
+    </div>
+    <div id="mtNoData" style="display:none;text-align:center;padding:40px;color:var(--t4);font-size:13px">No posts data yet</div>
+  </div>
+
+</div><!-- /t-meta -->
 
 
 <!-- ══════════════════════════════════════
@@ -830,7 +928,7 @@ function _fmtDate(iso) {
 
 async function _loadFromSupabase() {
   try {
-    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney] = await Promise.all([
+    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney, metaPageDaily, metaPosts] = await Promise.all([
       _sb('app_store_daily?order=date.asc&limit=90'),
       _sb('apple_ads_keywords?order=impressions.desc&limit=50'),
       _sb('youtube_channel_daily?order=date.asc&limit=90'),
@@ -838,6 +936,8 @@ async function _loadFromSupabase() {
       _sb('youtube_video_daily?order=date.asc&limit=500'),
       _sb('firebase_events?order=date.asc'),
       _sb('firebase_user_journey?order=last_seen_date.desc&limit=200'),
+      _sb('meta_page_daily?order=date.desc&limit=90'),
+      _sb('meta_post_insights?order=date.desc&limit=200'),
     ]);
 
     // Each platform has independent fallback — no early return if one is empty
@@ -1002,11 +1102,87 @@ async function _loadFromSupabase() {
       }
     }
 
+    // ── Meta (FB + IG) ───────────────────────────────────────
+    const hasMeta = Array.isArray(metaPosts) && metaPosts.length > 0;
+    if (hasMeta) {
+      const _m = (id, v) => { const e=document.getElementById(id); if(e&&v!=null) e.textContent=v; };
+      const fbPosts = metaPosts.filter(p => p.platform === 'facebook');
+      const igPosts = metaPosts.filter(p => p.platform === 'instagram');
+      const totalReach = metaPosts.reduce((a,p) => a+(p.reach||0), 0);
+      const totalImpr  = metaPosts.reduce((a,p) => a+(p.impressions||0), 0);
+      const totalEng   = metaPosts.reduce((a,p) => a+(p.engagement||0), 0);
+      // FB page reach from meta_page_daily (sum)
+      const fbPageReach = Array.isArray(metaPageDaily)
+        ? metaPageDaily.reduce((a,r) => a+(r.reach||0), 0) : 0;
+      // IG avg watch time (reels only, in seconds)
+      const reelPosts = igPosts.filter(p => p.reels_avg_watch_time_ms > 0);
+      const igAvgWatch = reelPosts.length > 0
+        ? (reelPosts.reduce((a,p) => a+(p.reels_avg_watch_time_ms||0), 0) / reelPosts.length / 1000).toFixed(1)
+        : '—';
+
+      _m('mtTotalReach',  totalReach.toLocaleString());
+      _m('mtTotalImpr',   totalImpr.toLocaleString());
+      _m('mtTotalEng',    totalEng.toLocaleString());
+      _m('mtTotalPosts',  metaPosts.length);
+      _m('mtPostsSub',    `${fbPosts.length} FB · ${igPosts.length} IG`);
+      _m('mtFbPosts',     fbPosts.length);
+      _m('mtFbReach',     fbPageReach.toLocaleString());
+      _m('mtIgPosts',     igPosts.length);
+      _m('mtIgAvgWatch',  igAvgWatch + (igAvgWatch !== '—' ? 's' : ''));
+
+      // Store globally for filter buttons
+      window._mtAllPosts = metaPosts;
+      mtFilter('all');
+    }
+
     return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily, hasYT, ytVidDaily, hasVidDaily, appStore, hasAppStore };
   } catch(e) {
     console.warn('[dashboard] Supabase load failed:', e.message);
     return null;
   }
+}
+
+// ── Meta filter ───────────────────────────────────────────
+function mtFilter(platform) {
+  const all = window._mtAllPosts || [];
+  const rows = platform === 'all' ? all : all.filter(p => p.platform === platform);
+  const tbody = document.getElementById('mtPostsTbody');
+  const noData = document.getElementById('mtNoData');
+  if (!tbody) return;
+  // Update button styles
+  ['all','facebook','instagram'].forEach(p => {
+    const btn = document.getElementById('mtBtn-'+p);
+    if (!btn) return;
+    btn.style.background = p === platform ? 'var(--meta)' : 'var(--white)';
+    btn.style.color      = p === platform ? '#fff'        : 'var(--t2)';
+  });
+  if (!rows.length) {
+    tbody.innerHTML = '';
+    if (noData) noData.style.display = 'block';
+    return;
+  }
+  if (noData) noData.style.display = 'none';
+  const platBadge = p => p === 'facebook'
+    ? `<span style="background:var(--fbl);color:var(--fb);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700">FB</span>`
+    : `<span style="background:var(--mtl);color:var(--meta);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700">IG</span>`;
+  tbody.innerHTML = rows.map((p, i) => {
+    const avgWatch = p.reels_avg_watch_time_ms > 0
+      ? (p.reels_avg_watch_time_ms / 1000).toFixed(1) + 's' : '—';
+    const cap = (p.message || '').substring(0, 60) + ((p.message||'').length > 60 ? '…' : '');
+    return `<tr style="${i%2 ? 'background:#fafbfc' : ''}">
+      <td style="padding:8px 10px;white-space:nowrap">${p.date||'—'}</td>
+      <td style="padding:8px 10px">${platBadge(p.platform)}</td>
+      <td style="padding:8px 10px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--t2)">${cap||'—'}</td>
+      <td style="padding:8px 10px;text-align:right;font-weight:600">${(p.reach||0).toLocaleString()}</td>
+      <td style="padding:8px 10px;text-align:right">${(p.impressions||0).toLocaleString()}</td>
+      <td style="padding:8px 10px;text-align:right">${p.likes||0}</td>
+      <td style="padding:8px 10px;text-align:right">${p.comments||0}</td>
+      <td style="padding:8px 10px;text-align:right">${p.shares||0}</td>
+      <td style="padding:8px 10px;text-align:right">${p.saves||0}</td>
+      <td style="padding:8px 10px;text-align:right;font-weight:700;color:var(--meta)">${p.engagement||0}</td>
+      <td style="padding:8px 10px;text-align:right;color:var(--t3)">${avgWatch}</td>
+    </tr>`;
+  }).join('');
 }
 
 // ── Chart defaults ────────────────────────────────────────
