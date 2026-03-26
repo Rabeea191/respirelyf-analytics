@@ -703,16 +703,16 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <div class="snum">4</div>
     <div>
       <h2>App Store Performance</h2>
-      <p>App Store Connect · Feb 6 – Mar 7, 2026 · iOS only</p>
+      <p id="asDateRange">App Store Connect · iOS only</p>
     </div>
   </div>
 
   <div class="kband kband5">
-    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Impressions</div><div class="kval">5,895</div><div class="ksub">Paid + organic</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Page Views</div><div class="kval">177</div><div class="ksub">3.0% of impressions</div></div>
-    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Downloads</div><div class="kval">29</div><div class="ksub up">16.4% of page views</div></div>
-    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Conversion</div><div class="kval">16.4%</div><div class="ksub up">Above industry avg ✓</div></div>
-    <div class="kpi" style="--kc:var(--org)"><div class="klbl">Impression→Tap</div><div class="kval">3.0%</div><div class="ksub wa">Industry avg 4–6%</div></div>
+    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Impressions</div><div class="kval" id="asImpr">—</div><div class="ksub" id="asImprSub">Not available via API</div></div>
+    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Page Views</div><div class="kval" id="asPv">—</div><div class="ksub" id="asPvSub">—</div></div>
+    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Downloads</div><div class="kval" id="asDl">—</div><div class="ksub" id="asDlSub">Total downloads</div></div>
+    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Avg / Day</div><div class="kval" id="asAvgDl">—</div><div class="ksub">Downloads per day</div></div>
+    <div class="kpi" style="--kc:var(--org)"><div class="klbl">Peak Day</div><div class="kval" id="asPeakDl">—</div><div class="ksub" id="asPeakDlSub">Best single day</div></div>
   </div>
 
   <div class="g2">
@@ -741,7 +741,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
       <div class="cmd"><canvas id="appStoreImprDay"></canvas></div>
     </div>
     <div class="card data-ok">
-      <div class="ch"><div><h3>Daily Downloads</h3><p>29 total downloads · Feb 6 – Mar 7</p></div></div>
+      <div class="ch"><div><h3>Daily Downloads</h3><p id="asDlChartSub">Loading…</p></div><span class="ctag ctg">LIVE DATA</span></div>
       <div class="cmd"><canvas id="dlDayChart"></canvas></div>
     </div>
   </div>
@@ -1294,6 +1294,29 @@ async function _loadFromSupabase() {
     const imp = hasAppStore ? appStore.map(r => r.impressions || 0) : [];
     const pv  = hasAppStore ? appStore.map(r => r.page_views  || 0) : [];
     const dl  = hasAppStore ? appStore.map(r => r.downloads   || 0) : [];
+
+    if (hasAppStore) {
+      const _s = (id, v) => { const e=document.getElementById(id); if(e&&v!==null&&v!==undefined) e.textContent=v; };
+      const totalDl  = dl.reduce((a,b)=>a+b,0);
+      const totalImp = imp.reduce((a,b)=>a+b,0);
+      const totalPv  = pv.reduce((a,b)=>a+b,0);
+      const peakDl   = Math.max(...dl);
+      const peakDate = appStore[dl.indexOf(peakDl)]?.date || '';
+      const avgDl    = dl.length ? (totalDl/dl.length).toFixed(1) : '—';
+      const dateFrom = appStore[0]?.date || '';
+      const dateTo   = appStore[appStore.length-1]?.date || '';
+      _s('asDateRange', `App Store Connect · ${dateFrom} → ${dateTo} · iOS`);
+      _s('asImpr',      totalImp > 0 ? totalImp.toLocaleString() : '—');
+      _s('asImprSub',   totalImp > 0 ? 'Paid + organic' : 'Not available via API');
+      _s('asPv',        totalPv  > 0 ? totalPv.toLocaleString() : '—');
+      _s('asPvSub',     totalPv  > 0 && totalImp > 0 ? (totalPv/totalImp*100).toFixed(1)+'% of impressions' : '—');
+      _s('asDl',        totalDl.toString());
+      _s('asDlSub',     `${dateFrom} → ${dateTo}`);
+      _s('asAvgDl',     avgDl);
+      _s('asPeakDl',    peakDl.toString());
+      _s('asPeakDlSub', peakDate ? 'Best: '+peakDate : 'Best single day');
+      _s('asDlChartSub', `${totalDl} total downloads · ${dateFrom} → ${dateTo}`);
+    }
 
     // ── YouTube ─────────────────────────────────────────────
     const hasVidDaily = Array.isArray(ytVidDaily) && ytVidDaily.length > 0;
