@@ -294,10 +294,11 @@ def _fetch_ig_media(user_token: str, ig_id: str, since_date: str) -> list[dict]:
 
         is_reel = media_type in ("video", "reel", "reels")
 
-        # Base metrics for all media
-        metrics = "impressions,reach,likes,comments,shares,saved,total_interactions"
+        # v22+ deprecations: impressions → views, plays → views
+        # Base metrics for all media (views replaces both impressions + plays)
+        metrics = "views,reach,likes,comments,shares,saved,total_interactions"
         if is_reel:
-            metrics += ",plays,ig_reels_avg_watch_time,ig_reels_video_view_total_time"
+            metrics += ",ig_reels_avg_watch_time,ig_reels_video_view_total_time"
 
         row = {
             "post_id":                   media_id,
@@ -328,15 +329,21 @@ def _fetch_ig_media(user_token: str, ig_id: str, since_date: str) -> list[dict]:
         if ir.status_code == 200:
             for m in ir.json().get("data", []):
                 name = m.get("name")
-                val  = int(m.get("values", [{}])[0].get("value", 0) or 0)
-                if name == "impressions":                    row["impressions"]               = val
+                # v25 returns value directly; older shape uses values[0].value
+                raw_val = m.get("value") if "value" in m else (
+                    m.get("values", [{}])[0].get("value", 0)
+                )
+                val = int(raw_val or 0)
+                if name == "views":
+                    # views replaces both impressions (feed) and plays (reels)
+                    row["impressions"]  = val
+                    row["video_views"]  = val
                 elif name == "reach":                        row["reach"]                     = val
                 elif name == "likes":                        row["likes"]                     = val
                 elif name == "comments":                     row["comments"]                  = val
                 elif name == "shares":                       row["shares"]                    = val
                 elif name == "saved":                        row["saves"]                     = val
                 elif name == "total_interactions":           row["engagement"]                = val
-                elif name == "plays":                        row["video_views"]               = val
                 elif name == "ig_reels_avg_watch_time":      row["reels_avg_watch_time_ms"]   = val
                 elif name == "ig_reels_video_view_total_time": row["reels_total_watch_time_ms"] = val
         else:
