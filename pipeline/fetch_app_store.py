@@ -266,14 +266,21 @@ def _download_and_parse(instance_id: str, target_date: date) -> int | None:
                     break
             if app_id and app_id != str(APPSTORE_APP_ID):
                 continue
-            # Sum download metric
+            # Sum download metric — or count rows if row-per-download format
+            found = False
             for uc in unit_cols:
                 if uc in row:
                     try:
                         total += int(float(row[uc] or 0))
                     except (ValueError, TypeError):
                         pass
+                    found = True
                     break
+            if not found:
+                # Row-per-download format: each row = 1 download
+                dl_type = row.get("Download Type", "").strip()
+                if dl_type != "7":  # skip re-downloads (type 7)
+                    total += 1
 
     return total
 
