@@ -302,30 +302,18 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   <!-- Apple Ads KPI band — populated by renderDashboard() -->
   <div class="kband kband6" id="appleKpis"></div>
 
-  <div class="g31">
-    <div class="card data-ok">
-      <div class="ch"><div><h3>Keyword Performance</h3><p id="kwCardSub">Sorted by impressions</p></div><span class="ctag cta">APPLE ADS</span></div>
-      <div style="overflow-x:auto">
-      <table class="tbl" id="kwTable">
-        <thead><tr>
-          <th>Keyword</th><th>Impressions</th><th>Taps</th><th>Installs</th><th>Spend</th><th>CPT</th><th>Result</th>
-        </tr></thead>
-        <tbody id="kwBody"></tbody>
-        <tfoot id="kwTfoot"><tr>
-          <td colspan="7" style="color:var(--t4);font-size:11px">No keyword data yet — run pipeline</td>
-        </tr></tfoot>
-      </table>
-      </div>
-    </div>
-    <div>
-      <div class="card data-ok">
-        <div class="ch"><div><h3>Daily Impressions &amp; Downloads</h3><p>Apple Ads · Feb 10–16 peak week</p></div></div>
-        <div class="csm"><canvas id="appleWeekDetail"></canvas></div>
-      </div>
-      <div class="card data-ok">
-        <div class="ch"><div><h3>Keyword Impressions vs Taps</h3><p>Top 10 by impressions</p></div></div>
-        <div class="cmd"><canvas id="kwImpChart"></canvas></div>
-      </div>
+  <div class="card data-ok">
+    <div class="ch"><div><h3>Keyword Performance</h3><p id="kwCardSub">Sorted by impressions</p></div><span class="ctag cta">APPLE ADS</span></div>
+    <div style="overflow-x:auto">
+    <table class="tbl" id="kwTable">
+      <thead><tr>
+        <th>Keyword</th><th>Impressions</th><th>Taps</th><th>Installs</th><th>Spend</th><th>CPT</th><th>Result</th>
+      </tr></thead>
+      <tbody id="kwBody"></tbody>
+      <tfoot id="kwTfoot"><tr>
+        <td colspan="7" style="color:var(--t4);font-size:11px">No keyword data yet — run pipeline</td>
+      </tr></tfoot>
+    </table>
     </div>
   </div>
 
@@ -344,17 +332,6 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <div class="kpi" style="--kc:var(--t3)"><div class="klbl">CTR</div><div class="kval">1.24%</div><div class="ksub">Paid campaign</div></div>
     <div class="kpi" style="--kc:var(--t3)"><div class="klbl">CPC</div><div class="kval">$0.11</div><div class="ksub">Cost per click</div></div>
     <div class="kpi" style="--kc:var(--org)"><div class="klbl">Est. Installs</div><div class="kval">~1–2</div><div class="ksub wa">No tracking link</div></div>
-  </div>
-
-  <div class="g2">
-    <div class="card data-ok">
-      <div class="ch"><div><h3>Video Retention Curve</h3><p>Average watch-through across paid campaign</p></div><span class="ctag cty">YOUTUBE PAID</span></div>
-      <div class="cmd"><canvas id="ytRetention"></canvas></div>
-    </div>
-    <div class="card data-ok">
-      <div class="ch"><div><h3>Age Demographics — Paid Viewers</h3><p>Viewer age breakdown · Total 5,324 impressions w/ demo data</p></div><span class="ctag cty">YOUTUBE</span></div>
-      <div class="cmd"><canvas id="ytAgeChart"></canvas></div>
-    </div>
   </div>
 
   <div class="box borg">
@@ -412,42 +389,31 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 
   <hr class="subdiv">
 
-  <!-- 2e. SPEND DONUT -->
-  <div class="subhead"><span>Total Paid Spend Breakdown</span></div>
-  <div class="g31">
-    <div class="card data-ok">
-      <div class="ch"><div><h3>Paid Spend by Channel</h3><p id="spendMixPeriod">Loading…</p></div><span class="ctag ctx">SPEND MIX</span></div>
-      <div class="g2" style="align-items:center">
-        <div class="csm"><canvas id="paidSpendDonut"></canvas></div>
-        <div id="spendMixBars">
-          <div style="text-align:center;padding:20px;color:var(--t4)">⏳ Waiting for pipeline data</div>
-        </div>
+  <!-- 2e. CHANNEL EFFICIENCY -->
+  <div class="subhead"><span>Channel Efficiency Comparison</span></div>
+  <div class="card">
+    <div class="ch"><div><h3>Install Cost by Source</h3><p>Cost per install across all channels</p></div></div>
+    <div class="fn">
+      <div class="fstep" style="border-color:var(--apb);background:var(--apl)">
+        <div class="fbg" style="width:100%;background:rgba(29,85,217,.06)"></div>
+        <div class="fic">🍎</div>
+        <div class="ftx"><strong>Apple Search Ads</strong><small id="eff-apple-sub">Loading…</small></div>
+        <div class="fnum" style="color:var(--yt)" id="eff-apple-cpi">⏳</div>
       </div>
-    </div>
-    <div class="card">
-      <div class="ch"><div><h3>Channel Efficiency Comparison</h3><p>Install cost by source</p></div></div>
-      <div class="fn">
-        <div class="fstep" style="border-color:var(--apb);background:var(--apl)">
-          <div class="fbg" style="width:100%;background:rgba(29,85,217,.06)"></div>
-          <div class="fic">🍎</div>
-          <div class="ftx"><strong>Apple Search Ads</strong><small id="eff-apple-sub">Loading…</small></div>
-          <div class="fnum" style="color:var(--yt)" id="eff-apple-cpi">⏳</div>
-        </div>
-        <div class="fstep" style="border-color:var(--ytb);background:var(--ytl)">
-          <div class="fic">▶</div>
-          <div class="ftx"><strong>YouTube Paid</strong><small>~1-2 est. installs · $8.41</small></div>
-          <div class="fnum" style="color:var(--org)">~$4–8</div>
-        </div>
-        <div class="fstep" style="border-color:var(--gnb);background:var(--gnl)">
-          <div class="fic">📲</div>
-          <div class="ftx"><strong>Organic App Store</strong><small>~26 installs · $0 spend</small></div>
-          <div class="fnum" style="color:var(--grn)">$0.00</div>
-        </div>
-        <div class="fstep" style="border-color:var(--border);background:#f7f9ff">
-          <div class="fic">▶</div>
-          <div class="ftx"><strong>YouTube Organic</strong><small>~0–1 est. · $0 spend</small></div>
-          <div class="fnum dt">Untrk</div>
-        </div>
+      <div class="fstep" style="border-color:var(--ytb);background:var(--ytl)">
+        <div class="fic">▶</div>
+        <div class="ftx"><strong>YouTube Paid</strong><small>~1-2 est. installs · $8.41</small></div>
+        <div class="fnum" style="color:var(--org)">~$4–8</div>
+      </div>
+      <div class="fstep" style="border-color:var(--gnb);background:var(--gnl)">
+        <div class="fic">📲</div>
+        <div class="ftx"><strong>Organic App Store</strong><small>~26 installs · $0 spend</small></div>
+        <div class="fnum" style="color:var(--grn)">$0.00</div>
+      </div>
+      <div class="fstep" style="border-color:var(--border);background:#f7f9ff">
+        <div class="fic">▶</div>
+        <div class="ftx"><strong>YouTube Organic</strong><small>~0–1 est. · $0 spend</small></div>
+        <div class="fnum dt">Untrk</div>
       </div>
     </div>
   </div>
@@ -1160,101 +1126,6 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
       </tr>`;
     }
   }
-
-  // ─── PAID SPEND DONUT ───────────────────────────────────
-  {
-    const appleSpend = hasKw ? kwData.reduce((a,k)=>a+k.spend,0) : 0;
-    mkDonut('paidSpendDonut',
-      [`Apple Ads $${appleSpend.toFixed(2)}`, 'YouTube $0', 'Meta $0', 'Google $0'],
-      [appleSpend || 0.01, 0.01, 0.01, 0.01],
-      ['#1d55d9','#d42b2b','#6830d8','#1a73e8']
-    );
-  }
-
-  // ─── APPLE ADS WEEK DETAIL ──────────────────────────────
-  // Shows last 7 days of Apple Ads data if available, else empty
-  {
-    if (hasKw && FL.length >= 7) {
-      mkBar('appleWeekDetail',
-        FL.slice(-7),
-        [
-          {label:'Impressions', data:imp.slice(-7), backgroundColor:'rgba(29,85,217,.75)', yAxisID:'y'},
-          {label:'Downloads',   data:dl.slice(-7),  backgroundColor:'rgba(10,138,95,.85)', yAxisID:'y1'},
-        ],
-        {extra:{scales:{
-          x:{grid:{display:false}},
-          y:{position:'left', grid:{color:'#f0f3fa'}, title:{display:true,text:'Impressions',font:{size:10}}},
-          y1:{position:'right', grid:{drawOnChartArea:false}, title:{display:true,text:'Downloads',font:{size:10}}, max:6}
-        }}}
-      );
-    }
-  }
-
-  // ─── KW IMP CHART ───────────────────────────────────────
-  const top10kw = kwData.slice(0,10);
-  mkBar('kwImpChart',
-    top10kw.map(k=>k.kw),
-    [
-      {label:'Impressions', data:top10kw.map(k=>k.imp), backgroundColor:'rgba(29,85,217,.6)'},
-      {label:'Taps',        data:top10kw.map(k=>k.taps*20), backgroundColor:'rgba(10,138,95,.7)'},
-    ],
-    {xAxis:{ticks:{font:{size:9}}}}
-  );
-
-  // ─── YT RETENTION ───────────────────────────────────────
-  {
-    const ctx = document.getElementById('ytRetention');
-    if(ctx) new Chart(ctx, {
-      type:'bar',
-      data:{
-        labels:['Start (0s)','30 seconds','1 minute','1:31','End (1:31)'],
-        datasets:[{data:[100,17.8,9.6,8.2,8.2], backgroundColor:['#d42b2b','#e84b4b','#f06060','#f47070','#f8a0a0'], borderRadius:4}]
-      },
-      options:{
-        indexAxis:'y', responsive:true, maintainAspectRatio:true,
-        plugins:{legend:{display:false}},
-        scales:{
-          x:{max:100, ticks:{callback:v=>v+'%', font:{size:10}}, grid:{color:'#f0f3fa'}},
-          y:{grid:{display:false}, ticks:{font:{size:10}}}
-        }
-      }
-    });
-  }
-
-  // ─── YT AGE CHART ───────────────────────────────────────
-  mkBar('ytAgeChart',
-    ['18–24','25–34','35–44','45–54','55–64','65+'],
-    [{data:[1066,1649,1172,698,415,324], backgroundColor:['#d42b2b','#e84b4b','#c83030','#b02020','#981818','#801010'], borderRadius:4}]
-  );
-
-  // ─── YT TAB — store data for lazy chart init ─────────────
-  const ytFL   = hasYT ? ytDaily.map(r=>_fmtDate(r.date)) : [];
-  const ytWt   = hasYT ? ytDaily.map(r=>+(r.watch_time_min||0).toFixed(1)) : [];
-  const ytSubs = hasYT ? ytDaily.map(r=>r.subscribers||0) : [];
-  window._ytCharts = { ytFL, ytVw, ytWt, ytSubs };
-  window._ytChartsReady = false;
-
-  // ─── YT TAB — VIDEO TABLE ───────────────────────────────
-  {
-    // Per-video stats from youtube_video_daily — keep LATEST row only
-    // (each row = 30-day window total, summing across runs inflates numbers)
-    const vidMap = {};
-    if(hasVidDaily) {
-      ytVidDaily.forEach(r => {
-        const prev = vidMap[r.video_id];
-        if(!prev || r.date > prev._date) {
-          vidMap[r.video_id] = {
-            views:    r.views||0,
-            watch:    r.watch_time_min||0,
-            likes:    r.likes||0,
-            comments: r.comments||0,
-            dur:      r.avg_view_duration > 0 ? [r.avg_view_duration] : [],
-            title:    r.title||'',
-            _date:    r.date
-          };
-        }
-      });
-    }
     const tbody = document.getElementById('yt2VidBody');
     const ytVidArr = Array.isArray(ytVideos) ? ytVideos : [];
     if(tbody && ytVidArr.length > 0) {
@@ -1369,37 +1240,6 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
       }
     });
   }
-
-  // ─── SPEND MIX BARS ─────────────────────────────────────
-  {
-    const barsEl   = document.getElementById('spendMixBars');
-    const periodEl = document.getElementById('spendMixPeriod');
-    const appleSpend = hasKw ? kwData.reduce((a,k)=>a+k.spend,0) : 0;
-    const totalSpend = appleSpend; // add other channels as they connect
-    if (periodEl) periodEl.textContent = totalSpend > 0
-      ? `$${totalSpend.toFixed(2)} total · ${FL[0]||''} – ${FL[FL.length-1]||''}`
-      : 'No spend data yet';
-    if (barsEl) {
-      if (totalSpend === 0) {
-        barsEl.innerHTML = `<div style="text-align:center;padding:20px;color:var(--t4)">⏳ No spend data yet — run pipeline</div>`;
-      } else {
-        const appleP = totalSpend > 0 ? (appleSpend/totalSpend*100).toFixed(1) : 0;
-        const totalDl  = dl.reduce((a,b)=>a+b,0);
-        const appleInst = hasKw ? kwData.reduce((a,k)=>a+k.inst,0) : 0;
-        const blendCpi = totalDl > 0 ? '$'+(totalSpend/totalDl).toFixed(2) : '—';
-        barsEl.innerHTML = `
-          <div class="rrow"><div class="rlbl">Apple Ads</div><div class="rtrk"><div class="rfil" style="width:${appleP}%;background:var(--apple)"></div></div><div class="rval" style="color:var(--apple)">$${appleSpend.toFixed(2)}</div></div>
-          <div class="rrow"><div class="rlbl">YouTube</div><div class="rtrk"><div class="rfil" style="width:0%;background:var(--yt)"></div></div><div class="rval dt">$0</div></div>
-          <div class="rrow"><div class="rlbl">Meta Ads</div><div class="rtrk"><div class="rfil" style="width:0%;background:var(--meta)"></div></div><div class="rval dt">$0</div></div>
-          <div class="rrow"><div class="rlbl">Google</div><div class="rtrk"><div class="rfil" style="width:0%;background:var(--gads)"></div></div><div class="rval dt">$0</div></div>
-          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-            <div style="font-size:11px;color:var(--t3)">Blended CPI (${appleInst} paid installs)</div>
-            <div style="font-size:22px;font-weight:900;color:var(--t1)">${appleInst>0?'$'+(appleSpend/appleInst).toFixed(2):'—'}</div>
-            <div style="font-size:11px;color:var(--t3)">All ${totalDl} downloads attributed: <strong style="color:var(--grn)">${blendCpi}</strong></div>
-          </div>
-        `;
-      }
-    }
   }
 
   // ─── FUNNEL STEPS (live numbers) ────────────────────────
