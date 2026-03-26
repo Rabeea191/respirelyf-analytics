@@ -54,6 +54,7 @@ META_APP_SECRET    = _opt("META_APP_SECRET")    # for token exchange
 META_ACCESS_TOKEN  = _opt("META_ACCESS_TOKEN")
 META_AD_ACCOUNT_ID = _opt("META_AD_ACCOUNT_ID")
 META_PAGE_ID       = _opt("META_PAGE_ID")
+META_IG_ACCOUNT_ID = _opt("META_IG_ACCOUNT_ID") # optional: set directly to skip auto-detection
 
 # ── Reddit Ads ────────────────────────────────────────────
 REDDIT_APP_ID     = _opt("REDDIT_APP_ID")

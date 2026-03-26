@@ -31,6 +31,7 @@ from pipeline.config import (
     META_PAGE_ID,
     META_APP_ID,
     META_APP_SECRET,
+    META_IG_ACCOUNT_ID,
 )
 from pipeline.store import upsert
 
@@ -204,26 +205,36 @@ def _fetch_fb_posts(page_token: str, page_id: str, since_date: str) -> list[dict
         post_date = post["created_time"][:10]
         caption   = (post.get("message") or post.get("story") or "")[:200]
 
+        post_type = _detect_fb_post_type(post)
         row = {
-            "post_id":     post_id,
-            "platform":    "facebook",
-            "date":        post_date,
-            "post_type":   _detect_fb_post_type(post),
-            "message":     caption,
-            "impressions": 0,
-            "reach":       0,
-            "likes":       0,
-            "comments":    0,
-            "shares":      0,
-            "saves":       0,
-            "engagement":  0,
-            "video_views": 0,
+            "post_id":                  post_id,
+            "platform":                 "facebook",
+            "date":                     post_date,
+            "post_type":                post_type,
+            "message":                  caption,
+            "impressions":              0,
+            "reach":                    0,
+            "likes":                    0,
+            "comments":                 0,
+            "shares":                   0,
+            "saves":                    0,
+            "engagement":               0,
+            "clicks":                   0,
+            "video_views":              0,
+            "video_view_time_ms":       0,
+            "video_complete_views":     0,
+            "reels_avg_watch_time_ms":  0,
+            "reels_total_watch_time_ms": 0,
         }
 
-        # Per-post insight metrics
+        # Per-post insight metrics — add video metrics for video posts
+        metrics = ("post_impressions,post_reach,post_engaged_users,"
+                   "post_reactions_by_type_total,post_clicks,post_shares")
+        if post_type == "video":
+            metrics += ",post_video_views,post_video_view_time,post_video_complete_video_views"
+
         ir = requests.get(f"{GRAPH}/{post_id}/insights", params={
-            "metric":       "post_impressions,post_reach,post_engaged_users,"
-                            "post_reactions_by_type_total,post_clicks,post_shares",
+            "metric":       metrics,
             "access_token": page_token,
         }, timeout=30)
 
@@ -241,6 +252,14 @@ def _fetch_fb_posts(page_token: str, page_id: str, since_date: str) -> list[dict
                     row["likes"] = int(sum((val or {}).values()))
                 elif name == "post_shares":
                     row["shares"] = int(val or 0)
+                elif name == "post_clicks":
+                    row["clicks"] = int(val or 0)
+                elif name == "post_video_views":
+                    row["video_views"] = int(val or 0)
+                elif name == "post_video_view_time":
+                    row["video_view_time_ms"] = int(val or 0)
+                elif name == "post_video_complete_video_views":
+                    row["video_complete_views"] = int(val or 0)
 
         rows.append(row)
 
@@ -267,25 +286,32 @@ def _fetch_ig_media(page_token: str, ig_id: str, since_date: str) -> list[dict]:
         media_date = media["timestamp"][:10]
         media_type = media.get("media_type", "IMAGE").lower()
 
-        # Reels have 'plays', others don't
-        metrics = "impressions,reach,likes,comments,shares,saved"
-        if media_type in ("video", "reel"):
-            metrics += ",plays"
+        is_reel = media_type in ("video", "reel")
+
+        # Base metrics for all media
+        metrics = "impressions,reach,likes,comments,shares,saved,total_interactions"
+        if is_reel:
+            metrics += ",plays,ig_reels_avg_watch_time,ig_reels_video_view_total_time"
 
         row = {
-            "post_id":     media_id,
-            "platform":    "instagram",
-            "date":        media_date,
-            "post_type":   media_type,
-            "message":     (media.get("caption") or "")[:200],
-            "impressions": 0,
-            "reach":       0,
-            "likes":       int(media.get("like_count", 0)),
-            "comments":    int(media.get("comments_count", 0)),
-            "shares":      0,
-            "saves":       0,
-            "engagement":  0,
-            "video_views": 0,
+            "post_id":                   media_id,
+            "platform":                  "instagram",
+            "date":                      media_date,
+            "post_type":                 media_type,
+            "message":                   (media.get("caption") or "")[:200],
+            "impressions":               0,
+            "reach":                     0,
+            "likes":                     int(media.get("like_count", 0)),
+            "comments":                  int(media.get("comments_count", 0)),
+            "shares":                    0,
+            "saves":                     0,
+            "engagement":                0,
+            "clicks":                    0,
+            "video_views":               0,
+            "video_view_time_ms":        0,
+            "video_complete_views":      0,
+            "reels_avg_watch_time_ms":   0,
+            "reels_total_watch_time_ms": 0,
         }
 
         ir = requests.get(f"{GRAPH}/{media_id}/insights", params={
@@ -297,17 +323,23 @@ def _fetch_ig_media(page_token: str, ig_id: str, since_date: str) -> list[dict]:
             for m in ir.json().get("data", []):
                 name = m.get("name")
                 val  = int(m.get("values", [{}])[0].get("value", 0) or 0)
-                if name == "impressions": row["impressions"] = val
-                elif name == "reach":     row["reach"]       = val
-                elif name == "likes":     row["likes"]       = val
-                elif name == "comments":  row["comments"]    = val
-                elif name == "shares":    row["shares"]      = val
-                elif name == "saved":     row["saves"]       = val
-                elif name == "plays":     row["video_views"] = val
+                if name == "impressions":                    row["impressions"]               = val
+                elif name == "reach":                        row["reach"]                     = val
+                elif name == "likes":                        row["likes"]                     = val
+                elif name == "comments":                     row["comments"]                  = val
+                elif name == "shares":                       row["shares"]                    = val
+                elif name == "saved":                        row["saves"]                     = val
+                elif name == "total_interactions":           row["engagement"]                = val
+                elif name == "plays":                        row["video_views"]               = val
+                elif name == "ig_reels_avg_watch_time":      row["reels_avg_watch_time_ms"]   = val
+                elif name == "ig_reels_video_view_total_time": row["reels_total_watch_time_ms"] = val
+        else:
+            print(f"[meta] IG insights error {ir.status_code} for {media_id}: {ir.text[:200]}")
 
-        row["engagement"] = (
-            row["likes"] + row["comments"] + row["shares"] + row["saves"]
-        )
+        # Fallback engagement if total_interactions not returned
+        if row["engagement"] == 0:
+            row["engagement"] = row["likes"] + row["comments"] + row["shares"] + row["saves"]
+
         rows.append(row)
 
     return rows
@@ -370,8 +402,8 @@ def run(target_date: date | None = None) -> None:
     long_token = _get_long_lived_token(META_ACCESS_TOKEN)
     page_token = _get_page_token(long_token, META_PAGE_ID)
 
-    # 2. Instagram Account ID (from Page)
-    ig_id = _get_instagram_id(page_token, META_PAGE_ID)
+    # 2. Instagram Account ID — use direct secret if set, else derive from Page
+    ig_id = META_IG_ACCOUNT_ID or _get_instagram_id(page_token, META_PAGE_ID)
 
     # 3. FB Page daily insights
     page_row = _fetch_page_insights(page_token, META_PAGE_ID, date_str)
