@@ -1308,7 +1308,7 @@ async function _loadFromSupabase() {
       const totalWatch   = ytDaily.reduce((a,r)=>a+(r.watch_time_min||0),0);
       const avgDur       = ytDaily.filter(r=>r.avg_view_duration>0);
       const avgDurVal    = avgDur.length ? Math.round(avgDur.reduce((a,r)=>a+(r.avg_view_duration||0),0)/avgDur.length) : null;
-      const subsGained   = ytDaily.reduce((a,r)=>a+(r.subscribers_gained||0),0);
+      const subsGained   = ytDaily.reduce((a,r)=>a+(r.subscribers||0),0);
       const avgDaily     = ytVw.length ? Math.round(totalViews/ytVw.length) : 0;
       const peakDay      = ytVw.length ? Math.max(...ytVw) : 0;
 
@@ -1689,22 +1689,29 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
   // ─── YT TAB — store data for lazy chart init ─────────────
   const ytFL   = hasYT ? ytDaily.map(r=>_fmtDate(r.date)) : [];
   const ytWt   = hasYT ? ytDaily.map(r=>+(r.watch_time_min||0).toFixed(1)) : [];
-  const ytSubs = hasYT ? ytDaily.map(r=>r.subscribers_gained||0) : [];
+  const ytSubs = hasYT ? ytDaily.map(r=>r.subscribers||0) : [];
   window._ytCharts = { ytFL, ytVw, ytWt, ytSubs };
   window._ytChartsReady = false;
 
   // ─── YT TAB — VIDEO TABLE ───────────────────────────────
   {
-    // Aggregate per-video stats from youtube_video_daily
+    // Per-video stats from youtube_video_daily — keep LATEST row only
+    // (each row = 30-day window total, summing across runs inflates numbers)
     const vidMap = {};
     if(hasVidDaily) {
       ytVidDaily.forEach(r => {
-        if(!vidMap[r.video_id]) vidMap[r.video_id] = {views:0, watch:0, likes:0, comments:0, dur:[], title:r.title||''};
-        vidMap[r.video_id].views   += r.views||0;
-        vidMap[r.video_id].watch   += r.watch_time_min||0;
-        vidMap[r.video_id].likes   += r.likes||0;
-        vidMap[r.video_id].comments+= r.comments||0;
-        if(r.avg_view_duration>0) vidMap[r.video_id].dur.push(r.avg_view_duration);
+        const prev = vidMap[r.video_id];
+        if(!prev || r.date > prev._date) {
+          vidMap[r.video_id] = {
+            views:    r.views||0,
+            watch:    r.watch_time_min||0,
+            likes:    r.likes||0,
+            comments: r.comments||0,
+            dur:      r.avg_view_duration > 0 ? [r.avg_view_duration] : [],
+            title:    r.title||'',
+            _date:    r.date
+          };
+        }
       });
     }
     const tbody = document.getElementById('yt2VidBody');
@@ -1719,7 +1726,7 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
         const durArr = agg.dur||[];
         const dur    = durArr.length ? Math.round(durArr.reduce((a,b)=>a+b,0)/durArr.length) : '—';
         const pub    = v.published_at ? _fmtDate(v.published_at.slice(0,10)) : '—';
-        const views  = (agg.views||v.views||0).toLocaleString();
+        const views  = (v.views||agg.views||0).toLocaleString(); // prefer youtube_videos (correctly upserted) over daily aggregate
         tbody.innerHTML += `<tr class="${i%2===0?'ra':''}">
           <td style="max-width:260px"><div style="font-size:11px;font-weight:500;color:var(--t1);line-height:1.4">${v.title||'—'}</div></td>
           <td class="num"><strong>${views}</strong></td>
@@ -2003,17 +2010,19 @@ document.querySelectorAll('.hn[data-tab]').forEach(btn => {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     btn.classList.add('act');
     document.getElementById(btn.dataset.tab).classList.add('active');
-    // Lazy init YouTube charts on first visit
+    // Lazy init YouTube charts on first visit (inside setTimeout so DOM reflows first)
     if (btn.dataset.tab === 't-youtube' && !window._ytChartsReady && window._ytCharts) {
-      const {ytFL, ytVw, ytWt, ytSubs} = window._ytCharts;
-      mkLine('yt2ViewsChart', ytFL, [{label:'Views', data:ytVw, borderColor:'#d42b2b', backgroundColor:'rgba(212,43,43,.1)', fill:true, borderWidth:2}]);
-      mkLine('yt2WatchChart', ytFL, [{label:'Watch Time (min)', data:ytWt, borderColor:'#e8743b', backgroundColor:'rgba(232,116,59,.1)', fill:true, borderWidth:2}]);
-      mkBar('yt2SubsChart',   ytFL, [{label:'Subs Gained', data:ytSubs, backgroundColor:'rgba(16,185,129,.7)', borderRadius:4}]);
-      window._ytChartsReady = true;
+      setTimeout(() => {
+        const {ytFL, ytVw, ytWt, ytSubs} = window._ytCharts;
+        mkLine('yt2ViewsChart', ytFL, [{label:'Views', data:ytVw, borderColor:'#d42b2b', backgroundColor:'rgba(212,43,43,.1)', fill:true, borderWidth:2}]);
+        mkLine('yt2WatchChart', ytFL, [{label:'Watch Time (min)', data:ytWt, borderColor:'#e8743b', backgroundColor:'rgba(232,116,59,.1)', fill:true, borderWidth:2}]);
+        mkBar('yt2SubsChart',   ytFL, [{label:'Subs Gained', data:ytSubs, backgroundColor:'rgba(16,185,129,.7)', borderRadius:4}]);
+        window._ytChartsReady = true;
+      }, 100);
     }
     // Resize all charts
     if (typeof Chart !== 'undefined') {
-      setTimeout(() => Object.values(Chart.instances).forEach(c => { try { c.resize(); } catch(e){} }), 50);
+      setTimeout(() => Object.values(Chart.instances).forEach(c => { try { c.resize(); } catch(e){} }), 150);
     }
   });
 });
