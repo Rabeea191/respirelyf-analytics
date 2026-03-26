@@ -78,22 +78,34 @@ CREATE TABLE IF NOT EXISTS google_ads_daily (
 
 -- ── Meta Post Insights (FB + IG per-post) ──────────────────
 CREATE TABLE IF NOT EXISTS meta_post_insights (
-    post_id      TEXT        NOT NULL,
-    platform     TEXT        NOT NULL,   -- 'facebook' or 'instagram'
-    date         DATE        NOT NULL,
-    post_type    TEXT,                   -- 'photo', 'video', 'reel', 'status'
-    message      TEXT,                   -- caption (truncated to 200 chars)
-    impressions  INTEGER     NOT NULL DEFAULT 0,
-    reach        INTEGER     NOT NULL DEFAULT 0,
-    likes        INTEGER     NOT NULL DEFAULT 0,
-    comments     INTEGER     NOT NULL DEFAULT 0,
-    shares       INTEGER     NOT NULL DEFAULT 0,
-    saves        INTEGER     NOT NULL DEFAULT 0,
-    engagement   INTEGER     NOT NULL DEFAULT 0,
-    video_views  INTEGER     NOT NULL DEFAULT 0,
-    updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    post_id                     TEXT        NOT NULL,
+    platform                    TEXT        NOT NULL,   -- 'facebook' or 'instagram'
+    date                        DATE        NOT NULL,
+    post_type                   TEXT,                   -- 'photo', 'video', 'reel', 'status'
+    message                     TEXT,                   -- caption (truncated to 200 chars)
+    impressions                 INTEGER     NOT NULL DEFAULT 0,
+    reach                       INTEGER     NOT NULL DEFAULT 0,
+    likes                       INTEGER     NOT NULL DEFAULT 0,
+    comments                    INTEGER     NOT NULL DEFAULT 0,
+    shares                      INTEGER     NOT NULL DEFAULT 0,
+    saves                       INTEGER     NOT NULL DEFAULT 0,
+    engagement                  INTEGER     NOT NULL DEFAULT 0,  -- post_engaged_users / total_interactions
+    clicks                      INTEGER     NOT NULL DEFAULT 0,  -- post_clicks (FB)
+    video_views                 INTEGER     NOT NULL DEFAULT 0,  -- post_video_views / video_views
+    video_view_time_ms          BIGINT      NOT NULL DEFAULT 0,  -- post_video_view_time (FB, milliseconds)
+    video_complete_views        INTEGER     NOT NULL DEFAULT 0,  -- post_video_complete_video_views (FB)
+    reels_avg_watch_time_ms     BIGINT      NOT NULL DEFAULT 0,  -- ig_reels_avg_watch_time (IG, milliseconds)
+    reels_total_watch_time_ms   BIGINT      NOT NULL DEFAULT 0,  -- ig_reels_video_view_total_time (IG, milliseconds)
+    updated_at                  TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (post_id, date)
 );
+
+-- Run these if the table already exists (adds missing columns safely):
+ALTER TABLE meta_post_insights ADD COLUMN IF NOT EXISTS clicks                    INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE meta_post_insights ADD COLUMN IF NOT EXISTS video_view_time_ms        BIGINT  NOT NULL DEFAULT 0;
+ALTER TABLE meta_post_insights ADD COLUMN IF NOT EXISTS video_complete_views      INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE meta_post_insights ADD COLUMN IF NOT EXISTS reels_avg_watch_time_ms   BIGINT  NOT NULL DEFAULT 0;
+ALTER TABLE meta_post_insights ADD COLUMN IF NOT EXISTS reels_total_watch_time_ms BIGINT  NOT NULL DEFAULT 0;
 
 -- ── Meta Ads ───────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS meta_ads_daily (
