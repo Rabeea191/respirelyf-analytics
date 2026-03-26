@@ -161,7 +161,10 @@ def _wait_for_report(request_id: str,
             return None
 
         reports = r.json().get("data", [])
-        # Find App Downloads Standard or Detailed (no state check — presence = available)
+        # On first attempt, print all available report names for debugging
+        if attempt == 1:
+            all_names = [rep.get("attributes", {}).get("name", "?") for rep in reports]
+            print(f"[app_store] All available reports: {all_names}")
         for rep in reports:
             name = rep.get("attributes", {}).get("name", "")
             if target_name.lower() in name.lower():
@@ -169,7 +172,7 @@ def _wait_for_report(request_id: str,
                 return rep["id"]
 
         count = len(reports)
-        print(f"[app_store] [{attempt}/{max_attempts}] {count} reports, App Downloads not yet — waiting 30s...")
+        print(f"[app_store] [{attempt}/{max_attempts}] {count} reports, '{target_name}' not found — waiting 30s...")
         if attempt < max_attempts:
             time.sleep(30)
 
@@ -352,10 +355,16 @@ def run(target_date: date | None = None) -> None:
     if not report_id:
         return
 
-    # Also look for impressions/discovery report (non-blocking)
-    impr_report_id = _wait_for_report(request_id, "Discovery", max_attempts=3)
+    # Also look for impressions report — try specific App Store names only
+    impr_report_id = _wait_for_report(request_id, "App Store Engagement", max_attempts=3)
     if not impr_report_id:
-        impr_report_id = _wait_for_report(request_id, "Engagement", max_attempts=3)
+        impr_report_id = _wait_for_report(request_id, "App Engagement", max_attempts=3)
+    if not impr_report_id:
+        impr_report_id = _wait_for_report(request_id, "App Store Discovery", max_attempts=3)
+    if impr_report_id:
+        print(f"[app_store] Impressions report found: {impr_report_id}")
+    else:
+        print("[app_store] No impressions report available — check 'All available reports' above")
 
     # Step 3 — get all available instances from Apple
     all_inst = _list_all_instances(report_id)
