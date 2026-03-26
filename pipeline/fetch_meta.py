@@ -35,7 +35,7 @@ from pipeline.config import (
 )
 from pipeline.store import upsert
 
-GRAPH = "https://graph.facebook.com/v19.0"
+GRAPH = "https://graph.facebook.com/v25.0"
 
 
 # ── Credentials check ──────────────────────────────────────────────────────────
@@ -121,17 +121,20 @@ def _get_page_token(long_user_token: str, page_id: str) -> str:
 def _get_instagram_id(page_token: str, page_id: str) -> str | None:
     """Get Instagram Business Account ID linked to the Facebook Page."""
     r = requests.get(f"{GRAPH}/{page_id}", params={
-        "fields":       "instagram_business_account",
+        "fields":       "id,name,instagram_business_account",
         "access_token": page_token,
     }, timeout=30)
+    print(f"[meta] _get_instagram_id raw response ({r.status_code}): {r.text[:400]}")
     if r.status_code != 200:
         return None
-    ig = r.json().get("instagram_business_account") or {}
+    body = r.json()
+    ig = body.get("instagram_business_account") or {}
     ig_id = ig.get("id")
     if ig_id:
-        print(f"[meta] Instagram Account ID: {ig_id} ✓")
+        print(f"[meta] Instagram Business Account ID: {ig_id} ✓")
     else:
-        print("[meta] No Instagram Business Account linked to Page")
+        print(f"[meta] No instagram_business_account in response — "
+              f"check page {page_id} has an IG Business account connected in Meta Business Suite")
     return ig_id
 
 
@@ -430,6 +433,12 @@ def run(target_date: date | None = None) -> None:
     # IG Graph API requires user token (not page token) for /media + insights
     if ig_id:
         print(f"[meta] Using IG account ID: {ig_id}")
+        # Verify the ID is a valid IG Business Account before calling /media
+        vr = requests.get(f"{GRAPH}/{ig_id}", params={
+            "fields": "id,username,media_count",
+            "access_token": long_token,
+        }, timeout=30)
+        print(f"[meta] IG ID verify ({vr.status_code}): {vr.text[:300]}")
         ig_posts = _fetch_ig_media(long_token, ig_id, since_30d)
         if ig_posts:
             upsert("meta_post_insights", ig_posts)
