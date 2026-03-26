@@ -405,8 +405,12 @@ def run(target_date: date | None = None) -> None:
     long_token = _get_long_lived_token(META_ACCESS_TOKEN)
     page_token = _get_page_token(long_token, META_PAGE_ID)
 
-    # 2. Instagram Account ID — use direct secret if set, else derive from Page
-    ig_id = META_IG_ACCOUNT_ID or _get_instagram_id(page_token, META_PAGE_ID)
+    # 2. Instagram Account ID — always derive from Page (most reliable)
+    # META_IG_ACCOUNT_ID secret is kept as a hint but auto-detection is used first
+    ig_id = _get_instagram_id(page_token, META_PAGE_ID)
+    if not ig_id and META_IG_ACCOUNT_ID:
+        print(f"[meta] IG auto-detect failed, trying hardcoded ID: {META_IG_ACCOUNT_ID}")
+        ig_id = META_IG_ACCOUNT_ID
 
     # 3. FB Page daily insights
     page_row = _fetch_page_insights(page_token, META_PAGE_ID, date_str)
@@ -425,6 +429,7 @@ def run(target_date: date | None = None) -> None:
     # 5. Instagram per-media insights (last 30 days)
     # IG Graph API requires user token (not page token) for /media + insights
     if ig_id:
+        print(f"[meta] Using IG account ID: {ig_id}")
         ig_posts = _fetch_ig_media(long_token, ig_id, since_30d)
         if ig_posts:
             upsert("meta_post_insights", ig_posts)
