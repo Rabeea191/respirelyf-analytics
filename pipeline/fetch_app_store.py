@@ -235,8 +235,10 @@ def _download_and_parse(instance_id: str, target_date: date) -> int | None:
         print("[app_store] No segments found.")
         return None
 
-    unit_cols = ["App Units", "AppUnits", "Units", "app_units"]
-    id_cols   = ["App Apple ID", "AppAppleId", "Apple ID", "app_apple_id"]
+    unit_cols = ["Installs", "Installations", "First Time Downloads",
+                 "firstTimeDownloads", "App Units", "AppUnits", "Units", "app_units"]
+    id_cols   = ["App Apple ID", "AppAppleId", "Apple Identifier",
+                 "Apple ID", "app_apple_id", "appAppleId"]
     total     = 0
 
     for seg in segments:
@@ -252,6 +254,7 @@ def _download_and_parse(instance_id: str, target_date: date) -> int | None:
         if not lines:
             continue
         hdrs = lines[0].split("\t")
+        print(f"[app_store] TSV columns: {hdrs[:10]}")  # debug
         rows = [dict(zip(hdrs, line.split("\t"))) for line in lines[1:] if line]
 
         for row in rows:
@@ -263,7 +266,7 @@ def _download_and_parse(instance_id: str, target_date: date) -> int | None:
                     break
             if app_id and app_id != str(APPSTORE_APP_ID):
                 continue
-            # Sum App Units
+            # Sum download metric
             for uc in unit_cols:
                 if uc in row:
                     try:
