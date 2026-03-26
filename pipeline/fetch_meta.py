@@ -272,12 +272,14 @@ def _fetch_ig_media(page_token: str, ig_id: str, since_date: str) -> list[dict]:
     """Fetch IG posts/reels since given date + per-media engagement metrics."""
     r = requests.get(f"{GRAPH}/{ig_id}/media", params={
         "fields":       "id,caption,media_type,timestamp,like_count,comments_count",
-        "since":        since_date,
         "limit":        50,
         "access_token": page_token,
     }, timeout=30)
-    r.raise_for_status()
-    medias = r.json().get("data", [])
+    if r.status_code != 200:
+        print(f"[meta] IG media error {r.status_code}: {r.text[:300]}")
+        return []
+    # IG /media doesn't support `since` — filter by date in Python
+    medias = [m for m in r.json().get("data", []) if m.get("timestamp", "")[:10] >= since_date]
     print(f"[meta] IG media found: {len(medias)}")
 
     rows = []
