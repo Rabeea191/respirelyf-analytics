@@ -286,7 +286,7 @@ def _fetch_ig_media(page_token: str, ig_id: str, since_date: str) -> list[dict]:
         media_date = media["timestamp"][:10]
         media_type = media.get("media_type", "IMAGE").lower()
 
-        is_reel = media_type in ("video", "reel")
+        is_reel = media_type in ("video", "reel", "reels")
 
         # Base metrics for all media
         metrics = "impressions,reach,likes,comments,shares,saved,total_interactions"
