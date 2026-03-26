@@ -268,12 +268,13 @@ def _fetch_fb_posts(page_token: str, page_id: str, since_date: str) -> list[dict
 
 # ── Instagram per-media insights ───────────────────────────────────────────────
 
-def _fetch_ig_media(page_token: str, ig_id: str, since_date: str) -> list[dict]:
-    """Fetch IG posts/reels since given date + per-media engagement metrics."""
+def _fetch_ig_media(user_token: str, ig_id: str, since_date: str) -> list[dict]:
+    """Fetch IG posts/reels since given date + per-media engagement metrics.
+    Must use long-lived user token (not page token) — IG API needs instagram_basic on user token."""
     r = requests.get(f"{GRAPH}/{ig_id}/media", params={
         "fields":       "id,caption,media_type,timestamp,like_count,comments_count",
         "limit":        50,
-        "access_token": page_token,
+        "access_token": user_token,
     }, timeout=30)
     if r.status_code != 200:
         print(f"[meta] IG media error {r.status_code}: {r.text[:300]}")
@@ -318,7 +319,7 @@ def _fetch_ig_media(page_token: str, ig_id: str, since_date: str) -> list[dict]:
 
         ir = requests.get(f"{GRAPH}/{media_id}/insights", params={
             "metric":       metrics,
-            "access_token": page_token,
+            "access_token": user_token,
         }, timeout=30)
 
         if ir.status_code == 200:
@@ -422,8 +423,9 @@ def run(target_date: date | None = None) -> None:
         print(f"[meta] FB posts upserted: {len(fb_posts)} ✓")
 
     # 5. Instagram per-media insights (last 30 days)
+    # IG Graph API requires user token (not page token) for /media + insights
     if ig_id:
-        ig_posts = _fetch_ig_media(page_token, ig_id, since_30d)
+        ig_posts = _fetch_ig_media(long_token, ig_id, since_30d)
         if ig_posts:
             upsert("meta_post_insights", ig_posts)
             print(f"[meta] IG posts upserted: {len(ig_posts)} ✓")
