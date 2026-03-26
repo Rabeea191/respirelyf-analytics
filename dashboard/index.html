@@ -1194,8 +1194,9 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
     if (tbody) {
       if (hasAppStore && appStore.length > 0) {
         const rows = appStore.filter(r => (r.downloads||0) > 0);
-        const total = rows.reduce((a,r)=>a+(r.downloads||0),0);
-        const lastDate = appStore[appStore.length-1]?.date || '';
+        const lastRow = appStore[appStore.length-1];
+        const total = lastRow?.downloads || 0;
+        const lastDate = lastRow?.date || '';
         tbody.innerHTML = rows.map((r,i) =>
           `<tr${i%2?' class="ra"':''}><td>${r.date}</td><td class="num gt">${r.downloads}</td></tr>`
         ).join('');
@@ -1204,7 +1205,7 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
           <td class="num gt" style="font-size:15px">${total}</td>
         </tr>`;
         const sub = document.getElementById('asDlChartSub');
-        if (sub) sub.textContent = `${total} total downloads · ${appStore[0]?.date} → ${lastDate}`;
+        if (sub) sub.textContent = `${total} total downloads · up to ${lastDate}`;
       } else {
         tbody.innerHTML = `<tr><td colspan="2" class="dt" style="text-align:center;padding:24px">No App Store data yet — run the pipeline</td></tr>`;
       }
