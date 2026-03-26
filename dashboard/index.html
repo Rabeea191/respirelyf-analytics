@@ -264,13 +264,10 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   </div>
 
   <nav class="hnav">
-    <button class="hn act" data-tab="t-overview">🏠 Overview</button>
-    <button class="hn" data-tab="t-paid">💰 Paid Ads</button>
+    <button class="hn act" data-tab="t-paid">💰 Paid Ads</button>
     <button class="hn" data-tab="t-youtube">▶ YouTube</button>
-    <button class="hn" data-tab="t-organic">📱 Organic</button>
     <button class="hn" data-tab="t-appstore">🍎 App Store</button>
     <button class="hn" data-tab="t-firebase">🔥 Firebase</button>
-    <button class="hn" data-tab="t-social">📱 Social</button>
     <button class="hn" data-tab="t-funnel">🔄 Funnel</button>
     <button class="hn" data-tab="t-insights">💡 Insights</button>
   </nav>
@@ -282,67 +279,12 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 
 <div class="page">
 
-<!-- ══════════════════════════════════════
-  ① OVERVIEW — EXECUTIVE SUMMARY
-══════════════════════════════════════ -->
-<div id="t-overview" class="tab-pane active">
-  <div class="stitle">
-    <div class="snum">1</div>
-    <div>
-      <h2>Overview — Executive Summary</h2>
-      <p><span class="dateRange">—</span></p>
-    </div>
-  </div>
-
-  <!-- KPI BAND 10 cards — populated by renderDashboard() -->
-  <div class="kband kband10" id="overviewKpis"></div>
-
-  <!-- CROSS-CHANNEL TABLE -->
-  <div class="card">
-    <div class="ch">
-      <div><h3>Cross-Channel Summary — All Platforms</h3><p id="channelPeriod">Loading…</p></div>
-      <span class="ctag ctx">ALL CHANNELS</span>
-    </div>
-    <div style="overflow-x:auto">
-    <table class="tbl">
-      <thead><tr>
-        <th>Channel</th><th>Status</th><th>Impressions</th><th>Clicks / Taps</th><th>Installs</th><th>Spend</th><th>CPI</th>
-      </tr></thead>
-      <tbody id="channelBody"></tbody>
-      <tfoot><tr id="channelTotals">
-        <td colspan="7" style="color:var(--t4);font-size:11px">Loading live data from Supabase…</td>
-      </tr></tfoot>
-    </table>
-    </div>
-  </div>
-
-  <!-- MASTER TIMELINE CHART -->
-  <div class="card data-ok">
-    <div class="ch">
-      <div><h3>Master Timeline — All Key Metrics</h3><p><span class="dateRange">—</span></p></div>
-      <span class="ctag ctg">REAL DATA</span>
-    </div>
-    <div class="leg">
-      <div class="li"><div class="ld" style="background:#1d55d9"></div>App Store Impressions</div>
-      <div class="li"><div class="ld" style="background:#0a8a5f"></div>Downloads</div>
-      <div class="li"><div class="ld" style="background:#6830d8"></div>Sessions</div>
-      <div class="li"><div class="ld" style="background:#d42b2b"></div>YouTube Views</div>
-    </div>
-    <div class="clg"><canvas id="masterChart"></canvas></div>
-  </div>
-
-  <!-- DATA STATUS BANNER -->
-  <div class="box bblue">
-    <div class="bico">ℹ️</div>
-    <div><strong>Data Status:</strong> Apple Search Ads, App Store Connect, YouTube Analytics, and Firebase session data are real and verified for this period. YouTube Paid campaign has partial data (only 2 of 4 planned days ran). Meta Ads, Google Ads, Facebook organic, X/Twitter, and Reddit have <strong>no data connected yet</strong> — those sections show structure and will auto-populate when exports are connected.</div>
-  </div>
-</div><!-- /t-overview -->
 
 
 <!-- ══════════════════════════════════════
   ② PAID ADS — ALL CHANNELS
 ══════════════════════════════════════ -->
-<div id="t-paid" class="tab-pane">
+<div id="t-paid" class="tab-pane active">
   <div class="stitle">
     <div class="snum">2</div>
     <div>
@@ -567,134 +509,6 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-  ③ ORGANIC SOCIAL MEDIA
-══════════════════════════════════════ -->
-<div id="t-organic" class="tab-pane">
-  <div class="stitle">
-    <div class="snum">3</div>
-    <div>
-      <h2>Organic Social Media</h2>
-      <p>YouTube · Facebook · Instagram · X/Twitter · Reddit · TikTok</p>
-    </div>
-  </div>
-
-  <!-- YouTube Organic -->
-  <div class="subhead">
-    <span>▶ YouTube Channel — Organic</span>
-    <span class="stag" style="background:var(--ytl);border-color:var(--ytb);color:var(--yt)">REAL DATA</span>
-  </div>
-
-  <div class="kband">
-    <div class="kpi" style="--kc:var(--yt)"><div class="klbl">Total Views</div><div class="kval">864</div><div class="ksub">30-day period</div></div>
-    <div class="kpi" style="--kc:var(--yt)"><div class="klbl">Impressions</div><div class="kval">21,419</div><div class="ksub">YouTube surface</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Videos Published</div><div class="kval">10</div><div class="ksub">Feb 6 – Mar 7</div></div>
-    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Avg CTR</div><div class="kval" id="ytCtrKpi">—</div><div class="ksub up">YouTube avg 2–5%</div></div>
-  </div>
-
-  <div class="g31">
-    <div class="card data-ok">
-      <div class="ch"><div><h3>Top 10 Videos by Views</h3><p>Organic YouTube channel · Feb 2026</p></div><span class="ctag cty">YOUTUBE ORGANIC</span></div>
-      <div style="overflow-x:auto">
-      <table class="tbl" id="vidTable">
-        <thead><tr><th>Title</th><th>Views</th><th>Impressions</th><th>CTR</th><th>Published</th></tr></thead>
-        <tbody id="vidBody"></tbody>
-      </table>
-      </div>
-    </div>
-    <div>
-      <div class="card data-ok">
-        <div class="ch"><div><h3>Daily YouTube Channel Views</h3><p>Organic views Feb 6 – Mar 7</p></div></div>
-        <div class="csm"><canvas id="ytViewsChart"></canvas></div>
-      </div>
-      <div class="box bred">
-        <div class="bico">🔗</div>
-        <div><strong>Critical Gap:</strong> 864 organic YouTube viewers have NO path to the App Store. None of the 10 video descriptions contain an App Store download link. This is a free, immediate fix — add the App Store URL to all video descriptions today.</div>
-      </div>
-    </div>
-  </div>
-
-  <hr class="subdiv">
-
-  <!-- Facebook / Instagram -->
-  <div class="subhead">
-    <span>f Facebook Page &amp; Instagram</span>
-    <span class="stag" style="background:var(--ogl);border-color:var(--ogb);color:var(--org)">NO DATA CONNECTED</span>
-  </div>
-
-  <div class="card no-data">
-    <div class="ch"><div><h3>Facebook Page &amp; Instagram — Organic</h3><p>Connect Meta Business Suite export to populate this section</p></div><span class="ctag ctfb">FACEBOOK</span></div>
-    <div class="box borg">
-      <div class="bico">📋</div>
-      <div><strong>When connected, this section will show:</strong> Page likes &amp; follower growth, Post reach &amp; impressions, Story views, Link clicks to App Store, Reel views, Comment &amp; reaction counts, Top performing posts, Audience demographics. Export from Meta Business Suite → Insights → Export Data.</div>
-    </div>
-    <div class="kband">
-      <div class="kpi nd" style="--kc:var(--fb)"><div class="klbl">Page Followers</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--fb)"><div class="klbl">Post Reach</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--fb)"><div class="klbl">Link Clicks</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--fb)"><div class="klbl">Story Views</div><div class="kval">—</div><div class="ksub">No data</div></div>
-    </div>
-  </div>
-
-  <hr class="subdiv">
-
-  <!-- X / Twitter -->
-  <div class="subhead">
-    <span>X / Twitter</span>
-    <span class="stag" style="background:var(--ogl);border-color:var(--ogb);color:var(--org)">NO DATA CONNECTED</span>
-  </div>
-
-  <div class="card no-data">
-    <div class="ch"><div><h3>X / Twitter — Organic</h3><p>Connect X Analytics export to populate</p></div><span class="ctag cttw">X / TWITTER</span></div>
-    <div class="kband">
-      <div class="kpi nd" style="--kc:var(--tw)"><div class="klbl">Impressions</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--tw)"><div class="klbl">Engagements</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--tw)"><div class="klbl">Profile Visits</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--tw)"><div class="klbl">Followers</div><div class="kval">—</div><div class="ksub">No data</div></div>
-    </div>
-  </div>
-
-  <hr class="subdiv">
-
-  <!-- Reddit -->
-  <div class="subhead">
-    <span>Reddit</span>
-    <span class="stag" style="background:var(--ogl);border-color:var(--ogb);color:var(--org)">NO DATA CONNECTED</span>
-  </div>
-
-  <div class="card no-data">
-    <div class="ch"><div><h3>Reddit — Organic Posts</h3><p>r/asthma · r/COPD · r/HealthApps</p></div><span class="ctag ctrd">REDDIT</span></div>
-    <div class="box borg">
-      <div class="bico">🎯</div>
-      <div><strong>High-intent opportunity:</strong> r/asthma has 180,000+ members — the most concentrated respiratory health audience on the internet. Organic posts answering questions and sharing the app (following subreddit rules) could drive high-converting downloads at $0 cost. This audience is currently completely untapped.</div>
-    </div>
-    <div class="kband">
-      <div class="kpi nd" style="--kc:var(--rd)"><div class="klbl">Posts</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--rd)"><div class="klbl">Upvotes</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--rd)"><div class="klbl">Comments</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--rd)"><div class="klbl">Community Members</div><div class="kval">—</div><div class="ksub">No data</div></div>
-    </div>
-  </div>
-
-  <hr class="subdiv">
-
-  <!-- TikTok -->
-  <div class="subhead">
-    <span>TikTok</span>
-    <span class="stag" style="background:var(--ogl);border-color:var(--ogb);color:var(--org)">NO DATA CONNECTED</span>
-  </div>
-
-  <div class="card no-data">
-    <div class="ch"><div><h3>TikTok — Organic &amp; Creator</h3><p>Connect TikTok for Business analytics to populate</p></div><span class="ctag ctx">TIKTOK</span></div>
-    <div class="kband">
-      <div class="kpi nd" style="--kc:#010101"><div class="klbl">Video Views</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:#010101"><div class="klbl">Followers</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:#010101"><div class="klbl">Profile Clicks</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:#010101"><div class="klbl">Link Clicks</div><div class="kval">—</div><div class="ksub">No data</div></div>
-    </div>
-  </div>
-
-</div><!-- /t-organic -->
 
 
 <!-- ══════════════════════════════════════
@@ -709,83 +523,13 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     </div>
   </div>
 
-  <div class="kband kband5">
-    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Impressions</div><div class="kval" id="asImpr">—</div><div class="ksub" id="asImprSub">Not available via API</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Page Views</div><div class="kval" id="asPv">—</div><div class="ksub" id="asPvSub">—</div></div>
-    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Downloads</div><div class="kval" id="asDl">—</div><div class="ksub" id="asDlSub">Total downloads</div></div>
-    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Avg / Day</div><div class="kval" id="asAvgDl">—</div><div class="ksub">Downloads per day</div></div>
-    <div class="kpi" style="--kc:var(--org)"><div class="klbl">Peak Day</div><div class="kval" id="asPeakDl">—</div><div class="ksub" id="asPeakDlSub">Best single day</div></div>
-  </div>
-
-  <div class="g2">
-    <div class="card data-ok">
-      <div class="ch"><div><h3>Impressions Split — Paid vs Organic</h3><p id="imprSplitSub">Loading…</p></div><span class="ctag ctg">APP STORE</span></div>
-      <div class="csm"><canvas id="appStoreImprSplit"></canvas></div>
-      <div style="display:flex;gap:16px;margin-top:12px;justify-content:center" id="imprSplitLegend">
-        <div class="li"><div class="ld" style="background:var(--apple)"></div><span id="imprLegApple">Apple Ads</span></div>
-        <div class="li"><div class="ld" style="background:var(--grn)"></div><span id="imprLegOrganic">Organic</span></div>
-      </div>
-    </div>
-    <div class="card data-ok">
-      <div class="ch"><div><h3>Download Attribution</h3><p>29 total downloads by estimated source</p></div><span class="ctag ctg">ATTRIBUTION</span></div>
-      <div class="csm"><canvas id="dlAttrDonut"></canvas></div>
-      <div style="display:flex;gap:16px;margin-top:12px;justify-content:center">
-        <div class="li"><div class="ld" style="background:var(--grn)"></div>Organic ~25 (86%)</div>
-        <div class="li"><div class="ld" style="background:var(--apple)"></div>Apple Ads 3 (10%)</div>
-        <div class="li"><div class="ld" style="background:var(--yt)"></div>YouTube ~1 (4%)</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="g2">
-    <div class="card data-ok">
-      <div class="ch"><div><h3>Daily App Store Impressions</h3><p>Paid (Apple Ads) vs Organic stacked · 30 days</p></div></div>
-      <div class="cmd"><canvas id="appStoreImprDay"></canvas></div>
-    </div>
-    <div class="card data-ok">
-      <div class="ch"><div><h3>Daily Downloads</h3><p id="asDlChartSub">Loading…</p></div><span class="ctag ctg">LIVE DATA</span></div>
-      <div class="cmd"><canvas id="dlDayChart"></canvas></div>
-    </div>
-  </div>
-
-  <div class="card data-ok">
-    <div class="ch"><div><h3>Page Views vs Downloads — Daily Comparison</h3><p>Conversion relationship across the period</p></div></div>
-    <div class="cmd"><canvas id="pvDlChart"></canvas></div>
-  </div>
-
-  <div class="g2">
-    <div class="card data-ok">
-      <div class="ch"><div><h3>Top 5 Impression Days</h3><p>Highest single-day App Store impressions</p></div></div>
-      <table class="tbl">
-        <thead><tr><th>Date</th><th>Impressions</th><th>Driver</th><th>Downloads</th></tr></thead>
-        <tbody>
-          <tr><td><strong>Feb 11</strong></td><td class="num">2,425</td><td><span class="pill pa">Apple Ads peak</span></td><td class="num gt">4</td></tr>
-          <tr class="ra"><td><strong>Feb 16</strong></td><td class="num">1,399</td><td><span class="pill pa">Apple Ads</span></td><td class="num gt">1</td></tr>
-          <tr><td><strong>Feb 12</strong></td><td class="num">821</td><td><span class="pill pa">Apple Ads</span></td><td class="num gt">2</td></tr>
-          <tr class="ra"><td><strong>Feb 17</strong></td><td class="num">466</td><td><span class="pill pa">Apple Ads</span></td><td class="num gt">2</td></tr>
-          <tr><td><strong>Feb 15</strong></td><td class="num">116</td><td><span class="pill pg">Organic</span></td><td class="num gt">3</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div>
-      <div class="box bblue">
-        <div class="bico">📊</div>
-        <div><strong>Impression → Tap: 3.0%</strong> — Below industry average of 4–6%. The app icon and first screenshot are likely not compelling enough at thumbnail size. A/B test a new icon and a results-focused first screenshot (e.g. "Breathe Easier in 7 Days").</div>
-      </div>
-      <div class="box bgreen">
-        <div class="bico">✅</div>
-        <div><strong>Tap → Install: 16.4%</strong> — Above the industry average of 8–12%. Once users reach the product page, it converts well. The priority is getting more users to the page, not improving the page itself.</div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- Daily Downloads Details — shown only if real data exists -->
-  <div id="asDailyCard" class="card" style="display:none">
-    <div class="ch"><div><h3>Daily Downloads Breakdown</h3><p>Days with at least 1 download · App Store Connect live data</p></div><span class="ctag ctg">LIVE DATA</span></div>
+  <!-- Daily Downloads Breakdown -->
+  <div class="card">
+    <div class="ch"><div><h3>Daily Downloads Breakdown</h3><p id="asDlChartSub">App Store Connect · live data</p></div><span class="ctag ctg">LIVE DATA</span></div>
     <table class="tbl">
-      <thead><tr><th>Date</th><th>Downloads</th><th>Impressions</th></tr></thead>
-      <tbody id="asDailyTbody"></tbody>
+      <thead><tr><th>Date</th><th>Downloads</th></tr></thead>
+      <tbody id="asDailyTbody"><tr><td colspan="2" class="dt" style="text-align:center;padding:16px">Loading…</td></tr></tbody>
+      <tfoot id="asDailyTfoot"></tfoot>
     </table>
   </div>
 
@@ -857,84 +601,6 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 </div><!-- /t-firebase -->
 
 
-<!-- ══════════════════════════════════════
-  ⑥ SOCIAL PLATFORM DEEP DIVE
-══════════════════════════════════════ -->
-<div id="t-social" class="tab-pane">
-  <div class="stitle">
-    <div class="snum">6</div>
-    <div>
-      <h2>Social Platform Deep Dive</h2>
-      <p>All channels · status · metrics · opportunity analysis</p>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="ch"><div><h3>Platform Comparison Grid</h3><p>All social platforms · Feb 6 – Mar 7, 2026</p></div><span class="ctag ctx">ALL PLATFORMS</span></div>
-    <div style="overflow-x:auto">
-    <table class="plat-table">
-      <thead><tr>
-        <th>Platform</th><th>Status</th><th>Followers/Subs</th><th>Impressions</th><th>Engagement</th><th>Link Clicks</th><th>Est. Installs</th>
-      </tr></thead>
-      <tbody>
-        <tr>
-          <td><div class="plat-name"><div class="plat-icon" style="background:var(--ytl)">▶</div>YouTube</div></td>
-          <td><span class="pill pG">✓ Data</span></td>
-          <td class="dt">—</td>
-          <td class="num">21,419</td>
-          <td class="num">864 views</td>
-          <td class="num rt">0 <small>(no link)</small></td>
-          <td class="num ot">~1–2</td>
-        </tr>
-        <tr class="ra">
-          <td><div class="plat-name"><div class="plat-icon" style="background:var(--fbl)">f</div>Facebook Page</div></td>
-          <td><span class="pill po">⚠ No data</span></td>
-          <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td>
-        </tr>
-        <tr>
-          <td><div class="plat-name"><div class="plat-icon" style="background:#fce7f3">📸</div>Instagram</div></td>
-          <td><span class="pill po">⚠ No data</span></td>
-          <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td>
-        </tr>
-        <tr class="ra">
-          <td><div class="plat-name"><div class="plat-icon" style="background:var(--twl)">𝕏</div>X / Twitter</div></td>
-          <td><span class="pill po">⚠ No data</span></td>
-          <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td>
-        </tr>
-        <tr>
-          <td><div class="plat-name"><div class="plat-icon" style="background:var(--rdl)">r/</div>Reddit</div></td>
-          <td><span class="pill po">⚠ No data</span></td>
-          <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td>
-        </tr>
-        <tr class="ra">
-          <td><div class="plat-name"><div class="plat-icon" style="background:#f0f4fa">🎵</div>TikTok</div></td>
-          <td><span class="pill po">⚠ No data</span></td>
-          <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
-
-  <div class="g3">
-    <div class="box bred" style="display:block">
-      <div style="font-size:14px;margin-bottom:8px">🔗</div>
-      <strong>864 YouTube viewers have NO path to App Store</strong>
-      <p style="margin-top:8px;font-size:12px;line-height:1.7">Add App Store download link to all 10 video descriptions. Free, immediate, 5-minute fix. Could convert 2–5% of viewers = 17–43 additional downloads at $0 cost.</p>
-    </div>
-    <div class="box borg" style="display:block">
-      <div style="font-size:14px;margin-bottom:8px">📊</div>
-      <strong>Meta organic audience completely unknown</strong>
-      <p style="margin-top:8px;font-size:12px;line-height:1.7">Connect Meta Business Suite to understand Facebook page followers, Instagram reach, and which posts drive App Store link clicks. Required before scaling Meta Ads.</p>
-    </div>
-    <div class="box bpur" style="display:block">
-      <div style="font-size:14px;margin-bottom:8px">🎯</div>
-      <strong>Reddit r/asthma: 180k high-intent members</strong>
-      <p style="margin-top:8px;font-size:12px;line-height:1.7">Largest concentration of respiratory health audience online. Organic helpful posts (following community rules) could drive high-converting, $0 downloads from users actively managing asthma and COPD.</p>
-    </div>
-  </div>
-
-</div><!-- /t-social -->
 
 
 <!-- ══════════════════════════════════════
@@ -1445,118 +1111,6 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
   const fmt      = (n) => n > 0 ? n.toLocaleString() : '—';
   const fmtD     = (n) => n > 0 ? '$' + n.toFixed(2) : '—';
 
-  // ─── OVERVIEW KPI BAND ─────────────────────────────────
-  {
-    const el = document.getElementById('overviewKpis');
-    if (el) {
-      const totalDl   = dl.reduce((a,b)=>a+b,0);
-      const totalSess = sess.reduce((a,b)=>a+b,0);
-      const totalYt   = ytVw.reduce((a,b)=>a+b,0);
-      const totalImp  = imp.reduce((a,b)=>a+b,0);
-      const totalPv   = pv.reduce((a,b)=>a+b,0);
-      const appleSpend = hasKw ? kwData.reduce((a,k)=>a+k.spend,0) : 0;
-      const peakActD  = actD.length > 0 ? Math.max(...actD) : 0;
-      const pInstall  = totalPv > 0 ? ((totalDl/totalPv)*100).toFixed(1)+'%' : '—';
-      const blendCpi  = totalDl > 0 && appleSpend > 0 ? '$'+(appleSpend/totalDl).toFixed(2) : '—';
-      const period    = FL.length > 1 ? `${FL[0]} – ${FL[FL.length-1]} · ${FL.length} days` : 'No pipeline data yet';
-
-      if (!hasData) {
-        el.innerHTML = `<div class="kpi nd" style="--kc:var(--t4);grid-column:1/-1"><div class="klbl">Pipeline Status</div><div class="kval" style="font-size:16px">⏳ Waiting for data</div><div class="ksub">Run the GitHub Actions workflow to populate Supabase, then refresh this page</div></div>`;
-      } else {
-        el.innerHTML = `
-          <div class="kpi" style="--kc:var(--apple)"><div class="klbl">App Store Impr</div><div class="kval">${fmt(totalImp)}</div><div class="ksub">${period}</div></div>
-          <div class="kpi" style="--kc:var(--org)"><div class="klbl">Apple Ads Spend</div><div class="kval">${hasKw ? '$'+appleSpend.toFixed(2) : '—'}</div><div class="ksub">${hasKw ? 'Search Ads' : 'No ads data'}</div></div>
-          <div class="kpi" style="--kc:var(--grn)"><div class="klbl">App Downloads</div><div class="kval">${fmt(totalDl)}</div><div class="ksub up">${pInstall !== '—' ? pInstall+' page→install' : 'vs page views'}</div></div>
-          <div class="kpi" style="--kc:var(--meta)"><div class="klbl">App Sessions</div><div class="kval">${fmt(totalSess)}</div><div class="ksub">${totalDl>0 ? (totalSess/totalDl).toFixed(1)+' sessions/user' : 'Firebase data'}</div></div>
-          <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Page → Install</div><div class="kval">${pInstall}</div><div class="ksub ${pInstall!=='—'&&parseFloat(pInstall)>=8?'up':''}">Industry avg 8–12%</div></div>
-          <div class="kpi" style="--kc:var(--org)"><div class="klbl">Blended CPI</div><div class="kval">${blendCpi}</div><div class="ksub">Ad spend / downloads</div></div>
-          <div class="kpi" style="--kc:var(--yt)"><div class="klbl">YouTube Views</div><div class="kval">${fmt(totalYt)}</div><div class="ksub">Organic channel views</div></div>
-          <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Active Users</div><div class="kval">${fmt(peakActD)}</div><div class="ksub">Peak daily devices</div></div>
-          <div class="kpi" style="--kc:#94a3b8"><div class="klbl">Revenue</div><div class="kval">$0</div><div class="ksub dn">No monetisation active</div></div>
-          <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Total Page Views</div><div class="kval">${fmt(totalPv)}</div><div class="ksub">App Store listing views</div></div>
-        `;
-      }
-    }
-  }
-
-  // ─── CROSS-CHANNEL TABLE ────────────────────────────────
-  {
-    const tbody = document.getElementById('channelBody');
-    const tfoot = document.getElementById('channelTotals');
-    const periodEl = document.getElementById('channelPeriod');
-    if (periodEl) {
-      periodEl.textContent = FL.length > 1
-        ? `Live data · ${FL[0]} – ${FL[FL.length-1]}`
-        : 'No pipeline data — run GitHub Actions workflow';
-    }
-    if (tbody) {
-      const appleImpr    = hasKw ? kwData.reduce((a,k)=>a+k.imp,0)   : 0;
-      const appleTaps    = hasKw ? kwData.reduce((a,k)=>a+k.taps,0)  : 0;
-      const appleInst    = hasKw ? kwData.reduce((a,k)=>a+k.inst,0)  : 0;
-      const appleSpend   = hasKw ? kwData.reduce((a,k)=>a+k.spend,0) : 0;
-      const appleCpi     = appleInst > 0 ? '$'+(appleSpend/appleInst).toFixed(2) : '—';
-      const totalStoreImp = imp.reduce((a,b)=>a+b,0);
-      const totalPv      = pv.reduce((a,b)=>a+b,0);
-      const totalDl      = dl.reduce((a,b)=>a+b,0);
-      const totalYtVw    = ytVw.reduce((a,b)=>a+b,0);
-
-      if (!hasData && !hasKw) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--t4)">⏳ No data yet — add GitHub secrets and run the workflow</td></tr>`;
-        if (tfoot) tfoot.innerHTML = `<tr><td colspan="7" style="color:var(--t4);font-size:11px">Run pipeline to see live totals</td></tr>`;
-      } else {
-        tbody.innerHTML = `
-          <tr class="ra"><td><strong>Apple Search Ads</strong></td>
-            <td><span class="pill ${hasKw?'pG':'px'}">${hasKw?'✓ Live':'⚠ No Data'}</span></td>
-            <td class="num">${hasKw?appleImpr.toLocaleString():nd}</td>
-            <td class="num">${hasKw?appleTaps:nd}</td>
-            <td class="num ${hasKw&&appleInst>0?'gt':''}">${hasKw?appleInst:nd}</td>
-            <td class="num">${hasKw?'$'+appleSpend.toFixed(2):nd}</td>
-            <td class="num ${hasKw&&appleInst>0?'ot':''}">${hasKw?appleCpi:nd}</td></tr>
-          <tr><td><strong>YouTube Paid Ads</strong></td>
-            <td><span class="pill px">⚠ No Data</span></td>
-            <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td></tr>
-          <tr class="ra"><td><strong>Meta Ads (FB/IG)</strong></td>
-            <td><span class="pill px">⚠ No Data</span></td>
-            <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td></tr>
-          <tr><td><strong>Google Ads</strong></td>
-            <td><span class="pill px">⚠ No Data</span></td>
-            <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td></tr>
-          <tr class="ra"><td><strong>App Store Organic</strong></td>
-            <td><span class="pill ${hasData?'pG':'px'}">${hasData?'✓ Live':'⚠ No Data'}</span></td>
-            <td class="num">${hasData?totalStoreImp.toLocaleString():nd}</td>
-            <td class="num">${hasData?totalPv.toLocaleString():nd}</td>
-            <td class="num ${hasData&&totalDl>0?'gt':''}">${hasData?totalDl:nd}</td>
-            <td class="num gt">$0</td><td class="num gt">$0</td></tr>
-          <tr><td><strong>YouTube Organic</strong></td>
-            <td><span class="pill ${ytVw.length>0?'pG':'px'}">${ytVw.length>0?'✓ Live':'⚠ No Data'}</span></td>
-            <td class="dt">—</td>
-            <td class="num">${totalYtVw>0?totalYtVw.toLocaleString():nd}</td>
-            <td class="dt">~</td><td class="num gt">$0</td><td class="dt">Organic</td></tr>
-          <tr class="ra"><td><strong>Facebook Organic</strong></td>
-            <td><span class="pill px">⚠ No Data</span></td>
-            <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="num gt">$0</td><td class="dt">—</td></tr>
-          <tr><td><strong>Reddit Ads</strong></td>
-            <td><span class="pill px">⚠ No Data</span></td>
-            <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td><td class="dt">—</td></tr>
-        `;
-        if (tfoot) {
-          const totImpr  = (hasKw?appleImpr:0) + totalStoreImp;
-          const totDl    = totalDl;
-          const totSpend = hasKw ? appleSpend : 0;
-          const totCpi   = totDl > 0 && totSpend > 0 ? '$'+(totSpend/totDl).toFixed(2) : '—';
-          tfoot.innerHTML = `<tr>
-            <td colspan="2"><strong>TOTALS (live data)</strong></td>
-            <td class="num">${totImpr>0?totImpr.toLocaleString():'—'}</td>
-            <td class="dt">—</td>
-            <td class="num gt">${totDl>0?totDl:'—'}</td>
-            <td class="num">${totSpend>0?'$'+totSpend.toFixed(2):'—'}</td>
-            <td class="num">${totCpi}</td>
-          </tr>`;
-        }
-      }
-    }
-  }
-
   // ─── APPLE ADS KPI BAND ────────────────────────────────
   {
     const el = document.getElementById('appleKpis');
@@ -1606,14 +1160,6 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
       </tr>`;
     }
   }
-
-  // ─── MASTER CHART ───────────────────────────────────────
-  mkLine('masterChart', FL, [
-    {label:'App Store Impressions', data:imp, borderColor:'#1d55d9', backgroundColor:'rgba(29,85,217,.08)', fill:true, borderWidth:2},
-    {label:'Downloads',          data:dl,   borderColor:'#0a8a5f', backgroundColor:'rgba(10,138,95,.1)', fill:true,  borderWidth:2},
-    {label:'Sessions',           data:sess, borderColor:'#6830d8', backgroundColor:'rgba(104,48,216,.08)',fill:true, borderWidth:2},
-    {label:'YouTube Views',      data:ytVw, borderColor:'#d42b2b', backgroundColor:'rgba(212,43,43,.07)', fill:true, borderWidth:2},
-  ]);
 
   // ─── PAID SPEND DONUT ───────────────────────────────────
   {
@@ -1679,11 +1225,6 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
   mkBar('ytAgeChart',
     ['18–24','25–34','35–44','45–54','55–64','65+'],
     [{data:[1066,1649,1172,698,415,324], backgroundColor:['#d42b2b','#e84b4b','#c83030','#b02020','#981818','#801010'], borderRadius:4}]
-  );
-
-  // ─── YT VIEWS LINE ──────────────────────────────────────
-  mkLine('ytViewsChart', FL,
-    [{label:'YouTube Views', data:ytVw, borderColor:'#d42b2b', backgroundColor:'rgba(212,43,43,.1)', fill:true, borderWidth:2}]
   );
 
   // ─── YT TAB — store data for lazy chart init ─────────────
@@ -1755,23 +1296,11 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
     if (legA)  legA.textContent  = paidTotal > 0 ? `Apple Ads ${paidTotal.toLocaleString()} (${totalImp>0?((paidTotal/totalImp)*100).toFixed(1)+'%':'—'})` : 'Apple Ads (—)';
     if (legO)  legO.textContent  = orgTotal  > 0 ? `Organic ${orgTotal.toLocaleString()} (${totalImp>0?((orgTotal/totalImp)*100).toFixed(1)+'%':'—'})`   : 'Organic (—)';
   }
-  mkDonut('appStoreImprSplit',
-    [`Apple Ads ${paidTotal.toLocaleString()}`, `Organic ${orgTotal.toLocaleString()}`],
-    [paidTotal||0.01, orgTotal||0.01],
-    ['#1d55d9','#0a8a5f']
-  );
-
   // ─── DOWNLOAD ATTRIBUTION DONUT ─────────────────────────
   const totalDl  = dl.reduce((a,b)=>a+b,0);
   const paidDl   = hasKw ? kwData.reduce((a,k)=>a+k.inst,0) : 0;
   const ytDl     = 0;
   const orgDl    = Math.max(0, totalDl - paidDl - ytDl);
-  mkDonut('dlAttrDonut',
-    [`Organic ${orgDl}`, `Apple Ads ${paidDl}`, `YouTube ${ytDl}`],
-    [orgDl||0.01, paidDl||0.01, ytDl||0.01],
-    ['#0a8a5f','#1d55d9','#d42b2b']
-  );
-
   // ─── EFFICIENCY COMPARISON STEPS ────────────────────────
   {
     const appleInst  = hasKw ? kwData.reduce((a,k)=>a+k.inst,0) : 0;
@@ -1786,40 +1315,30 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
   // ─── APP STORE IMPRESSIONS STACKED ──────────────────────
   const paidImprArr = imp.map(()=>0); // will use kwData-based paid if available
   const orgImprArr  = imp.map((v)=>v);
-  mkBar('appStoreImprDay', FL,
-    [
-      {label:'Paid (Apple Ads)', data:paidImprArr, backgroundColor:'rgba(29,85,217,.75)', stack:'s'},
-      {label:'Organic',          data:orgImprArr,  backgroundColor:'rgba(10,138,95,.65)', stack:'s'},
-    ],
-    {extra:{scales:{x:{stacked:true,grid:{display:false},ticks:{maxTicksLimit:10,font:{size:10}}}, y:{stacked:true,grid:{color:'#f0f3fa'}}}}}
-  );
-
   // ─── DOWNLOAD DAY CHART ─────────────────────────────────
-  mkBar('dlDayChart', FL,
-    [{data:dl, backgroundColor:'rgba(10,138,95,.75)', borderRadius:3}]
-  );
-
-  // ─── App Store Daily Downloads Table (conditional) ──────
-  if (hasAppStore && appStore.length > 0) {
-    const totalDlCheck = appStore.reduce((a,r)=>a+(r.downloads||0),0);
-    const asDtbody = document.getElementById('asDailyTbody');
-    if (asDtbody && totalDlCheck > 0) {
-      const card = document.getElementById('asDailyCard');
-      if (card) card.style.display = '';
-      asDtbody.innerHTML = appStore
-        .filter(r => (r.downloads||0) > 0)
-        .map((r,i) => `<tr${i%2?' class="ra"':''}><td>${r.date}</td><td class="num gt">${r.downloads}</td>${r.impressions>0?'<td class="num">'+r.impressions.toLocaleString()+'</td>':'<td class="dt">—</td>'}</tr>`)
-        .join('');
+  // ─── App Store Daily Downloads Table ────────────────────
+  {
+    const tbody = document.getElementById('asDailyTbody');
+    const tfoot = document.getElementById('asDailyTfoot');
+    if (tbody) {
+      if (hasAppStore && appStore.length > 0) {
+        const rows = appStore.filter(r => (r.downloads||0) > 0);
+        const total = rows.reduce((a,r)=>a+(r.downloads||0),0);
+        const lastDate = appStore[appStore.length-1]?.date || '';
+        tbody.innerHTML = rows.map((r,i) =>
+          `<tr${i%2?' class="ra"':''}><td>${r.date}</td><td class="num gt">${r.downloads}</td></tr>`
+        ).join('');
+        if (tfoot) tfoot.innerHTML = `<tr style="background:var(--gnl);font-weight:700">
+          <td>Total · up to ${lastDate}</td>
+          <td class="num gt" style="font-size:15px">${total}</td>
+        </tr>`;
+        const sub = document.getElementById('asDlChartSub');
+        if (sub) sub.textContent = `${total} total downloads · ${appStore[0]?.date} → ${lastDate}`;
+      } else {
+        tbody.innerHTML = `<tr><td colspan="2" class="dt" style="text-align:center;padding:24px">No App Store data yet — run the pipeline</td></tr>`;
+      }
     }
   }
-
-  // ─── PV vs DL ───────────────────────────────────────────
-  mkBar('pvDlChart', FL,
-    [
-      {label:'Page Views', data:pv, backgroundColor:'rgba(29,85,217,.6)', borderRadius:3},
-      {label:'Downloads',  data:dl, backgroundColor:'rgba(10,138,95,.75)', borderRadius:3},
-    ]
-  );
 
   // ─── FUNNEL CHART (live data) ────────────────────────────
   {
