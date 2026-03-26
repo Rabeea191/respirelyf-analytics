@@ -218,71 +218,110 @@ def _get_instance(report_id: str, target_date: date) -> str | None:
     return None
 
 
-# ── Step 4: Download segments and parse App Units ─────────────────────────────
+# ── Step 4: Download segments and parse ───────────────────────────────────────
 
-def _download_and_parse(instance_id: str, target_date: date) -> int | None:
-    """Download gzip TSV segments, parse App Units for our app."""
+def _get_segments(instance_id: str) -> list:
+    """Fetch + decompress all TSV segments for an instance."""
     r = requests.get(
         f"{BASE}/analyticsReportInstances/{instance_id}/segments",
         headers=_hdr(), timeout=30,
     )
     if r.status_code != 200:
         print(f"[app_store] Segments error {r.status_code}: {r.text[:200]}")
-        return None
+        return []
+    result = []
+    for seg in r.json().get("data", []):
+        url = seg.get("attributes", {}).get("url")
+        if not url:
+            continue
+        dl = requests.get(url, timeout=60)
+        if dl.status_code != 200:
+            continue
+        raw = gzip.decompress(dl.content).decode("utf-8")
+        lines = raw.strip().splitlines()
+        if not lines:
+            continue
+        hdrs = [h.strip() for h in lines[0].split("\t")]
+        rows = [dict(zip(hdrs, line.split("\t"))) for line in lines[1:] if line]
+        result.extend(rows)
+    return result
 
-    segments = r.json().get("data", [])
-    if not segments:
-        print("[app_store] No segments found.")
+
+ID_COLS = ["App Apple ID", "AppAppleId", "Apple Identifier", "Apple ID",
+           "app_apple_id", "appAppleId", "App Apple Identifier"]
+
+
+def _filter_app(rows: list) -> list:
+    """Keep only rows matching our app ID (or all rows if no ID column)."""
+    out = []
+    for row in rows:
+        app_id = ""
+        for ic in ID_COLS:
+            if ic in row:
+                app_id = str(row[ic]).strip()
+                break
+        if app_id and app_id != str(APPSTORE_APP_ID):
+            continue
+        out.append(row)
+    return out
+
+
+def _download_and_parse(instance_id: str, target_date: date) -> int | None:
+    """Parse App Units (downloads) from segment rows."""
+    rows = _filter_app(_get_segments(instance_id))
+    if not rows:
         return None
 
     unit_cols = ["Installs", "Installations", "First Time Downloads",
                  "firstTimeDownloads", "App Units", "AppUnits", "Units", "app_units"]
-    id_cols   = ["App Apple ID", "AppAppleId", "Apple Identifier",
-                 "Apple ID", "app_apple_id", "appAppleId"]
-    total     = 0
-
-    for seg in segments:
-        url = seg.get("attributes", {}).get("url")
-        if not url:
-            continue
-        # Signed URL — no auth header needed
-        dl = requests.get(url, timeout=60)
-        if dl.status_code != 200:
-            continue
-        raw   = gzip.decompress(dl.content).decode("utf-8")
-        lines = raw.strip().splitlines()
-        if not lines:
-            continue
-        hdrs = lines[0].split("\t")
-        print(f"[app_store] TSV columns: {hdrs[:10]}")  # debug
-        rows = [dict(zip(hdrs, line.split("\t"))) for line in lines[1:] if line]
-
-        for row in rows:
-            # Filter by app ID if column exists
-            app_id = ""
-            for ic in id_cols:
-                if ic in row:
-                    app_id = str(row[ic]).strip()
-                    break
-            if app_id and app_id != str(APPSTORE_APP_ID):
-                continue
-            # Sum download metric — or count rows if row-per-download format
-            found = False
-            for uc in unit_cols:
-                if uc in row:
-                    try:
-                        total += int(float(row[uc] or 0))
-                    except (ValueError, TypeError):
-                        pass
-                    found = True
-                    break
-            if not found:
-                # Row-per-download format: each row = 1 download
-                dl_type = row.get("Download Type", "").strip()
-                if dl_type != "7":  # skip re-downloads (type 7)
-                    total += 1
-
+    total = 0
+    for row in rows:
+        found = False
+        for uc in unit_cols:
+            if uc in row:
+                try:
+                    total += int(float(row[uc] or 0))
+                except (ValueError, TypeError):
+                    pass
+                found = True
+                break
+        if not found:
+            dl_type = row.get("Download Type", "").strip()
+            if dl_type != "7":
+                total += 1
     return total
+
+
+def _parse_impressions(instance_id: str) -> dict | None:
+    """Parse impressions + page views from Discovery/Engagement report segments."""
+    rows = _filter_app(_get_segments(instance_id))
+    if not rows:
+        return None
+
+    impr_cols = ["Impressions", "App Impressions", "Total Impressions",
+                 "impressions", "Impression Count"]
+    impr_u_cols = ["Unique Impressions", "Impressions Unique Device",
+                   "unique_impressions", "Unique Device Impressions"]
+    pv_cols   = ["Page Views", "App Page Views", "page_views",
+                 "Product Page Views", "Store Page Views"]
+    pv_u_cols = ["Unique Page Views", "Page Views Unique Device",
+                 "unique_page_views"]
+
+    def _sum(rows, cols):
+        for col in cols:
+            if col in rows[0]:
+                try:
+                    return sum(int(float(r.get(col) or 0)) for r in rows)
+                except (ValueError, TypeError):
+                    pass
+        return 0
+
+    return {
+        "impressions":        _sum(rows, impr_cols),
+        "impressions_unique": _sum(rows, impr_u_cols),
+        "page_views":         _sum(rows, pv_cols),
+        "page_views_unique":  _sum(rows, pv_u_cols),
+    }
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────
@@ -308,10 +347,15 @@ def run(target_date: date | None = None) -> None:
     if not request_id:
         return
 
-    # Step 2 — poll up to 10 min (10 × 30s)
-    report_id = _wait_for_report(request_id)
+    # Step 2 — poll for Downloads report
+    report_id = _wait_for_report(request_id, "App Downloads")
     if not report_id:
         return
+
+    # Also look for impressions/discovery report (non-blocking)
+    impr_report_id = _wait_for_report(request_id, "Discovery", max_attempts=3)
+    if not impr_report_id:
+        impr_report_id = _wait_for_report(request_id, "Engagement", max_attempts=3)
 
     # Step 3 — get all available instances from Apple
     all_inst = _list_all_instances(report_id)
@@ -334,9 +378,17 @@ def run(target_date: date | None = None) -> None:
         if instance_id:
             downloads = _download_and_parse(instance_id, proc_date)
             if downloads is not None:
-                print(f"[app_store] {proc_date}: {downloads} App Units (Analytics API ✓ exact)")
-                upsert("app_store_daily", [{"date": proc_date.isoformat(),
-                                            "downloads": downloads, "redownloads": 0}])
+                row = {"date": proc_date.isoformat(), "downloads": downloads, "redownloads": 0}
+                # Also fetch impressions if report available
+                if impr_report_id:
+                    impr_inst_id = _get_instance(impr_report_id, proc_date)
+                    if impr_inst_id:
+                        impr_data = _parse_impressions(impr_inst_id)
+                        if impr_data:
+                            row.update(impr_data)
+                            print(f"[app_store] {proc_date}: impr={impr_data['impressions']} pv={impr_data['page_views']}")
+                print(f"[app_store] {proc_date}: {downloads} downloads ✓")
+                upsert("app_store_daily", [row])
 
 
 if __name__ == "__main__":
