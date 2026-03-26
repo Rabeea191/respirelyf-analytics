@@ -57,6 +57,8 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 
 /* KPI BAND */
 .kband{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+.kband3{grid-template-columns:repeat(3,1fr)}
+.kband4{grid-template-columns:repeat(4,1fr)}
 .kband5{grid-template-columns:repeat(5,1fr)}
 .kband6{grid-template-columns:repeat(6,1fr)}
 .kband10{grid-template-columns:repeat(5,1fr)}
@@ -777,6 +779,16 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     </div>
   </div>
 
+
+  <!-- Daily Downloads Details — shown only if real data exists -->
+  <div id="asDailyCard" class="card" style="display:none">
+    <div class="ch"><div><h3>Daily Downloads Breakdown</h3><p>Days with at least 1 download · App Store Connect live data</p></div><span class="ctag ctg">LIVE DATA</span></div>
+    <table class="tbl">
+      <thead><tr><th>Date</th><th>Downloads</th><th>Impressions</th></tr></thead>
+      <tbody id="asDailyTbody"></tbody>
+    </table>
+  </div>
+
 </div><!-- /t-appstore -->
 
 
@@ -921,6 +933,55 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <div class="box bgrey" style="margin-top:14px">
       <div class="bico">ℹ️</div>
       <div>With only 29 users, cohort retention curves will have high variance. The power user (25 sessions Feb 18, 19 sessions Mar 2) shows at least 1 user retained to D30+. Enable Firebase BigQuery streaming export to get full retention breakdown by day and feature interaction.</div>
+    </div>
+  </div>
+
+
+  <!-- User Journey Section -->
+  <hr class="subdiv">
+  <div class="subhead">
+    <span>User Journey Tracker</span>
+    <span class="stag" style="background:var(--ogl);border-color:var(--ogb);color:var(--org)">MANUAL DATA</span>
+  </div>
+
+  <!-- Journey KPI Band -->
+  <div class="kband kband4">
+    <div class="kpi" style="--kc:var(--meta)"><div class="klbl">Total Users</div><div class="kval" id="ujTotalUsers">—</div><div class="ksub">in journey tracker</div></div>
+    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Active Users</div><div class="kval" id="ujActiveUsers">—</div><div class="ksub">current_status = active</div></div>
+    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg Days Active</div><div class="kval" id="ujAvgDays">—</div><div class="ksub">days_actually_active</div></div>
+    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg Sessions</div><div class="kval" id="ujAvgSess">—</div><div class="ksub">total_sessions / user</div></div>
+  </div>
+
+  <!-- Feature Usage KPIs -->
+  <div class="kband kband3" style="margin-top:10px">
+    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Peak Flow Logs</div><div class="kval" id="ujPeakFlow">—</div><div class="ksub">total across all users</div></div>
+    <div class="kpi" style="--kc:var(--yt)"><div class="klbl">Symptom Logs</div><div class="kval" id="ujSymptom">—</div><div class="ksub">total across all users</div></div>
+    <div class="kpi" style="--kc:var(--meta)"><div class="klbl">Sleep Logs</div><div class="kval" id="ujSleep">—</div><div class="ksub">total across all users</div></div>
+  </div>
+
+  <div class="g2" style="margin-top:14px">
+    <!-- Journey Stage Breakdown -->
+    <div class="card">
+      <div class="ch"><div><h3>Journey Stage Breakdown</h3><p>Users by current stage</p></div><span class="ctag ctm">JOURNEY</span></div>
+      <table class="tbl">
+        <thead><tr><th>Stage</th><th>Users</th><th>% of Total</th></tr></thead>
+        <tbody id="ujStageTbody">
+          <tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading journey data…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Per-User Table -->
+    <div class="card">
+      <div class="ch"><div><h3>User Detail Table</h3><p>Top 20 users by last active date</p></div><span class="ctag ctm">USERS</span></div>
+      <div style="overflow-x:auto">
+        <table class="tbl" style="font-size:11px">
+          <thead><tr><th>User ID</th><th>City</th><th>Stage</th><th>Status</th><th>Sessions</th><th>Days Active</th><th>Features</th></tr></thead>
+          <tbody id="ujUserTbody">
+            <tr><td colspan="7" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -1268,13 +1329,14 @@ function _fmtDate(iso) {
 
 async function _loadFromSupabase() {
   try {
-    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events] = await Promise.all([
+    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney] = await Promise.all([
       _sb('app_store_daily?order=date.asc&limit=90'),
       _sb('apple_ads_keywords?order=impressions.desc&limit=50'),
       _sb('youtube_channel_daily?order=date.asc&limit=90'),
       _sb('youtube_videos?order=views.desc&limit=50'),
       _sb('youtube_video_daily?order=date.asc&limit=500'),
       _sb('firebase_events?order=date.asc'),
+      _sb('firebase_user_journey?order=last_seen_date.desc&limit=200'),
     ]);
 
     // Each platform has independent fallback — no early return if one is empty
@@ -1393,7 +1455,53 @@ async function _loadFromSupabase() {
       );
     }
 
-    return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily, hasYT, ytVidDaily, hasVidDaily };
+    const hasJourney = Array.isArray(userJourney) && userJourney.length > 0;
+
+    // ── User Journey KPIs (DOM update here, pre-render) ──────
+    if (hasJourney) {
+      const _j = (id, v) => { const e=document.getElementById(id); if(e&&v!=null) e.textContent=v; };
+      const totalU   = userJourney.length;
+      const activeU  = userJourney.filter(u => u.current_status === 'active').length;
+      const avgDaysA = (userJourney.reduce((a,u)=>a+(u.days_actually_active||0),0)/totalU).toFixed(1);
+      const avgSess  = (userJourney.reduce((a,u)=>a+(u.total_sessions||0),0)/totalU).toFixed(1);
+      const totalPfl = userJourney.reduce((a,u)=>a+(u.peak_flow_logs||0),0);
+      const totalSym = userJourney.reduce((a,u)=>a+(u.symptom_logs||0),0);
+      const totalSlp = userJourney.reduce((a,u)=>a+(u.sleep_logs||0),0);
+      _j('ujTotalUsers',  totalU);
+      _j('ujActiveUsers', activeU);
+      _j('ujAvgDays',     avgDaysA);
+      _j('ujAvgSess',     avgSess);
+      _j('ujPeakFlow',    totalPfl);
+      _j('ujSymptom',     totalSym);
+      _j('ujSleep',       totalSlp);
+
+      // Journey stage breakdown table
+      const stageMap = {};
+      userJourney.forEach(u => {
+        const s = u.journey_stage || 'unknown';
+        stageMap[s] = (stageMap[s]||0)+1;
+      });
+      const tbody = document.getElementById('ujStageTbody');
+      if (tbody) {
+        tbody.innerHTML = Object.entries(stageMap)
+          .sort((a,b)=>b[1]-a[1])
+          .map(([stage,cnt],i) => {
+            const pct = ((cnt/totalU)*100).toFixed(0);
+            return `<tr${i%2?' class="ra"':''}><td><strong>${stage}</strong></td><td class="num">${cnt}</td><td class="num">${pct}%</td></tr>`;
+          }).join('');
+      }
+
+      // Per-user table
+      const utbody = document.getElementById('ujUserTbody');
+      if (utbody) {
+        utbody.innerHTML = userJourney.slice(0,20).map((u,i) => {
+          const city = u.city || u.region || u.country || '—';
+          return `<tr${i%2?' class="ra"':''}><td>${u.user_pseudo_id?.slice(0,8)||'—'}…</td><td>${city}</td><td>${u.journey_stage||'—'}</td><td>${u.current_status||'—'}</td><td class="num">${u.total_sessions||0}</td><td class="num">${u.days_actually_active||0}</td><td class="num">${u.unique_features_used||0}</td></tr>`;
+        }).join('');
+      }
+    }
+
+    return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily, hasYT, ytVidDaily, hasVidDaily, appStore, hasAppStore };
   } catch(e) {
     console.warn('[dashboard] Supabase load failed:', e.message);
     return null;
@@ -1460,7 +1568,7 @@ function mkDonut(id, labels, data, colors) {
 }
 
 // ── Render all charts with given data ─────────────────────
-function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily = [], hasYT = false, ytVidDaily = [], hasVidDaily = false }) {
+function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily = [], hasYT = false, ytVidDaily = [], hasVidDaily = false, appStore = [], hasAppStore = false }) {
 
   const hasData  = FL.length > 0;
   const hasKw    = kwData.length > 0;
@@ -1821,6 +1929,20 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
   mkBar('dlDayChart', FL,
     [{data:dl, backgroundColor:'rgba(10,138,95,.75)', borderRadius:3}]
   );
+
+  // ─── App Store Daily Downloads Table (conditional) ──────
+  if (hasAppStore && appStore.length > 0) {
+    const totalDlCheck = appStore.reduce((a,r)=>a+(r.downloads||0),0);
+    const asDtbody = document.getElementById('asDailyTbody');
+    if (asDtbody && totalDlCheck > 0) {
+      const card = document.getElementById('asDailyCard');
+      if (card) card.style.display = '';
+      asDtbody.innerHTML = appStore
+        .filter(r => (r.downloads||0) > 0)
+        .map((r,i) => `<tr${i%2?' class="ra"':''}><td>${r.date}</td><td class="num gt">${r.downloads}</td>${r.impressions>0?'<td class="num">'+r.impressions.toLocaleString()+'</td>':'<td class="dt">—</td>'}</tr>`)
+        .join('');
+    }
+  }
 
   // ─── PV vs DL ───────────────────────────────────────────
   mkBar('pvDlChart', FL,
