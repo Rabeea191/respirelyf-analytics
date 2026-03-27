@@ -310,21 +310,19 @@ def _download_and_parse(instance_id: str, target_date: date) -> int | None:
         unique_types = list({str(r.get("Download Type","")).strip() for r in rows})
         print(f"[app_store] Download Type values in TSV: {unique_types}")
 
-    # First-time download type identifiers (Apple uses different values per report version)
-    FTD_TYPES = {"1", "firstTimeDownload", "First Time Download",
-                 "FIRST_TIME_DOWNLOAD", "first_time_download"}
+    # Confirmed Apple Download Type string values from live TSV:
+    # 'First-time download' = new install (what we want)
+    # 'Redownload'          = user reinstalling
+    # 'Auto-update'         = automatic OS update (skip)
+    # 'Manual update'       = user-initiated update (skip)
+    FTD_TYPES = {"First-time download", "firstTimeDownload", "First Time Download",
+                 "FIRST_TIME_DOWNLOAD", "first_time_download", "1"}
 
     total = 0
     for row in rows:
         dl_type = str(row.get("Download Type", "")).strip()
-        if has_dl_type:
-            # Only count first-time downloads; skip if not a known FTD type
-            # If type is unknown/unrecognised, include it (better over-count than 0)
-            is_ftd = dl_type in FTD_TYPES
-            is_unknown = dl_type not in FTD_TYPES | {"4","7","reDownload","Redownload",
-                "REDOWNLOAD","update","Update","UPDATE","Re-Download"}
-            if not is_ftd and not is_unknown:
-                continue
+        if has_dl_type and dl_type not in FTD_TYPES:
+            continue  # skip Redownload, Auto-update, Manual update, etc.
         try:
             total += int(float(row.get(col_to_use) or 0))
         except (ValueError, TypeError):
