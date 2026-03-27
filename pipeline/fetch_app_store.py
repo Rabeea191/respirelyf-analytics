@@ -280,10 +280,15 @@ def _download_and_parse(instance_id: str, target_date: date) -> int | None:
     if not rows:
         return None
 
+    # Debug: show actual Date values in TSV
+    sample_dates = list({str(r.get('Date','')) for r in rows[:20]})
+    print(f"[app_store] TSV Date values (sample): {sample_dates[:5]}")
+
     # Filter to target date only — TSV instances may contain multiple dates
     target_str = target_date.isoformat()
     rows = [r for r in rows if str(r.get('Date', ''))[:10] == target_str]
     if not rows:
+        print(f"[app_store] WARNING: no rows matched date {target_str}")
         return None
 
     # Print available columns on first run so we know what the report contains
