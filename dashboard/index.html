@@ -1012,6 +1012,13 @@ async function _loadFromSupabase() {
       // date range sub
       const sub = document.getElementById('yt2ViewsSub');
       if(sub) sub.textContent = ytDaily[0]?.date + ' → ' + ytDaily[ytDaily.length-1]?.date;
+
+      // Store data for lazy chart init when YouTube tab is clicked
+      const ytFL   = ytDaily.map(r => _fmtDate(r.date));
+      const ytWt   = ytDaily.map(r => r.watch_time_min || 0);
+      const ytSubs = ytDaily.map(r => r.subscribers    || 0);
+      window._ytCharts = { ytFL, ytVw, ytWt, ytSubs };
+      window._ytChartsReady = false; // reset so charts re-init on next tab click
     }
 
     // ── Firebase ────────────────────────────────────────────
