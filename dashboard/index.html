@@ -1393,7 +1393,7 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
       if (hasAppStore && appStore.length > 0) {
         const rows = appStore.filter(r => (r.downloads||0) > 0);
         const lastRow = appStore[appStore.length-1];
-        const total = lastRow?.downloads || 0;
+        const total = appStore.reduce((a, r) => a + (r.downloads || 0), 0);
         const lastDate = lastRow?.date || '';
         tbody.innerHTML = rows.map((r,i) =>
           `<tr${i%2?' class="ra"':''}><td>${r.date}</td><td class="num gt">${r.downloads}</td></tr>`
