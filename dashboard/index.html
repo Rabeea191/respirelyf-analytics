@@ -918,7 +918,10 @@ const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 
 // ── Supabase helpers ──────────────────────────────────────
 const _H = { headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` } };
-const _sb = (path) => fetch(`${SUPABASE_URL}/rest/v1/${path}`, _H).then(r => r.json());
+const _sb = (path) => fetch(`${SUPABASE_URL}/rest/v1/${path}`, _H)
+  .then(r => r.json())
+  .then(d => { if (Array.isArray(d)) return d; console.warn('[sb] non-array:', path, d); return []; })
+  .catch(e => { console.warn('[sb] fetch failed:', path, e.message); return []; });
 
 function _fmtDate(iso) {
   // "2026-02-06" → "Feb 6"
@@ -1137,7 +1140,7 @@ async function _loadFromSupabase() {
 
     return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily, hasYT, ytVidDaily, hasVidDaily, appStore, hasAppStore };
   } catch(e) {
-    console.warn('[dashboard] Supabase load failed:', e.message);
+    console.error('[dashboard] _loadFromSupabase CRASHED:', e.message, e.stack);
     return null;
   }
 }
