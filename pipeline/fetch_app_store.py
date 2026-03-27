@@ -269,27 +269,25 @@ def _filter_app(rows: list) -> list:
     return out
 
 
-def _download_and_parse(instance_id: str, target_date: date) -> int | None:
+def _download_and_parse(instance_id: str, target_date: date) -> tuple[str, int] | tuple[None, None]:
     """Parse First Time Downloads from segment rows.
-    Strictly prefers 'First Time Downloads' column to avoid counting
-    redownloads or updates. Falls back to 'App Units' only if necessary.
-    Rows are per-territory — we sum across all territories.
-    Skips any row where 'Download Type' == '7' (updates, not installs).
+    Returns (actual_date_str, count) — Apple's processingDate is 1-2 days ahead
+    of real data date, so we find max date in TSV and use that as actual date.
+    Only counts rows where Download Type == 'First-time download'.
     """
     rows = _filter_app(_get_segments(instance_id))
     if not rows:
-        return None
+        return None, None
 
-    # Debug: show actual Date values in TSV
-    sample_dates = list({str(r.get('Date','')) for r in rows[:20]})
-    print(f"[app_store] TSV Date values (sample): {sample_dates[:5]}")
-
-    # Filter to target date only — TSV instances may contain multiple dates
-    target_str = target_date.isoformat()
-    rows = [r for r in rows if str(r.get('Date', ''))[:10] == target_str]
+    # Apple's processingDate is 1-2 days ahead of actual data date.
+    # Find the most recent date in TSV and use that as the actual data date.
+    all_dates = [str(r.get('Date', ''))[:10] for r in rows if r.get('Date')]
+    if not all_dates:
+        return None, None
+    actual_date_str = max(all_dates)
+    rows = [r for r in rows if str(r.get('Date', ''))[:10] == actual_date_str]
     if not rows:
-        print(f"[app_store] WARNING: no rows matched date {target_str}")
-        return None
+        return None, None
 
     # Print available columns on first run so we know what the report contains
     if rows:
@@ -339,7 +337,7 @@ def _download_and_parse(instance_id: str, target_date: date) -> int | None:
         except (ValueError, TypeError):
             pass
 
-    return total
+    return actual_date_str, total
 
 
 def _parse_impressions(instance_id: str) -> dict | None:
@@ -432,9 +430,9 @@ def run(target_date: date | None = None) -> None:
             continue
         instance_id = _get_instance(report_id, proc_date)
         if instance_id:
-            downloads = _download_and_parse(instance_id, proc_date)
-            if downloads is not None:
-                row = {"date": proc_date.isoformat(), "downloads": downloads, "redownloads": 0}
+            actual_date_str, downloads = _download_and_parse(instance_id, proc_date)
+            if actual_date_str and downloads is not None:
+                row = {"date": actual_date_str, "downloads": downloads, "redownloads": 0}
                 # Also fetch impressions if report available
                 if impr_report_id:
                     impr_inst_id = _get_instance(impr_report_id, proc_date)
@@ -442,8 +440,8 @@ def run(target_date: date | None = None) -> None:
                         impr_data = _parse_impressions(impr_inst_id)
                         if impr_data:
                             row.update(impr_data)
-                            print(f"[app_store] {proc_date}: impr={impr_data['impressions']} pv={impr_data['page_views']}")
-                print(f"[app_store] {proc_date}: {downloads} downloads ✓")
+                            print(f"[app_store] {actual_date_str}: impr={impr_data['impressions']} pv={impr_data['page_views']}")
+                print(f"[app_store] {actual_date_str}: {downloads} downloads ✓")
                 upsert("app_store_daily", [row])
 
 
