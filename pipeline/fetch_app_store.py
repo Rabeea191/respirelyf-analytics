@@ -284,39 +284,37 @@ def _download_and_parse(instance_id: str, target_date: date) -> int | None:
     if rows:
         print(f"[app_store] TSV columns: {list(rows[0].keys())[:15]}")
 
-    # Priority order: strictly first-time downloads only
-    # "App Units" includes redownloads so it's last resort
-    ftd_cols   = ["First Time Downloads", "firstTimeDownloads",
-                  "Installs", "Installations"]
-    units_cols = ["App Units", "AppUnits", "Units", "app_units"]
+    # The TSV report has a 'Download Type' column and a 'Counts' column.
+    # Download Type: 1 = First-time download, 4 = Redownload, 7 = Update
+    # Each row = one dimension combo (territory × device × source etc.)
+    # We sum Counts where Download Type == "1" to get first-time downloads only.
 
-    # Detect which column is available
+    # Detect the counts column name (Apple uses different names in different reports)
+    count_cols = ["Counts", "Count", "First Time Downloads", "firstTimeDownloads",
+                  "App Units", "AppUnits", "Units", "Installs", "Installations"]
     col_to_use = None
-    for c in ftd_cols:
-        if c in rows[0]:
+    for c in count_cols:
+        if rows and c in rows[0]:
             col_to_use = c
-            print(f"[app_store] Using column: '{c}' (first-time downloads)")
+            print(f"[app_store] Using column: '{c}'")
             break
-    if not col_to_use:
-        for c in units_cols:
-            if c in rows[0]:
-                col_to_use = c
-                print(f"[app_store] Using column: '{c}' (app units — includes redownloads)")
-                break
 
+    if not col_to_use:
+        print(f"[app_store] WARNING: no known count column found. Columns: {list(rows[0].keys())}")
+        return None
+
+    has_dl_type = rows and "Download Type" in rows[0]
     total = 0
     for row in rows:
-        # Skip update rows (Download Type 7 = update, not a new install)
-        dl_type = row.get("Download Type", "").strip()
-        if dl_type == "7":
+        dl_type = str(row.get("Download Type", "")).strip()
+        # If Download Type column exists, only count first-time downloads (type 1)
+        # Skip updates (7) and redownloads (4)
+        if has_dl_type and dl_type not in ("1", ""):
             continue
-        if col_to_use:
-            try:
-                total += int(float(row.get(col_to_use) or 0))
-            except (ValueError, TypeError):
-                pass
-        else:
-            total += 1  # last resort count
+        try:
+            total += int(float(row.get(col_to_use) or 0))
+        except (ValueError, TypeError):
+            pass
 
     return total
 
