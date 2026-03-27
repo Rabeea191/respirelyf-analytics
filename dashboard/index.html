@@ -1313,6 +1313,16 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
     }
   }
   // ─── YOUTUBE VIDEO TABLE ────────────────────────────────
+  // Build per-video aggregate map from daily rows
+  const vidMap = {};
+  (ytVidDaily || []).forEach(r => {
+    if (!vidMap[r.video_id]) vidMap[r.video_id] = { watch:0, likes:0, comments:0, dur:[], views:0 };
+    vidMap[r.video_id].watch    += (r.watch_time_min || 0);
+    vidMap[r.video_id].likes    += (r.likes    || 0);
+    vidMap[r.video_id].comments += (r.comments || 0);
+    vidMap[r.video_id].views    += (r.views    || 0);
+    if (r.avg_view_duration > 0) vidMap[r.video_id].dur.push(r.avg_view_duration);
+  });
   {
     const tbody = document.getElementById('yt2VidBody');
     const ytVidArr = Array.isArray(ytVideos) ? ytVideos : [];
