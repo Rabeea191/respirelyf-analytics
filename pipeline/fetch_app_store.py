@@ -270,28 +270,54 @@ def _filter_app(rows: list) -> list:
 
 
 def _download_and_parse(instance_id: str, target_date: date) -> int | None:
-    """Parse App Units (downloads) from segment rows."""
+    """Parse First Time Downloads from segment rows.
+    Strictly prefers 'First Time Downloads' column to avoid counting
+    redownloads or updates. Falls back to 'App Units' only if necessary.
+    Rows are per-territory — we sum across all territories.
+    Skips any row where 'Download Type' == '7' (updates, not installs).
+    """
     rows = _filter_app(_get_segments(instance_id))
     if not rows:
         return None
 
-    unit_cols = ["Installs", "Installations", "First Time Downloads",
-                 "firstTimeDownloads", "App Units", "AppUnits", "Units", "app_units"]
+    # Print available columns on first run so we know what the report contains
+    if rows:
+        print(f"[app_store] TSV columns: {list(rows[0].keys())[:15]}")
+
+    # Priority order: strictly first-time downloads only
+    # "App Units" includes redownloads so it's last resort
+    ftd_cols   = ["First Time Downloads", "firstTimeDownloads",
+                  "Installs", "Installations"]
+    units_cols = ["App Units", "AppUnits", "Units", "app_units"]
+
+    # Detect which column is available
+    col_to_use = None
+    for c in ftd_cols:
+        if c in rows[0]:
+            col_to_use = c
+            print(f"[app_store] Using column: '{c}' (first-time downloads)")
+            break
+    if not col_to_use:
+        for c in units_cols:
+            if c in rows[0]:
+                col_to_use = c
+                print(f"[app_store] Using column: '{c}' (app units — includes redownloads)")
+                break
+
     total = 0
     for row in rows:
-        found = False
-        for uc in unit_cols:
-            if uc in row:
-                try:
-                    total += int(float(row[uc] or 0))
-                except (ValueError, TypeError):
-                    pass
-                found = True
-                break
-        if not found:
-            dl_type = row.get("Download Type", "").strip()
-            if dl_type != "7":
-                total += 1
+        # Skip update rows (Download Type 7 = update, not a new install)
+        dl_type = row.get("Download Type", "").strip()
+        if dl_type == "7":
+            continue
+        if col_to_use:
+            try:
+                total += int(float(row.get(col_to_use) or 0))
+            except (ValueError, TypeError):
+                pass
+        else:
+            total += 1  # last resort count
+
     return total
 
 
