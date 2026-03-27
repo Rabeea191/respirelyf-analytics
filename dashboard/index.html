@@ -1073,8 +1073,8 @@ async function _loadFromSupabase() {
       const _j = (id, v) => { const e=document.getElementById(id); if(e&&v!=null) e.textContent=v; };
       const totalU   = userJourney.length;
       const activeU  = userJourney.filter(u => u.current_status === 'active').length;
-      const avgDaysA = (userJourney.reduce((a,u)=>a+(u.days_actually_active||0),0)/totalU).toFixed(1);
-      const avgSess  = (userJourney.reduce((a,u)=>a+(u.total_sessions||0),0)/totalU).toFixed(1);
+      const avgDaysA = (userJourney.reduce((a,u)=>a+(u.days_active||u.days_actually_active||0),0)/totalU).toFixed(1);
+      const avgSess  = (userJourney.reduce((a,u)=>a+(u.total_logs||u.total_sessions||0),0)/totalU).toFixed(1);
       const totalPfl = userJourney.reduce((a,u)=>a+(u.peak_flow_logs||0),0);
       const totalSym = userJourney.reduce((a,u)=>a+(u.symptom_logs||0),0);
       const totalSlp = userJourney.reduce((a,u)=>a+(u.sleep_logs||0),0);
@@ -1107,7 +1107,7 @@ async function _loadFromSupabase() {
       if (utbody) {
         utbody.innerHTML = userJourney.slice(0,20).map((u,i) => {
           const city = u.city || u.region || u.country || '—';
-          return `<tr${i%2?' class="ra"':''}><td>${u.user_pseudo_id?.slice(0,8)||'—'}…</td><td>${city}</td><td>${u.journey_stage||'—'}</td><td>${u.current_status||'—'}</td><td class="num">${u.total_sessions||0}</td><td class="num">${u.days_actually_active||0}</td><td class="num">${u.unique_features_used||0}</td></tr>`;
+          return `<tr${i%2?' class="ra"':''}><td>${u.user_id?.slice(0,8)||'—'}…</td><td>${city}</td><td>${u.journey_stage||'—'}</td><td>${u.current_status||'—'}</td><td class="num">${u.total_logs||0}</td><td class="num">${u.days_active||0}</td><td class="num">${(u.hd_food||0)+(u.hi_symptoms||0)+(u.hi_peak_flow||0)}</td></tr>`;
         }).join('');
       }
     }

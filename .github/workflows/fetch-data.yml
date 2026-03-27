@@ -116,3 +116,12 @@ jobs:
           REDDIT_PASSWORD:      ${{ secrets.REDDIT_PASSWORD }}
           SUPABASE_URL:         https://jxanvdhpqzxehupxkmee.supabase.co
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+
+      # ── READY: Internal User Journey API ───────────────────────
+      - name: User Journey (Internal API)
+        run: python -m pipeline.fetch_user_journey
+        continue-on-error: true
+        env:
+          ANALYTICS_API_KEY:    ${{ secrets.ANALYTICS_API_KEY }}
+          SUPABASE_URL:         https://jxanvdhpqzxehupxkmee.supabase.co
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
