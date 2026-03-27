@@ -1302,6 +1302,8 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
       </tr>`;
     }
   }
+  // ─── YOUTUBE VIDEO TABLE ────────────────────────────────
+  {
     const tbody = document.getElementById('yt2VidBody');
     const ytVidArr = Array.isArray(ytVideos) ? ytVideos : [];
     if(tbody && ytVidArr.length > 0) {
@@ -1416,7 +1418,6 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
         }
       }
     });
-  }
   }
 
   // ─── FUNNEL STEPS (live numbers) ────────────────────────
