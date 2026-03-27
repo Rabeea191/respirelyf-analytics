@@ -268,6 +268,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <button class="hn" data-tab="t-youtube">▶ YouTube</button>
     <button class="hn" data-tab="t-appstore">🍎 App Store</button>
     <button class="hn" data-tab="t-firebase">🔥 Firebase</button>
+    <button class="hn" data-tab="t-users">👥 Users</button>
     <button class="hn" data-tab="t-meta">📘 Meta</button>
     <button class="hn" data-tab="t-funnel">🔄 Funnel</button>
     <button class="hn" data-tab="t-insights">💡 Insights</button>
@@ -518,31 +519,39 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 
 
 
-  <!-- User Journey Section -->
-  <hr class="subdiv">
-  <div class="subhead">
-    <span>User Journey Tracker</span>
+</div><!-- /t-firebase -->
+
+<!-- ══════════════════════════════════════
+  USERS — USER JOURNEY TRACKER
+══════════════════════════════════════ -->
+<div id="t-users" class="tab-pane">
+  <div class="stitle">
+    <div class="snum" style="background:#6c63ff">👥</div>
+    <div>
+      <h2>User Journey Tracker</h2>
+      <p>Backend analytics · per-user onboarding, logging &amp; MDRIC engagement</p>
+    </div>
   </div>
 
-  <!-- Journey KPI Band -->
+  <!-- KPI Band Row 1 -->
   <div class="kband kband4">
-    <div class="kpi" style="--kc:var(--meta)"><div class="klbl">Total Users</div><div class="kval" id="ujTotalUsers">—</div><div class="ksub">in journey tracker</div></div>
-    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Active Users</div><div class="kval" id="ujActiveUsers">—</div><div class="ksub">current_status = active</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg Days Active</div><div class="kval" id="ujAvgDays">—</div><div class="ksub">days_actually_active</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg Sessions</div><div class="kval" id="ujAvgSess">—</div><div class="ksub">total_sessions / user</div></div>
+    <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Total Users</div><div class="kval" id="ujTotalUsers">—</div><div class="ksub">in journey tracker</div></div>
+    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Active Users</div><div class="kval" id="ujActiveUsers">—</div><div class="ksub">logged in last 7 days</div></div>
+    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg Days Active</div><div class="kval" id="ujAvgDays">—</div><div class="ksub">signup → last log</div></div>
+    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg Total Logs</div><div class="kval" id="ujAvgSess">—</div><div class="ksub">logs per user</div></div>
   </div>
 
-  <!-- Feature Usage KPIs -->
+  <!-- KPI Band Row 2: Feature usage -->
   <div class="kband kband3" style="margin-top:10px">
     <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Peak Flow Logs</div><div class="kval" id="ujPeakFlow">—</div><div class="ksub">total across all users</div></div>
     <div class="kpi" style="--kc:var(--yt)"><div class="klbl">Symptom Logs</div><div class="kval" id="ujSymptom">—</div><div class="ksub">total across all users</div></div>
-    <div class="kpi" style="--kc:var(--meta)"><div class="klbl">Sleep Logs</div><div class="kval" id="ujSleep">—</div><div class="ksub">total across all users</div></div>
+    <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Sleep Logs</div><div class="kval" id="ujSleep">—</div><div class="ksub">total across all users</div></div>
   </div>
 
   <div class="g2" style="margin-top:14px">
     <!-- Journey Stage Breakdown -->
     <div class="card">
-      <div class="ch"><div><h3>Journey Stage Breakdown</h3><p>Users by current stage</p></div><span class="ctag ctm">JOURNEY</span></div>
+      <div class="ch"><div><h3>Journey Stage Breakdown</h3><p>Users by current stage</p></div><span class="ctag" style="background:#f0eeff;color:#6c63ff;border-color:#d4d0ff">JOURNEY</span></div>
       <table class="tbl">
         <thead><tr><th>Stage</th><th>Users</th><th>% of Total</th></tr></thead>
         <tbody id="ujStageTbody">
@@ -551,12 +560,12 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
       </table>
     </div>
 
-    <!-- Per-User Table -->
+    <!-- Per-User Detail Table -->
     <div class="card">
-      <div class="ch"><div><h3>User Detail Table</h3><p>Top 20 users by last active date</p></div><span class="ctag ctm">USERS</span></div>
+      <div class="ch"><div><h3>User Detail</h3><p>Top 20 users · sorted by last active</p></div><span class="ctag" style="background:#f0eeff;color:#6c63ff;border-color:#d4d0ff">USERS</span></div>
       <div style="overflow-x:auto">
         <table class="tbl" style="font-size:11px">
-          <thead><tr><th>User ID</th><th>City</th><th>Stage</th><th>Status</th><th>Sessions</th><th>Days Active</th><th>Features</th></tr></thead>
+          <thead><tr><th>User ID</th><th>City</th><th>Stage</th><th>Status</th><th>Total Logs</th><th>Days Active</th><th>Key Features</th></tr></thead>
           <tbody id="ujUserTbody">
             <tr><td colspan="7" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
           </tbody>
@@ -565,7 +574,18 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     </div>
   </div>
 
-</div><!-- /t-firebase -->
+  <!-- MDRIC Engagement -->
+  <div class="card" style="margin-top:14px">
+    <div class="ch"><div><h3>MDRIC AI Engagement</h3><p>AI-generated outputs delivered to users</p></div><span class="ctag" style="background:#f0eeff;color:#6c63ff;border-color:#d4d0ff">AI</span></div>
+    <div class="kband kband4" style="padding:16px 0 8px">
+      <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Total Meeps</div><div class="kval" id="ujMeeps">—</div><div class="ksub">AI messages sent</div></div>
+      <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Weekly Reports</div><div class="kval" id="ujWeekly">—</div><div class="ksub">total sent</div></div>
+      <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Monthly Reports</div><div class="kval" id="ujMonthly">—</div><div class="ksub">total sent</div></div>
+      <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Memories</div><div class="kval" id="ujMemories">—</div><div class="ksub">total stored</div></div>
+    </div>
+  </div>
+
+</div><!-- /t-users -->
 
 
 <!-- ══════════════════════════════════════
@@ -1075,9 +1095,13 @@ async function _loadFromSupabase() {
       const activeU  = userJourney.filter(u => u.current_status === 'active').length;
       const avgDaysA = (userJourney.reduce((a,u)=>a+(u.days_active||u.days_actually_active||0),0)/totalU).toFixed(1);
       const avgSess  = (userJourney.reduce((a,u)=>a+(u.total_logs||u.total_sessions||0),0)/totalU).toFixed(1);
-      const totalPfl = userJourney.reduce((a,u)=>a+(u.peak_flow_logs||0),0);
-      const totalSym = userJourney.reduce((a,u)=>a+(u.symptom_logs||0),0);
-      const totalSlp = userJourney.reduce((a,u)=>a+(u.sleep_logs||0),0);
+      const totalPfl  = userJourney.reduce((a,u)=>a+(u.hi_peak_flow||u.peak_flow_logs||0),0);
+      const totalSym  = userJourney.reduce((a,u)=>a+(u.hi_symptoms||u.symptom_logs||0),0);
+      const totalSlp  = userJourney.reduce((a,u)=>a+(u.hd_sleep||u.sleep_logs||0),0);
+      const totalMeep = userJourney.reduce((a,u)=>a+(u.mdric_meeps||0),0);
+      const totalWk   = userJourney.reduce((a,u)=>a+(u.mdric_weekly||0),0);
+      const totalMon  = userJourney.reduce((a,u)=>a+(u.mdric_monthly||0),0);
+      const totalMem  = userJourney.reduce((a,u)=>a+(u.mdric_memories||0),0);
       _j('ujTotalUsers',  totalU);
       _j('ujActiveUsers', activeU);
       _j('ujAvgDays',     avgDaysA);
@@ -1085,6 +1109,10 @@ async function _loadFromSupabase() {
       _j('ujPeakFlow',    totalPfl);
       _j('ujSymptom',     totalSym);
       _j('ujSleep',       totalSlp);
+      _j('ujMeeps',       totalMeep);
+      _j('ujWeekly',      totalWk);
+      _j('ujMonthly',     totalMon);
+      _j('ujMemories',    totalMem);
 
       // Journey stage breakdown table
       const stageMap = {};
