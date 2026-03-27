@@ -1591,7 +1591,12 @@ async function boot() {
     }
   }
 
-  renderDashboard(data);
+  try {
+    renderDashboard(data);
+  } catch(e) {
+    console.error('[renderDashboard] CRASH at:', e.message);
+    console.error('[renderDashboard] Stack:', e.stack);
+  }
 }
 
 boot();
