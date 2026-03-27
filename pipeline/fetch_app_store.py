@@ -304,13 +304,27 @@ def _download_and_parse(instance_id: str, target_date: date) -> int | None:
         return None
 
     has_dl_type = rows and "Download Type" in rows[0]
+
+    # Print all unique Download Type values so we know what Apple sends
+    if has_dl_type:
+        unique_types = list({str(r.get("Download Type","")).strip() for r in rows})
+        print(f"[app_store] Download Type values in TSV: {unique_types}")
+
+    # First-time download type identifiers (Apple uses different values per report version)
+    FTD_TYPES = {"1", "firstTimeDownload", "First Time Download",
+                 "FIRST_TIME_DOWNLOAD", "first_time_download"}
+
     total = 0
     for row in rows:
         dl_type = str(row.get("Download Type", "")).strip()
-        # If Download Type column exists, only count first-time downloads (type 1)
-        # Skip updates (7) and redownloads (4)
-        if has_dl_type and dl_type not in ("1", ""):
-            continue
+        if has_dl_type:
+            # Only count first-time downloads; skip if not a known FTD type
+            # If type is unknown/unrecognised, include it (better over-count than 0)
+            is_ftd = dl_type in FTD_TYPES
+            is_unknown = dl_type not in FTD_TYPES | {"4","7","reDownload","Redownload",
+                "REDOWNLOAD","update","Update","UPDATE","Re-Download"}
+            if not is_ftd and not is_unknown:
+                continue
         try:
             total += int(float(row.get(col_to_use) or 0))
         except (ValueError, TypeError):
