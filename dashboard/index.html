@@ -990,7 +990,7 @@ async function _loadFromSupabase() {
     if (hasYT) {
       const ctrs = ytDaily.filter(r => r.ctr > 0).map(r => r.ctr);
       const avgCTR = ctrs.length ? (ctrs.reduce((a,b)=>a+b,0)/ctrs.length).toFixed(2) : null;
-      if (avgCTR) document.getElementById('ytCtrKpi').textContent = avgCTR + '%';
+      const ytCtrEl = document.getElementById('ytCtrKpi'); if (avgCTR && ytCtrEl) ytCtrEl.textContent = avgCTR + '%';
 
       // ── YouTube Tab KPIs ──────────────────────────────────
       const totalViews   = ytVw.reduce((a,b)=>a+b,0);
