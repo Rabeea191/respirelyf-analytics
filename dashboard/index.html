@@ -264,8 +264,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   </div>
 
   <nav class="hnav">
-    <button class="hn act" data-tab="t-paid">💰 Paid Ads</button>
-    <button class="hn" data-tab="t-youtube">▶ YouTube</button>
+    <button class="hn act" data-tab="t-youtube">▶ YouTube</button>
     <button class="hn" data-tab="t-appstore">🍎 App Store</button>
     <button class="hn" data-tab="t-firebase">🔥 Firebase</button>
     <button class="hn" data-tab="t-users">👥 Users</button>
@@ -283,150 +282,12 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 
 
 
-<!-- ══════════════════════════════════════
-  ② PAID ADS — ALL CHANNELS
-══════════════════════════════════════ -->
-<div id="t-paid" class="tab-pane active">
-  <div class="stitle">
-    <div class="snum">2</div>
-    <div>
-      <h2>Paid Ads — All Channels</h2>
-      <p>Apple Search Ads · YouTube Paid · Meta Ads · Google Ads · Reddit</p>
-    </div>
-  </div>
-
-  <!-- 2a. APPLE SEARCH ADS -->
-  <div class="subhead">
-    <span>🍎 Apple Search Ads</span>
-    <span class="stag" style="background:var(--apl);border-color:var(--apb);color:var(--apple)" id="appleSubTag">Loading…</span>
-  </div>
-
-  <!-- Apple Ads KPI band — populated by renderDashboard() -->
-  <div class="kband kband6" id="appleKpis"></div>
-
-  <div class="card data-ok">
-    <div class="ch"><div><h3>Keyword Performance</h3><p id="kwCardSub">Sorted by impressions</p></div><span class="ctag cta">APPLE ADS</span></div>
-    <div style="overflow-x:auto">
-    <table class="tbl" id="kwTable">
-      <thead><tr>
-        <th>Keyword</th><th>Impressions</th><th>Taps</th><th>Installs</th><th>Spend</th><th>CPT</th><th>Result</th>
-      </tr></thead>
-      <tbody id="kwBody"></tbody>
-      <tfoot id="kwTfoot"><tr>
-        <td colspan="7" style="color:var(--t4);font-size:11px">No keyword data yet — run pipeline</td>
-      </tr></tfoot>
-    </table>
-    </div>
-  </div>
-
-  <hr class="subdiv">
-
-  <!-- 2b. YOUTUBE PAID -->
-  <div class="subhead">
-    <span>▶ YouTube Paid Ads</span>
-    <span class="stag" style="background:var(--ytl);border-color:var(--ytb);color:var(--yt)">PARTIAL DATA · $8.41</span>
-  </div>
-
-  <div class="kband kband6">
-    <div class="kpi" style="--kc:var(--yt)"><div class="klbl">Spend</div><div class="kval">$8.41</div><div class="ksub wa">of $21.58 budget</div></div>
-    <div class="kpi" style="--kc:var(--yt)"><div class="klbl">YT Impressions</div><div class="kval">6,310</div><div class="ksub">Paid campaign</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Clicks</div><div class="kval">78</div><div class="ksub">1.24% CTR</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">CTR</div><div class="kval">1.24%</div><div class="ksub">Paid campaign</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">CPC</div><div class="kval">$0.11</div><div class="ksub">Cost per click</div></div>
-    <div class="kpi" style="--kc:var(--org)"><div class="klbl">Est. Installs</div><div class="kval">~1–2</div><div class="ksub wa">No tracking link</div></div>
-  </div>
-
-  <div class="box borg">
-    <div class="bico">⚠️</div>
-    <div><strong>YouTube Campaign Underdelivery:</strong> Only 2 of 4 planned days ran. $13.17 of $21.58 budget remained unspent. Campaign likely paused due to ad approval or targeting constraints. With no App Store deep link in the ad, install attribution is unavailable — estimated 1–2 installs based on click-to-install conversion benchmarks.</div>
-  </div>
-
-  <hr class="subdiv">
-
-  <!-- 2c. META ADS -->
-  <div class="subhead">
-    <span>f Meta Ads (Facebook / Instagram)</span>
-    <span class="stag" style="background:var(--ogl);border-color:var(--ogb);color:var(--org)">NO DATA CONNECTED</span>
-  </div>
-
-  <div class="card no-data">
-    <div class="ch"><div><h3>Meta Ads — Facebook &amp; Instagram</h3><p>Connect Meta Business Suite or Ads Manager CSV export to populate</p></div><span class="ctag ctm">META ADS</span></div>
-    <div class="box borg">
-      <div class="bico">📋</div>
-      <div><strong>When connected, this section will show:</strong> Reach, Impressions, CPM, CTR, CPC, Estimated installs, Audience demographics (age/gender/location), Creative performance (image vs video), Frequency, and ROAS. Connect by exporting from Meta Ads Manager → Reports → All time → Download CSV.</div>
-    </div>
-    <div class="kband">
-      <div class="kpi nd" style="--kc:var(--meta)"><div class="klbl">Reach</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--meta)"><div class="klbl">Impressions</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--meta)"><div class="klbl">CPM</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--meta)"><div class="klbl">CTR</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--meta)"><div class="klbl">CPC</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--meta)"><div class="klbl">Est. Installs</div><div class="kval">—</div><div class="ksub">No data</div></div>
-    </div>
-  </div>
-
-  <hr class="subdiv">
-
-  <!-- 2d. GOOGLE ADS -->
-  <div class="subhead">
-    <span>G Google Ads / UAC</span>
-    <span class="stag" style="background:var(--ogl);border-color:var(--ogb);color:var(--org)">NO DATA CONNECTED</span>
-  </div>
-
-  <div class="card no-data">
-    <div class="ch"><div><h3>Google Ads — Universal App Campaign</h3><p>Connect Google Ads account or export to populate</p></div><span class="ctag" style="background:var(--gadl);border-color:var(--gadb);color:var(--gads)">GOOGLE ADS</span></div>
-    <div class="box borg">
-      <div class="bico">📋</div>
-      <div><strong>Google UAC / App Campaigns would show:</strong> Search + Display + Play Store impressions, Install volume tracked via Firebase, CPI, geographic performance, keyword themes, and conversion events. Note: Google UAC requires linking Google Ads account to Firebase — when connected, installs auto-track via the Firebase SDK already installed.</div>
-    </div>
-    <div class="kband">
-      <div class="kpi nd" style="--kc:var(--gads)"><div class="klbl">Impressions</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--gads)"><div class="klbl">Clicks</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--gads)"><div class="klbl">Installs</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--gads)"><div class="klbl">Spend</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--gads)"><div class="klbl">CPI</div><div class="kval">—</div><div class="ksub">No data</div></div>
-      <div class="kpi nd" style="--kc:var(--gads)"><div class="klbl">ROAS</div><div class="kval">—</div><div class="ksub">No data</div></div>
-    </div>
-  </div>
-
-  <hr class="subdiv">
-
-  <!-- 2e. CHANNEL EFFICIENCY -->
-  <div class="subhead"><span>Channel Efficiency Comparison</span></div>
-  <div class="card">
-    <div class="ch"><div><h3>Install Cost by Source</h3><p>Cost per install across all channels</p></div></div>
-    <div class="fn">
-      <div class="fstep" style="border-color:var(--apb);background:var(--apl)">
-        <div class="fbg" style="width:100%;background:rgba(29,85,217,.06)"></div>
-        <div class="fic">🍎</div>
-        <div class="ftx"><strong>Apple Search Ads</strong><small id="eff-apple-sub">Loading…</small></div>
-        <div class="fnum" style="color:var(--yt)" id="eff-apple-cpi">⏳</div>
-      </div>
-      <div class="fstep" style="border-color:var(--ytb);background:var(--ytl)">
-        <div class="fic">▶</div>
-        <div class="ftx"><strong>YouTube Paid</strong><small>~1-2 est. installs · $8.41</small></div>
-        <div class="fnum" style="color:var(--org)">~$4–8</div>
-      </div>
-      <div class="fstep" style="border-color:var(--gnb);background:var(--gnl)">
-        <div class="fic">📲</div>
-        <div class="ftx"><strong>Organic App Store</strong><small>~26 installs · $0 spend</small></div>
-        <div class="fnum" style="color:var(--grn)">$0.00</div>
-      </div>
-      <div class="fstep" style="border-color:var(--border);background:#f7f9ff">
-        <div class="fic">▶</div>
-        <div class="ftx"><strong>YouTube Organic</strong><small>~0–1 est. · $0 spend</small></div>
-        <div class="fnum dt">Untrk</div>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /t-paid -->
 
 
 <!-- ══════════════════════════════════════
   ▶ YOUTUBE ANALYTICS TAB
 ══════════════════════════════════════ -->
-<div id="t-youtube" class="tab-pane">
+<div id="t-youtube" class="tab-pane active">
   <div class="stitle">
     <div class="snum" style="background:#d42b2b">▶</div>
     <div><h2>YouTube Analytics</h2><p>Channel performance · Organic reach · Video metrics</p></div>
