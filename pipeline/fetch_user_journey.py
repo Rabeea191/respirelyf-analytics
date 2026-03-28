@@ -29,10 +29,28 @@ HEADERS    = {
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _parse_dt(val: str | None) -> str | None:
-    """Return ISO string or None."""
+    """Return ISO string or None. Strips human suffixes like '(58d ago)'."""
     if not val:
         return None
-    return val  # already ISO format from API
+    # API sometimes returns "2026-01-29 (58d ago)" — extract just the date/datetime part
+    val = str(val).strip()
+    # Remove anything in parentheses e.g. " (58d ago)"
+    if "(" in val:
+        val = val[:val.index("(")].strip()
+    if not val:
+        return None
+    try:
+        # Try parsing as full ISO datetime first
+        dt = datetime.fromisoformat(val.replace("Z", "+00:00"))
+        return dt.isoformat()
+    except ValueError:
+        pass
+    try:
+        # Try parsing as date only (YYYY-MM-DD)
+        dt = datetime.strptime(val[:10], "%Y-%m-%d")
+        return dt.isoformat()
+    except ValueError:
+        return None
 
 def _days_since(dt_str: str | None) -> int:
     """Days since a datetime string (UTC). Returns 999 if None."""
