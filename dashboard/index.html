@@ -1032,7 +1032,7 @@ async function _loadFromSupabase() {
       _sb('youtube_videos?order=views.desc&limit=50'),
       _sb('youtube_video_daily?order=date.asc&limit=500'),
       _sb('firebase_events?order=date.asc'),
-      _sb('firebase_user_journey?order=last_seen_date.desc&limit=200'),
+      _sb('firebase_user_journey?order=updated_at.desc&limit=200'),
       _sb('meta_page_daily?order=date.desc&limit=90'),
       _sb('meta_post_insights?order=date.desc&limit=200'),
     ]);
