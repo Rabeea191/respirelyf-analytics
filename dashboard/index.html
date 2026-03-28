@@ -529,59 +529,133 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <div class="snum" style="background:#6c63ff">👥</div>
     <div>
       <h2>User Journey Tracker</h2>
-      <p>Backend analytics · per-user onboarding, logging &amp; MDRIC engagement</p>
+      <p class="dateRange">Backend analytics · per-user onboarding, logging &amp; MDRIC engagement</p>
     </div>
   </div>
 
-  <!-- KPI Band Row 1 -->
+  <!-- ── Row 1: Core KPIs ── -->
   <div class="kband kband4">
     <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Total Users</div><div class="kval" id="ujTotalUsers">—</div><div class="ksub">in journey tracker</div></div>
-    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Active Users</div><div class="kval" id="ujActiveUsers">—</div><div class="ksub">logged in last 7 days</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg Days Active</div><div class="kval" id="ujAvgDays">—</div><div class="ksub">signup → last log</div></div>
-    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg Total Logs</div><div class="kval" id="ujAvgSess">—</div><div class="ksub">logs per user</div></div>
+    <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Active Users</div><div class="kval" id="ujActiveUsers">—</div><div class="ksub" id="ujActiveSub">current_status = active</div></div>
+    <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Profile Complete</div><div class="kval" id="ujProfilePct">—</div><div class="ksub">all 4 sections done</div></div>
+    <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg Days Active</div><div class="kval" id="ujAvgDays">—</div><div class="ksub">per user</div></div>
   </div>
 
-  <!-- KPI Band Row 2: Feature usage -->
-  <div class="kband kband3" style="margin-top:10px">
-    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Peak Flow Logs</div><div class="kval" id="ujPeakFlow">—</div><div class="ksub">total across all users</div></div>
-    <div class="kpi" style="--kc:var(--yt)"><div class="klbl">Symptom Logs</div><div class="kval" id="ujSymptom">—</div><div class="ksub">total across all users</div></div>
-    <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Sleep Logs</div><div class="kval" id="ujSleep">—</div><div class="ksub">total across all users</div></div>
+  <!-- ── Row 2: Activity KPIs ── -->
+  <div class="kband" style="grid-template-columns:repeat(5,1fr);margin-top:10px">
+    <div class="kpi" style="--kc:#e74c3c"><div class="klbl">Symptom Logs</div><div class="kval" id="ujSymptom">—</div><div class="ksub">total all users</div></div>
+    <div class="kpi" style="--kc:var(--apple)"><div class="klbl">Peak Flow Logs</div><div class="kval" id="ujPeakFlow">—</div><div class="ksub">total all users</div></div>
+    <div class="kpi" style="--kc:#3498db"><div class="klbl">Sleep Tracked</div><div class="kval" id="ujSleep">—</div><div class="ksub">total all users</div></div>
+    <div class="kpi" style="--kc:#f39c12"><div class="klbl">Flare-ups Logged</div><div class="kval" id="ujFlareups">—</div><div class="ksub">total all users</div></div>
+    <div class="kpi" style="--kc:#6c63ff"><div class="klbl">AI Meeps Sent</div><div class="kval" id="ujMeeps">—</div><div class="ksub">total all users</div></div>
   </div>
 
+  <!-- ── Row 3: Onboarding Funnel + Journey Stage ── -->
   <div class="g2" style="margin-top:14px">
+    <!-- Onboarding Funnel -->
+    <div class="card">
+      <div class="ch"><div><h3>Onboarding Funnel</h3><p>Profile completion per section</p></div><span class="ctag" style="background:#f0eeff;color:#6c63ff;border-color:#d4d0ff">ONBOARDING</span></div>
+      <table class="tbl">
+        <thead><tr><th>Profile Section</th><th>Completed</th><th>% Users</th><th>Progress</th></tr></thead>
+        <tbody id="ujFunnelTbody">
+          <tr><td colspan="4" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Journey Stage Breakdown -->
     <div class="card">
       <div class="ch"><div><h3>Journey Stage Breakdown</h3><p>Users by current stage</p></div><span class="ctag" style="background:#f0eeff;color:#6c63ff;border-color:#d4d0ff">JOURNEY</span></div>
       <table class="tbl">
         <thead><tr><th>Stage</th><th>Users</th><th>% of Total</th></tr></thead>
         <tbody id="ujStageTbody">
-          <tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading journey data…</td></tr>
+          <tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── Row 4: Health Activity ── -->
+  <div class="g2" style="margin-top:14px">
+    <!-- Health Determinants -->
+    <div class="card">
+      <div class="ch"><div><h3>Health Determinants</h3><p>Lifestyle logs across all users</p></div><span class="ctag" style="background:#e8f8f0;color:#27ae60;border-color:#a8e6c0">LIFESTYLE</span></div>
+      <table class="tbl">
+        <thead><tr><th>Determinant</th><th>Total Logs</th><th>Avg / User</th></tr></thead>
+        <tbody id="ujHDTbody">
+          <tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Per-User Detail Table -->
+    <!-- Health Indicators -->
     <div class="card">
-      <div class="ch"><div><h3>User Detail</h3><p>Top 20 users · sorted by last active</p></div><span class="ctag" style="background:#f0eeff;color:#6c63ff;border-color:#d4d0ff">USERS</span></div>
-      <div style="overflow-x:auto">
-        <table class="tbl" style="font-size:11px">
-          <thead><tr><th>User ID</th><th>City</th><th>Stage</th><th>Status</th><th>Total Logs</th><th>Days Active</th><th>Key Features</th></tr></thead>
-          <tbody id="ujUserTbody">
-            <tr><td colspan="7" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="ch"><div><h3>Health Indicators</h3><p>Clinical tracking across all users</p></div><span class="ctag" style="background:#fff0f0;color:#e74c3c;border-color:#f5c0c0">CLINICAL</span></div>
+      <table class="tbl">
+        <thead><tr><th>Indicator</th><th>Total Logs</th><th>Avg / User</th></tr></thead>
+        <tbody id="ujHITbody">
+          <tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- MDRIC Engagement -->
+  <!-- ── Row 5: MDRIC + Geo ── -->
+  <div class="g2" style="margin-top:14px">
+    <!-- MDRIC AI Engagement -->
+    <div class="card">
+      <div class="ch"><div><h3>MDRIC AI Engagement</h3><p>AI-generated outputs delivered</p></div><span class="ctag" style="background:#f0eeff;color:#6c63ff;border-color:#d4d0ff">AI</span></div>
+      <table class="tbl">
+        <thead><tr><th>Output Type</th><th>Total</th><th>Avg / User</th></tr></thead>
+        <tbody id="ujMDRICTbody">
+          <tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
+        </tbody>
+      </table>
+      <div class="kband kband4" style="padding:14px 0 4px;border-top:1px solid var(--bdr);margin-top:12px">
+        <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Weekly Reports</div><div class="kval" id="ujWeekly">—</div><div class="ksub">total sent</div></div>
+        <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Monthly Reports</div><div class="kval" id="ujMonthly">—</div><div class="ksub">total sent</div></div>
+        <div class="kpi" style="--kc:#6c63ff"><div class="klbl">PDF Reports</div><div class="kval" id="ujReports">—</div><div class="ksub">total sent</div></div>
+        <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Memories</div><div class="kval" id="ujMemories">—</div><div class="ksub">total stored</div></div>
+      </div>
+    </div>
+
+    <!-- Geo + Platform Distribution -->
+    <div class="card">
+      <div class="ch"><div><h3>User Distribution</h3><p>Country &amp; platform breakdown</p></div><span class="ctag" style="background:#e8f4ff;color:#2980b9;border-color:#aed6f1">GEO</span></div>
+      <table class="tbl" style="margin-bottom:12px">
+        <thead><tr><th>Country</th><th>Users</th><th>%</th></tr></thead>
+        <tbody id="ujGeoTbody">
+          <tr><td colspan="3" class="dt" style="text-align:center;padding:12px">Loading…</td></tr>
+        </tbody>
+      </table>
+      <table class="tbl">
+        <thead><tr><th>Platform</th><th>Users</th><th>%</th></tr></thead>
+        <tbody id="ujPlatTbody">
+          <tr><td colspan="3" class="dt" style="text-align:center;padding:12px">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── Row 6: Per-user detail table ── -->
   <div class="card" style="margin-top:14px">
-    <div class="ch"><div><h3>MDRIC AI Engagement</h3><p>AI-generated outputs delivered to users</p></div><span class="ctag" style="background:#f0eeff;color:#6c63ff;border-color:#d4d0ff">AI</span></div>
-    <div class="kband kband4" style="padding:16px 0 8px">
-      <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Total Meeps</div><div class="kval" id="ujMeeps">—</div><div class="ksub">AI messages sent</div></div>
-      <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Weekly Reports</div><div class="kval" id="ujWeekly">—</div><div class="ksub">total sent</div></div>
-      <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Monthly Reports</div><div class="kval" id="ujMonthly">—</div><div class="ksub">total sent</div></div>
-      <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Memories</div><div class="kval" id="ujMemories">—</div><div class="ksub">total stored</div></div>
+    <div class="ch">
+      <div><h3>User Detail</h3><p>All users · sorted by last active · <span id="ujUserCount">—</span> total</p></div>
+      <span class="ctag" style="background:#f0eeff;color:#6c63ff;border-color:#d4d0ff">LIVE DATA</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tbl" style="font-size:11px">
+        <thead>
+          <tr>
+            <th>User ID</th><th>City</th><th>Country</th><th>Platform</th>
+            <th>Stage</th><th>Status</th><th>Days Active</th><th>Total Logs</th>
+            <th>Symptoms</th><th>Peak Flow</th><th>Meeps</th><th>Profile %</th>
+          </tr>
+        </thead>
+        <tbody id="ujUserTbody">
+          <tr><td colspan="12" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -1088,54 +1162,146 @@ async function _loadFromSupabase() {
 
     const hasJourney = Array.isArray(userJourney) && userJourney.length > 0;
 
-    // ── User Journey KPIs (DOM update here, pre-render) ──────
+    // ── User Journey — full render ────────────────────────────
     if (hasJourney) {
       const _j = (id, v) => { const e=document.getElementById(id); if(e&&v!=null) e.textContent=v; };
-      const totalU   = userJourney.length;
-      const activeU  = userJourney.filter(u => u.current_status === 'active').length;
-      const avgDaysA = (userJourney.reduce((a,u)=>a+(u.days_active||u.days_actually_active||0),0)/totalU).toFixed(1);
-      const avgSess  = (userJourney.reduce((a,u)=>a+(u.total_logs||u.total_sessions||0),0)/totalU).toFixed(1);
-      const totalPfl  = userJourney.reduce((a,u)=>a+(u.hi_peak_flow||u.peak_flow_logs||0),0);
-      const totalSym  = userJourney.reduce((a,u)=>a+(u.hi_symptoms||u.symptom_logs||0),0);
-      const totalSlp  = userJourney.reduce((a,u)=>a+(u.hd_sleep||u.sleep_logs||0),0);
-      const totalMeep = userJourney.reduce((a,u)=>a+(u.mdric_meeps||0),0);
-      const totalWk   = userJourney.reduce((a,u)=>a+(u.mdric_weekly||0),0);
-      const totalMon  = userJourney.reduce((a,u)=>a+(u.mdric_monthly||0),0);
-      const totalMem  = userJourney.reduce((a,u)=>a+(u.mdric_memories||0),0);
-      _j('ujTotalUsers',  totalU);
-      _j('ujActiveUsers', activeU);
-      _j('ujAvgDays',     avgDaysA);
-      _j('ujAvgSess',     avgSess);
-      _j('ujPeakFlow',    totalPfl);
-      _j('ujSymptom',     totalSym);
-      _j('ujSleep',       totalSlp);
-      _j('ujMeeps',       totalMeep);
-      _j('ujWeekly',      totalWk);
-      _j('ujMonthly',     totalMon);
-      _j('ujMemories',    totalMem);
+      const N = userJourney.length;
 
-      // Journey stage breakdown table
-      const stageMap = {};
-      userJourney.forEach(u => {
-        const s = u.journey_stage || 'unknown';
-        stageMap[s] = (stageMap[s]||0)+1;
-      });
-      const tbody = document.getElementById('ujStageTbody');
-      if (tbody) {
-        tbody.innerHTML = Object.entries(stageMap)
-          .sort((a,b)=>b[1]-a[1])
-          .map(([stage,cnt],i) => {
-            const pct = ((cnt/totalU)*100).toFixed(0);
-            return `<tr${i%2?' class="ra"':''}><td><strong>${stage}</strong></td><td class="num">${cnt}</td><td class="num">${pct}%</td></tr>`;
-          }).join('');
+      // ── Core KPIs ──
+      const activeU   = userJourney.filter(u => u.current_status === 'active').length;
+      const avgDays   = (userJourney.reduce((a,u)=>a+(u.days_active||0),0)/N).toFixed(1);
+      const profComplete = userJourney.filter(u =>
+        u.profile_about_you && u.profile_symptoms && u.profile_root_causes && u.profile_medication
+      ).length;
+      _j('ujTotalUsers',  N);
+      _j('ujActiveUsers', activeU);
+      _j('ujActiveSub',   `${((activeU/N)*100).toFixed(0)}% of total`);
+      _j('ujProfilePct',  ((profComplete/N)*100).toFixed(0)+'%');
+      _j('ujAvgDays',     avgDays);
+      _j('ujUserCount',   N);
+
+      // ── Activity KPIs ──
+      const totalSym  = userJourney.reduce((a,u)=>a+(u.hi_symptoms||0),0);
+      const totalPfl  = userJourney.reduce((a,u)=>a+(u.hi_peak_flow||0),0);
+      const totalSlp  = userJourney.reduce((a,u)=>a+(u.hd_sleep||0),0);
+      const totalFlu  = userJourney.reduce((a,u)=>a+(u.hi_flareups||0),0);
+      const totalMeep = userJourney.reduce((a,u)=>a+(u.mdric_meeps||0),0);
+      _j('ujSymptom',  totalSym);
+      _j('ujPeakFlow', totalPfl);
+      _j('ujSleep',    totalSlp);
+      _j('ujFlareups', totalFlu);
+      _j('ujMeeps',    totalMeep);
+
+      // ── MDRIC totals ──
+      const totalWk  = userJourney.reduce((a,u)=>a+(u.mdric_weekly||0),0);
+      const totalMon = userJourney.reduce((a,u)=>a+(u.mdric_monthly||0),0);
+      const totalRep = userJourney.reduce((a,u)=>a+(u.mdric_report||0),0);
+      const totalMem = userJourney.reduce((a,u)=>a+(u.mdric_memories||0),0);
+      _j('ujWeekly',  totalWk);
+      _j('ujMonthly', totalMon);
+      _j('ujReports', totalRep);
+      _j('ujMemories',totalMem);
+
+      // ── Onboarding Funnel ──
+      const funnelSteps = [
+        ['About You',     'profile_about_you'],
+        ['Symptoms',      'profile_symptoms'],
+        ['Root Causes',   'profile_root_causes'],
+        ['Medication',    'profile_medication'],
+      ];
+      const fTbody = document.getElementById('ujFunnelTbody');
+      if (fTbody) {
+        fTbody.innerHTML = funnelSteps.map(([label, key], i) => {
+          const cnt = userJourney.filter(u => u[key]).length;
+          const pct = ((cnt/N)*100).toFixed(0);
+          const bar = `<div style="background:#e8e4ff;border-radius:4px;height:8px;width:100%"><div style="background:#6c63ff;border-radius:4px;height:8px;width:${pct}%"></div></div>`;
+          return `<tr${i%2?' class="ra"':''}><td>${label}</td><td class="num">${cnt}</td><td class="num">${pct}%</td><td style="min-width:80px">${bar}</td></tr>`;
+        }).join('');
       }
 
-      // Per-user table
+      // ── Journey Stage Breakdown ──
+      const stageMap = {};
+      userJourney.forEach(u => { const s=u.journey_stage||'Unknown'; stageMap[s]=(stageMap[s]||0)+1; });
+      const stTbody = document.getElementById('ujStageTbody');
+      if (stTbody) {
+        stTbody.innerHTML = Object.entries(stageMap).sort((a,b)=>b[1]-a[1]).map(([stage,cnt],i) => {
+          const pct = ((cnt/N)*100).toFixed(0);
+          return `<tr${i%2?' class="ra"':''}><td><strong>${stage}</strong></td><td class="num">${cnt}</td><td class="num">${pct}%</td></tr>`;
+        }).join('');
+      }
+
+      // ── Health Determinants ──
+      const hdKeys = [['Food',       'hd_food'],['Hydration','hd_hydration'],['Sleep','hd_sleep'],['Activity','hd_activity'],['Stress','hd_stress']];
+      const hdTbody = document.getElementById('ujHDTbody');
+      if (hdTbody) {
+        hdTbody.innerHTML = hdKeys.map(([label,key],i) => {
+          const tot = userJourney.reduce((a,u)=>a+(u[key]||0),0);
+          return `<tr${i%2?' class="ra"':''}><td>${label}</td><td class="num gt">${tot}</td><td class="num">${(tot/N).toFixed(1)}</td></tr>`;
+        }).join('');
+      }
+
+      // ── Health Indicators ──
+      const hiKeys = [['Symptoms','hi_symptoms'],['Flare-ups','hi_flareups'],['Peak Flow','hi_peak_flow'],['Vitals','hi_vitals'],['Surveys','hi_surveys']];
+      const hiTbody = document.getElementById('ujHITbody');
+      if (hiTbody) {
+        hiTbody.innerHTML = hiKeys.map(([label,key],i) => {
+          const tot = userJourney.reduce((a,u)=>a+(u[key]||0),0);
+          return `<tr${i%2?' class="ra"':''}><td>${label}</td><td class="num gt">${tot}</td><td class="num">${(tot/N).toFixed(1)}</td></tr>`;
+        }).join('');
+      }
+
+      // ── MDRIC detail table ──
+      const mdKeys = [['AI Meeps','mdric_meeps'],['Weekly Reports','mdric_weekly'],['Monthly Reports','mdric_monthly'],['PDF Reports','mdric_report'],['Memories','mdric_memories']];
+      const mdTbody = document.getElementById('ujMDRICTbody');
+      if (mdTbody) {
+        mdTbody.innerHTML = mdKeys.map(([label,key],i) => {
+          const tot = userJourney.reduce((a,u)=>a+(u[key]||0),0);
+          return `<tr${i%2?' class="ra"':''}><td>${label}</td><td class="num gt">${tot}</td><td class="num">${(tot/N).toFixed(1)}</td></tr>`;
+        }).join('');
+      }
+
+      // ── Geo Distribution ──
+      const geoMap = {}, platMap = {};
+      userJourney.forEach(u => {
+        const c = u.session_country || u.device_country || '—';
+        geoMap[c] = (geoMap[c]||0)+1;
+        const p = u.auth_platform || u.app_source || '—';
+        platMap[p] = (platMap[p]||0)+1;
+      });
+      const geoTbody = document.getElementById('ujGeoTbody');
+      if (geoTbody) {
+        geoTbody.innerHTML = Object.entries(geoMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([c,cnt],i) =>
+          `<tr${i%2?' class="ra"':''}><td>${c}</td><td class="num">${cnt}</td><td class="num">${((cnt/N)*100).toFixed(0)}%</td></tr>`
+        ).join('');
+      }
+      const platTbody = document.getElementById('ujPlatTbody');
+      if (platTbody) {
+        platTbody.innerHTML = Object.entries(platMap).sort((a,b)=>b[1]-a[1]).map(([p,cnt],i) =>
+          `<tr${i%2?' class="ra"':''}><td>${p}</td><td class="num">${cnt}</td><td class="num">${((cnt/N)*100).toFixed(0)}%</td></tr>`
+        ).join('');
+      }
+
+      // ── Per-user detail table ──
       const utbody = document.getElementById('ujUserTbody');
       if (utbody) {
-        utbody.innerHTML = userJourney.slice(0,20).map((u,i) => {
-          const city = u.city || u.region || u.country || '—';
-          return `<tr${i%2?' class="ra"':''}><td>${u.user_id?.slice(0,8)||'—'}…</td><td>${city}</td><td>${u.journey_stage||'—'}</td><td>${u.current_status||'—'}</td><td class="num">${u.total_logs||0}</td><td class="num">${u.days_active||0}</td><td class="num">${(u.hd_food||0)+(u.hi_symptoms||0)+(u.hi_peak_flow||0)}</td></tr>`;
+        const sorted = [...userJourney].sort((a,b) => (b.days_active||0)-(a.days_active||0));
+        utbody.innerHTML = sorted.map((u,i) => {
+          const profPct = [u.profile_about_you,u.profile_symptoms,u.profile_root_causes,u.profile_medication].filter(Boolean).length * 25;
+          const statusColor = u.current_status==='active' ? 'var(--grn)' : 'var(--t4)';
+          return `<tr${i%2?' class="ra"':''}>
+            <td style="font-family:monospace">${(u.user_id||'—').slice(0,10)}…</td>
+            <td>${u.city||'—'}</td>
+            <td>${u.session_country||u.device_country||'—'}</td>
+            <td>${u.auth_platform||u.app_source||'—'}</td>
+            <td>${u.journey_stage||'—'}</td>
+            <td style="color:${statusColor};font-weight:600">${u.current_status||'—'}</td>
+            <td class="num">${u.days_active||0}</td>
+            <td class="num">${u.total_logs||0}</td>
+            <td class="num">${u.hi_symptoms||0}</td>
+            <td class="num">${u.hi_peak_flow||0}</td>
+            <td class="num gt">${u.mdric_meeps||0}</td>
+            <td class="num">${profPct}%</td>
+          </tr>`;
         }).join('');
       }
     }
