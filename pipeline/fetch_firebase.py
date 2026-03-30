@@ -105,11 +105,11 @@ SELECT
     ELSE 'Bounced'
   END AS journey_stage,
   CASE
-    WHEN MAX(DATE(TIMESTAMP_MICROS(event_timestamp))) >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+    WHEN MAX(DATE(TIMESTAMP_MICROS(event_timestamp))) >= DATE_SUB(CURRENT_DATE(), INTERVAL 8 DAY)
     THEN 'Active' ELSE 'Churned'
   END AS current_status
 FROM `{project}.{dataset}.events_intraday_*`
-WHERE DATE(TIMESTAMP_MICROS(event_timestamp)) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) AND CURRENT_DATE()
+WHERE DATE(TIMESTAMP_MICROS(event_timestamp)) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 8 DAY) AND DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
   AND geo.city != 'Ashburn'
   AND geo.country != 'Pakistan'
   AND user_pseudo_id != '19BA69FD-ECA7-46A5-BD25-766587D2574B'
@@ -181,8 +181,43 @@ def run(target_date: date | None = None) -> None:
             print(f"[firebase] using table {table_name}")
             break
 
+    # ── User behavior (wildcard query — runs regardless of daily table) ──
+    print("[firebase] querying user behavior (last 7 days)...")
+    beh_fmt = dict(project=FIREBASE_PROJECT_ID, dataset=BIGQUERY_DATASET_ID)
+    rows_beh = client.query(_USER_BEHAVIOR_SQL.format(**beh_fmt)).result()
+    behavior_rows = [
+        {
+            "user_pseudo_id":        row.user_pseudo_id,
+            "city":                  row.city,
+            "region":                row.region,
+            "country":               row.country,
+            "first_seen_date":       str(row.first_seen_date) if row.first_seen_date else None,
+            "last_seen_date":        str(row.last_seen_date) if row.last_seen_date else None,
+            "total_day_span":        row.total_day_span or 0,
+            "days_actually_active":  row.days_actually_active or 0,
+            "total_events":          row.total_events or 0,
+            "unique_features_used":  row.unique_features_used or 0,
+            "total_sessions":        row.total_sessions or 0,
+            "onboarding_events":     row.onboarding_events or 0,
+            "login_events":          row.login_events or 0,
+            "otp_events":            row.otp_events or 0,
+            "health_profile_events": row.health_profile_events or 0,
+            "today_tab_visits":      row.today_tab_visits or 0,
+            "peak_flow_logs":        row.peak_flow_logs or 0,
+            "symptom_logs":          row.symptom_logs or 0,
+            "sleep_logs":            row.sleep_logs or 0,
+            "treatment_views":       row.treatment_views or 0,
+            "progress_views":        row.progress_views or 0,
+            "journey_stage":         row.journey_stage,
+            "current_status":        row.current_status,
+        }
+        for row in rows_beh
+    ]
+    upsert("firebase_user_behavior", behavior_rows)
+    print(f"[firebase] user behavior done — {len(behavior_rows)} rows")
+
     if table_name is None:
-        print("[firebase] no events table found for past 30 days — skipping")
+        print("[firebase] no specific daily table found — skipping events/user_props")
         return
 
     fmt = dict(project=FIREBASE_PROJECT_ID, dataset=BIGQUERY_DATASET_ID, suffix=table_name)
@@ -215,40 +250,6 @@ def run(target_date: date | None = None) -> None:
         if row.value  # skip null values
     ]
     upsert("firebase_user_props", prop_rows)
-
-    # ── User behavior (per-user, last 7 days) ────────────────────
-    print("[firebase] querying user behavior...")
-    beh_fmt = dict(project=FIREBASE_PROJECT_ID, dataset=BIGQUERY_DATASET_ID)
-    rows_beh = client.query(_USER_BEHAVIOR_SQL.format(**beh_fmt)).result()
-    behavior_rows = [
-        {
-            "user_pseudo_id":        row.user_pseudo_id,
-            "city":                  row.city,
-            "region":                row.region,
-            "country":               row.country,
-            "first_seen_date":       str(row.first_seen_date) if row.first_seen_date else None,
-            "last_seen_date":        str(row.last_seen_date) if row.last_seen_date else None,
-            "total_day_span":        row.total_day_span or 0,
-            "days_actually_active":  row.days_actually_active or 0,
-            "total_events":          row.total_events or 0,
-            "unique_features_used":  row.unique_features_used or 0,
-            "total_sessions":        row.total_sessions or 0,
-            "onboarding_events":     row.onboarding_events or 0,
-            "login_events":          row.login_events or 0,
-            "otp_events":            row.otp_events or 0,
-            "health_profile_events": row.health_profile_events or 0,
-            "today_tab_visits":      row.today_tab_visits or 0,
-            "peak_flow_logs":        row.peak_flow_logs or 0,
-            "symptom_logs":          row.symptom_logs or 0,
-            "sleep_logs":            row.sleep_logs or 0,
-            "treatment_views":       row.treatment_views or 0,
-            "progress_views":        row.progress_views or 0,
-            "journey_stage":         row.journey_stage,
-            "current_status":        row.current_status,
-        }
-        for row in rows_beh
-    ]
-    upsert("firebase_user_behavior", behavior_rows)
 
     print(f"[firebase] done — {len(event_rows)} events, {len(prop_rows)} user props, {len(behavior_rows)} user behavior rows")
 
