@@ -96,8 +96,8 @@ def _compute_journey_stage(u: dict) -> str:
 
 def _compute_days_active(timing: dict) -> int:
     """Estimate days active from signup → last log."""
-    signed_up = timing.get("signed_up")
-    last_log  = timing.get("last_log") or timing.get("last_meep")
+    signed_up = _parse_dt(timing.get("signed_up"))
+    last_log  = _parse_dt(timing.get("last_log")) or _parse_dt(timing.get("last_meep"))
     if not signed_up or not last_log:
         return 0
     try:
@@ -108,8 +108,8 @@ def _compute_days_active(timing: dict) -> int:
         return 0
 
 def _compute_status(timing: dict) -> str:
-    """active if last_login within 7 days, else inactive."""
-    last_login = timing.get("last_meep") or timing.get("last_log")
+    """active if last activity within 7 days, else inactive."""
+    last_login = _parse_dt(timing.get("last_meep")) or _parse_dt(timing.get("last_log"))
     if _days_since(last_login) <= 7:
         return "active"
     return "inactive"
