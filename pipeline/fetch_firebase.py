@@ -72,9 +72,9 @@ LIMIT 500
 _USER_BEHAVIOR_SQL = """
 SELECT
   user_pseudo_id,
-  geo.city,
-  geo.region,
-  geo.country,
+  ANY_VALUE(geo.city)    AS city,
+  ANY_VALUE(geo.region)  AS region,
+  ANY_VALUE(geo.country) AS country,
   MIN(DATE(TIMESTAMP_MICROS(event_timestamp))) AS first_seen_date,
   MAX(DATE(TIMESTAMP_MICROS(event_timestamp))) AS last_seen_date,
   DATE_DIFF(
@@ -113,7 +113,7 @@ WHERE DATE(TIMESTAMP_MICROS(event_timestamp)) BETWEEN DATE_SUB(CURRENT_DATE(), I
   AND geo.city != 'Ashburn'
   AND geo.country != 'Pakistan'
   AND user_pseudo_id != '19BA69FD-ECA7-46A5-BD25-766587D2574B'
-GROUP BY user_pseudo_id, geo.city, geo.region, geo.country
+GROUP BY user_pseudo_id
 ORDER BY days_actually_active DESC, total_events DESC
 """
 
