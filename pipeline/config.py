@@ -56,6 +56,13 @@ META_AD_ACCOUNT_ID = _opt("META_AD_ACCOUNT_ID")
 META_PAGE_ID       = _opt("META_PAGE_ID")
 META_IG_ACCOUNT_ID = _opt("META_IG_ACCOUNT_ID") # optional: set directly to skip auto-detection
 
+# ── TikTok ────────────────────────────────────────────────
+TIKTOK_CLIENT_KEY    = _opt("TIKTOK_CLIENT_KEY")
+TIKTOK_CLIENT_SECRET = _opt("TIKTOK_CLIENT_SECRET")
+TIKTOK_ACCESS_TOKEN  = _opt("TIKTOK_ACCESS_TOKEN")
+TIKTOK_REFRESH_TOKEN = _opt("TIKTOK_REFRESH_TOKEN")
+TIKTOK_OPEN_ID       = _opt("TIKTOK_OPEN_ID")
+
 # ── Reddit Ads ────────────────────────────────────────────
 REDDIT_APP_ID     = _opt("REDDIT_APP_ID")
 REDDIT_APP_SECRET = _opt("REDDIT_APP_SECRET")

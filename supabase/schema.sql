@@ -148,6 +148,33 @@ CREATE TABLE IF NOT EXISTS firebase_user_props (
     PRIMARY KEY (date, property, value)
 );
 
+-- ── TikTok ─────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS tiktok_account_daily (
+    date            DATE PRIMARY KEY,
+    followers       INTEGER NOT NULL DEFAULT 0,
+    total_likes     INTEGER NOT NULL DEFAULT 0,
+    video_count     INTEGER NOT NULL DEFAULT 0,
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS tiktok_video_insights (
+    video_id        TEXT        NOT NULL,
+    date            DATE        NOT NULL,
+    title           TEXT,
+    views           INTEGER     NOT NULL DEFAULT 0,
+    likes           INTEGER     NOT NULL DEFAULT 0,
+    comments        INTEGER     NOT NULL DEFAULT 0,
+    shares          INTEGER     NOT NULL DEFAULT 0,
+    play_count      INTEGER     NOT NULL DEFAULT 0,
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (video_id, date)
+);
+
+ALTER TABLE tiktok_account_daily  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tiktok_video_insights ENABLE ROW LEVEL SECURITY;
+CREATE POLICY IF NOT EXISTS "anon read tiktok_account_daily"  ON tiktok_account_daily  FOR SELECT TO anon USING (TRUE);
+CREATE POLICY IF NOT EXISTS "anon read tiktok_video_insights" ON tiktok_video_insights FOR SELECT TO anon USING (TRUE);
+
 -- ── Firebase User Behavior (BigQuery events_intraday_* query) ─
 CREATE TABLE IF NOT EXISTS firebase_user_behavior (
     user_pseudo_id          TEXT PRIMARY KEY,

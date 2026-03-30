@@ -269,6 +269,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <button class="hn" data-tab="t-firebase">🔥 Firebase</button>
     <button class="hn" data-tab="t-users">👥 Users</button>
     <button class="hn" data-tab="t-meta">📘 Meta</button>
+    <button class="hn" data-tab="t-tiktok">🎵 TikTok</button>
   </nav>
 
   <div class="hright">
@@ -653,8 +654,39 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 
 </div><!-- /t-meta -->
 
+<!-- ══════════════════════════════════════
+  TIKTOK — ORGANIC PROFILE ANALYTICS
+══════════════════════════════════════ -->
+<div id="t-tiktok" class="tab-pane">
+  <div class="stitle">
+    <div class="snum" style="background:#010101;color:#fff">🎵</div>
+    <div>
+      <h2>TikTok — Organic Profile Analytics</h2>
+      <p>Followers · Video views · Engagement · Per-video performance</p>
+    </div>
+  </div>
 
+  <!-- KPI Band -->
+  <div class="kband kband4">
+    <div class="kpi" style="--kc:#010101"><div class="klbl">Followers</div><div class="kval" id="ttFollowers">—</div><div class="ksub">total account followers</div></div>
+    <div class="kpi" style="--kc:#fe2c55"><div class="klbl">Total Likes</div><div class="kval" id="ttLikes">—</div><div class="ksub">all videos combined</div></div>
+    <div class="kpi" style="--kc:#25f4ee"><div class="klbl">Videos</div><div class="kval" id="ttVideos">—</div><div class="ksub">total published</div></div>
+    <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Avg Views</div><div class="kval" id="ttAvgViews">—</div><div class="ksub">per video</div></div>
+  </div>
 
+  <!-- Video performance table -->
+  <div class="card">
+    <h3>Video Performance</h3>
+    <div style="overflow-x:auto">
+    <table class="tbl"><thead><tr>
+      <th>Title</th><th>Views</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Plays</th>
+    </tr></thead>
+    <tbody id="ttVideoTbody">
+      <tr><td colspan="6" class="dt" style="text-align:center;padding:24px">⏳ Connect TikTok Developer account to load data</td></tr>
+    </tbody></table>
+    </div>
+  </div>
+</div><!-- /t-tiktok -->
 
 
 </div><!-- /page -->
@@ -682,7 +714,7 @@ function _fmtDate(iso) {
 
 async function _loadFromSupabase() {
   try {
-    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney, metaPageDaily, metaPosts, userBehavior] = await Promise.all([
+    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney, metaPageDaily, metaPosts, userBehavior, ttAccount, ttVideos] = await Promise.all([
       _sb('app_store_daily?order=date.asc&limit=90'),
       _sb('apple_ads_keywords?order=impressions.desc&limit=50'),
       _sb('youtube_channel_daily?order=date.asc&limit=90'),
@@ -693,6 +725,8 @@ async function _loadFromSupabase() {
       _sb('meta_page_daily?order=date.desc&limit=90'),
       _sb('meta_post_insights?order=date.desc&limit=200'),
       _sb('firebase_user_behavior?order=days_actually_active.desc&limit=500'),
+      _sb('tiktok_account_daily?order=date.desc&limit=1'),
+      _sb('tiktok_video_insights?order=views.desc&limit=50'),
     ]);
 
     // Each platform has independent fallback — no early return if one is empty
@@ -1054,6 +1088,31 @@ async function _loadFromSupabase() {
           <td class="num">${u.sleep_logs||0}</td>
         </tr>`;
       }).join('');
+    }
+
+    // ── TikTok ──────────────────────────────────────────────────
+    const latestTT = Array.isArray(ttAccount) && ttAccount.length ? ttAccount[0] : null;
+    const _tt = (id, v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+    if (latestTT) {
+      _tt('ttFollowers', (latestTT.followers||0).toLocaleString());
+      _tt('ttLikes',     (latestTT.total_likes||0).toLocaleString());
+      _tt('ttVideos',    (latestTT.video_count||0).toLocaleString());
+      const avgV = latestTT.video_count > 0 && Array.isArray(ttVideos) && ttVideos.length
+        ? Math.round(ttVideos.reduce((s,v)=>s+(v.views||0),0) / ttVideos.length).toLocaleString()
+        : '—';
+      _tt('ttAvgViews', avgV);
+    }
+    if (Array.isArray(ttVideos) && ttVideos.length) {
+      const ttBody = document.getElementById('ttVideoTbody');
+      if (ttBody) ttBody.innerHTML = ttVideos.map((v,i) => `
+        <tr${i%2?' class="ra"':''}>
+          <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.title||'—'}</td>
+          <td class="num">${(v.views||0).toLocaleString()}</td>
+          <td class="num">${(v.likes||0).toLocaleString()}</td>
+          <td class="num">${v.comments||0}</td>
+          <td class="num">${v.shares||0}</td>
+          <td class="num">${(v.play_count||0).toLocaleString()}</td>
+        </tr>`).join('');
     }
 
     return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily, hasYT, ytVidDaily, hasVidDaily, appStore, hasAppStore };
