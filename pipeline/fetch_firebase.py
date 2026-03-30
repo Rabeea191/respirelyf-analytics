@@ -69,6 +69,54 @@ ORDER BY user_count DESC
 LIMIT 500
 """
 
+_USER_BEHAVIOR_SQL = """
+SELECT
+  user_pseudo_id,
+  geo.city,
+  geo.region,
+  geo.country,
+  MIN(DATE(TIMESTAMP_MICROS(event_timestamp))) AS first_seen_date,
+  MAX(DATE(TIMESTAMP_MICROS(event_timestamp))) AS last_seen_date,
+  DATE_DIFF(
+    MAX(DATE(TIMESTAMP_MICROS(event_timestamp))),
+    MIN(DATE(TIMESTAMP_MICROS(event_timestamp))),
+    DAY
+  ) AS total_day_span,
+  COUNT(DISTINCT DATE(TIMESTAMP_MICROS(event_timestamp))) AS days_actually_active,
+  COUNT(*) AS total_events,
+  COUNT(DISTINCT event_name) AS unique_features_used,
+  COUNTIF(event_name = 'session_start') AS total_sessions,
+  COUNTIF(event_name = 'rl_onboarding_ios') AS onboarding_events,
+  COUNTIF(event_name = 'rl_login_ios') AS login_events,
+  COUNTIF(event_name = 'rl_otp_ios') AS otp_events,
+  COUNTIF(event_name = 'rl_health_profile_ios') AS health_profile_events,
+  COUNTIF(event_name = 'rl_today_tab_ios') AS today_tab_visits,
+  COUNTIF(event_name = 'rl_peak_flow_card_ios') AS peak_flow_logs,
+  COUNTIF(event_name = 'rl_symptoms_card_ios') AS symptom_logs,
+  COUNTIF(event_name = 'rl_sleep_card_ios') AS sleep_logs,
+  COUNTIF(event_name = 'rl_treatment_sheet_ios') AS treatment_views,
+  COUNTIF(event_name = 'rl_progress_ios') AS progress_views,
+  CASE
+    WHEN COUNTIF(event_name = 'rl_today_tab_ios') > 0 THEN 'Fully Activated'
+    WHEN COUNTIF(event_name = 'rl_health_profile_ios') > 0 THEN 'Health Profile Done'
+    WHEN COUNTIF(event_name = 'rl_otp_ios') > 0 THEN 'Reached OTP'
+    WHEN COUNTIF(event_name = 'rl_login_ios') > 0 THEN 'Reached Login'
+    WHEN COUNTIF(event_name = 'rl_onboarding_ios') > 0 THEN 'Onboarding Only'
+    ELSE 'Bounced'
+  END AS journey_stage,
+  CASE
+    WHEN MAX(DATE(TIMESTAMP_MICROS(event_timestamp))) >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+    THEN 'Active' ELSE 'Churned'
+  END AS current_status
+FROM `{project}.{dataset}.events_intraday_*`
+WHERE DATE(TIMESTAMP_MICROS(event_timestamp)) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY) AND CURRENT_DATE()
+  AND geo.city != 'Ashburn'
+  AND geo.country != 'Pakistan'
+  AND user_pseudo_id != '19BA69FD-ECA7-46A5-BD25-766587D2574B'
+GROUP BY user_pseudo_id, geo.city, geo.region, geo.country
+ORDER BY days_actually_active DESC, total_events DESC
+"""
+
 _SESSIONS_SQL = """
 SELECT
     event_date,
@@ -168,7 +216,41 @@ def run(target_date: date | None = None) -> None:
     ]
     upsert("firebase_user_props", prop_rows)
 
-    print(f"[firebase] done — {len(event_rows)} events, {len(prop_rows)} user props")
+    # ── User behavior (per-user, last 7 days) ────────────────────
+    print("[firebase] querying user behavior...")
+    beh_fmt = dict(project=FIREBASE_PROJECT_ID, dataset=BIGQUERY_DATASET_ID)
+    rows_beh = client.query(_USER_BEHAVIOR_SQL.format(**beh_fmt)).result()
+    behavior_rows = [
+        {
+            "user_pseudo_id":        row.user_pseudo_id,
+            "city":                  row.city,
+            "region":                row.region,
+            "country":               row.country,
+            "first_seen_date":       str(row.first_seen_date) if row.first_seen_date else None,
+            "last_seen_date":        str(row.last_seen_date) if row.last_seen_date else None,
+            "total_day_span":        row.total_day_span or 0,
+            "days_actually_active":  row.days_actually_active or 0,
+            "total_events":          row.total_events or 0,
+            "unique_features_used":  row.unique_features_used or 0,
+            "total_sessions":        row.total_sessions or 0,
+            "onboarding_events":     row.onboarding_events or 0,
+            "login_events":          row.login_events or 0,
+            "otp_events":            row.otp_events or 0,
+            "health_profile_events": row.health_profile_events or 0,
+            "today_tab_visits":      row.today_tab_visits or 0,
+            "peak_flow_logs":        row.peak_flow_logs or 0,
+            "symptom_logs":          row.symptom_logs or 0,
+            "sleep_logs":            row.sleep_logs or 0,
+            "treatment_views":       row.treatment_views or 0,
+            "progress_views":        row.progress_views or 0,
+            "journey_stage":         row.journey_stage,
+            "current_status":        row.current_status,
+        }
+        for row in rows_beh
+    ]
+    upsert("firebase_user_behavior", behavior_rows)
+
+    print(f"[firebase] done — {len(event_rows)} events, {len(prop_rows)} user props, {len(behavior_rows)} user behavior rows")
 
 
 if __name__ == "__main__":

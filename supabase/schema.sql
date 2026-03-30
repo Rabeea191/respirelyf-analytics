@@ -148,7 +148,98 @@ CREATE TABLE IF NOT EXISTS firebase_user_props (
     PRIMARY KEY (date, property, value)
 );
 
+-- ── Firebase User Behavior (BigQuery events_intraday_* query) ─
+CREATE TABLE IF NOT EXISTS firebase_user_behavior (
+    user_pseudo_id          TEXT PRIMARY KEY,
+    city                    TEXT,
+    region                  TEXT,
+    country                 TEXT,
+    first_seen_date         DATE,
+    last_seen_date          DATE,
+    total_day_span          INTEGER NOT NULL DEFAULT 0,
+    days_actually_active    INTEGER NOT NULL DEFAULT 0,
+    total_events            INTEGER NOT NULL DEFAULT 0,
+    unique_features_used    INTEGER NOT NULL DEFAULT 0,
+    total_sessions          INTEGER NOT NULL DEFAULT 0,
+    onboarding_events       INTEGER NOT NULL DEFAULT 0,
+    login_events            INTEGER NOT NULL DEFAULT 0,
+    otp_events              INTEGER NOT NULL DEFAULT 0,
+    health_profile_events   INTEGER NOT NULL DEFAULT 0,
+    today_tab_visits        INTEGER NOT NULL DEFAULT 0,
+    peak_flow_logs          INTEGER NOT NULL DEFAULT 0,
+    symptom_logs            INTEGER NOT NULL DEFAULT 0,
+    sleep_logs              INTEGER NOT NULL DEFAULT 0,
+    treatment_views         INTEGER NOT NULL DEFAULT 0,
+    progress_views          INTEGER NOT NULL DEFAULT 0,
+    journey_stage           TEXT,
+    current_status          TEXT,
+    updated_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+ALTER TABLE firebase_user_behavior ENABLE ROW LEVEL SECURITY;
+CREATE POLICY IF NOT EXISTS "anon read firebase_user_behavior"
+    ON firebase_user_behavior FOR SELECT TO anon USING (TRUE);
+
 -- ── Reddit Ads ─────────────────────────────────────────────
+-- ── Internal User Journey (backend API) ───────────────────
+CREATE TABLE IF NOT EXISTS firebase_user_journey (
+    user_id              TEXT        PRIMARY KEY,
+    signed_up_at         TIMESTAMPTZ,
+    first_log_at         TIMESTAMPTZ,
+    last_log_at          TIMESTAMPTZ,
+    last_meep_at         TIMESTAMPTZ,
+    last_login_at        TIMESTAMPTZ,
+    -- Profile setup
+    profile_about_you    BOOLEAN     NOT NULL DEFAULT FALSE,
+    profile_symptoms     BOOLEAN     NOT NULL DEFAULT FALSE,
+    profile_root_causes  BOOLEAN     NOT NULL DEFAULT FALSE,
+    profile_medication   BOOLEAN     NOT NULL DEFAULT FALSE,
+    -- Treatments
+    inhalers             INTEGER     NOT NULL DEFAULT 0,
+    medications          INTEGER     NOT NULL DEFAULT 0,
+    supplements          INTEGER     NOT NULL DEFAULT 0,
+    -- Health determinants (log counts)
+    hd_food              INTEGER     NOT NULL DEFAULT 0,
+    hd_hydration         INTEGER     NOT NULL DEFAULT 0,
+    hd_sleep             INTEGER     NOT NULL DEFAULT 0,
+    hd_activity          INTEGER     NOT NULL DEFAULT 0,
+    hd_stress            INTEGER     NOT NULL DEFAULT 0,
+    -- Health indicators (log counts)
+    hi_symptoms          INTEGER     NOT NULL DEFAULT 0,
+    hi_flareups          INTEGER     NOT NULL DEFAULT 0,
+    hi_peak_flow         INTEGER     NOT NULL DEFAULT 0,
+    hi_vitals            INTEGER     NOT NULL DEFAULT 0,
+    hi_surveys           INTEGER     NOT NULL DEFAULT 0,
+    -- MDRIC AI engagement
+    mdric_meeps          INTEGER     NOT NULL DEFAULT 0,
+    mdric_weekly         INTEGER     NOT NULL DEFAULT 0,
+    mdric_monthly        INTEGER     NOT NULL DEFAULT 0,
+    mdric_report         INTEGER     NOT NULL DEFAULT 0,
+    mdric_memories       INTEGER     NOT NULL DEFAULT 0,
+    -- Session / device info
+    has_session          BOOLEAN     NOT NULL DEFAULT FALSE,
+    session_country      TEXT,
+    city                 TEXT,
+    region               TEXT,
+    auth_platform        TEXT,
+    app_source           TEXT,
+    device_type          TEXT,
+    os_version           TEXT,
+    app_version          TEXT,
+    language             TEXT,
+    device_country       TEXT,
+    -- Derived journey fields (computed by fetcher)
+    journey_stage        TEXT,
+    current_status       TEXT        NOT NULL DEFAULT 'inactive',
+    days_active          INTEGER     NOT NULL DEFAULT 0,
+    total_logs           INTEGER     NOT NULL DEFAULT 0,
+    updated_at           TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- RLS: anon can read, service role can write
+ALTER TABLE firebase_user_journey ENABLE ROW LEVEL SECURITY;
+CREATE POLICY IF NOT EXISTS "anon read firebase_user_journey"
+    ON firebase_user_journey FOR SELECT TO anon USING (TRUE);
+
 CREATE TABLE IF NOT EXISTS reddit_ads_daily (
     date          DATE    NOT NULL,
     campaign_id   TEXT    NOT NULL,

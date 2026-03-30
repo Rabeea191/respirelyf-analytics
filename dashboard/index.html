@@ -373,11 +373,45 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <div class="snum">5</div>
     <div>
       <h2>Firebase &amp; BigQuery — In-App Analytics</h2>
-      <p>Session data confirmed · Event-level data requires BigQuery export</p>
+      <p>Last 7 days · excl. internal users · data via BigQuery events_intraday_*</p>
     </div>
   </div>
 
+  <!-- KPI Band -->
+  <div class="kband kband4">
+    <div class="kpi" style="--kc:#ff6b35"><div class="klbl">Total Users</div><div class="kval" id="fbTotalUsers">—</div><div class="ksub">last 7 days</div></div>
+    <div class="kpi" style="--kc:#4caf50"><div class="klbl">Active Users</div><div class="kval" id="fbActiveUsers">—</div><div class="ksub">seen in last 7d</div></div>
+    <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Fully Activated</div><div class="kval" id="fbActivated">—</div><div class="ksub">reached Today tab</div></div>
+    <div class="kpi" style="--kc:#ff9800"><div class="klbl">Avg Sessions</div><div class="kval" id="fbAvgSess">—</div><div class="ksub">per user</div></div>
+  </div>
 
+  <!-- 2-col: Journey Stage + Feature Usage -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <h3>Journey Stage</h3>
+      <table class="tbl"><thead><tr><th>Stage</th><th>Users</th><th>%</th></tr></thead>
+      <tbody id="fbStageTbody"><tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr></tbody></table>
+    </div>
+    <div class="card">
+      <h3>Feature Usage</h3>
+      <table class="tbl"><thead><tr><th>Feature</th><th>Total Events</th><th>Users</th></tr></thead>
+      <tbody id="fbFeatureTbody"><tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr></tbody></table>
+    </div>
+  </div>
+
+  <!-- Per-user detail table -->
+  <div class="card">
+    <h3>Per-User Detail <span style="font-size:12px;font-weight:400;color:var(--t4)">last 7 days · excl. internal</span></h3>
+    <div style="overflow-x:auto">
+    <table class="tbl"><thead><tr>
+      <th>User ID</th><th>City</th><th>Country</th>
+      <th>Journey Stage</th><th>Status</th>
+      <th>Days Active</th><th>Sessions</th><th>Events</th>
+      <th>Symptoms</th><th>Peak Flow</th><th>Sleep</th>
+    </tr></thead>
+    <tbody id="fbUserTbody"><tr><td colspan="11" class="dt" style="text-align:center;padding:16px">Loading…</td></tr></tbody></table>
+    </div>
+  </div>
 
 </div><!-- /t-firebase -->
 
@@ -750,7 +784,7 @@ function _fmtDate(iso) {
 
 async function _loadFromSupabase() {
   try {
-    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney, metaPageDaily, metaPosts] = await Promise.all([
+    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney, metaPageDaily, metaPosts, userBehavior] = await Promise.all([
       _sb('app_store_daily?order=date.asc&limit=90'),
       _sb('apple_ads_keywords?order=impressions.desc&limit=50'),
       _sb('youtube_channel_daily?order=date.asc&limit=90'),
@@ -760,6 +794,7 @@ async function _loadFromSupabase() {
       _sb('firebase_user_journey?order=updated_at.desc&limit=200'),
       _sb('meta_page_daily?order=date.desc&limit=90'),
       _sb('meta_post_insights?order=date.desc&limit=200'),
+      _sb('firebase_user_behavior?order=days_actually_active.desc&limit=500'),
     ]);
 
     // Each platform has independent fallback — no early return if one is empty
@@ -1062,6 +1097,65 @@ async function _loadFromSupabase() {
       // Store globally for filter buttons
       window._mtAllPosts = metaPosts;
       mtFilter('all');
+    }
+
+    // ── Firebase User Behavior ──────────────────────────────────
+    if (Array.isArray(userBehavior) && userBehavior.length) {
+      const N = userBehavior.length;
+      const active    = userBehavior.filter(u => u.current_status === 'Active').length;
+      const activated = userBehavior.filter(u => u.journey_stage === 'Fully Activated').length;
+      const avgSess   = (userBehavior.reduce((s,u) => s+(u.total_sessions||0), 0) / N).toFixed(1);
+
+      const _fb = (id, v) => { const e=document.getElementById(id); if(e) e.textContent=v; };
+      _fb('fbTotalUsers',  N);
+      _fb('fbActiveUsers', active);
+      _fb('fbActivated',   activated);
+      _fb('fbAvgSess',     avgSess);
+
+      const stages = ['Fully Activated','Health Profile Done','Reached OTP','Reached Login','Onboarding Only','Bounced'];
+      const stageTbody = document.getElementById('fbStageTbody');
+      if (stageTbody) stageTbody.innerHTML = stages.map((s,i) => {
+        const cnt = userBehavior.filter(u => u.journey_stage === s).length;
+        const pct = ((cnt/N)*100).toFixed(0);
+        return `<tr${i%2?' class="ra"':''}><td>${s}</td><td class="num">${cnt}</td><td class="num">${pct}%</td></tr>`;
+      }).join('');
+
+      const features = [
+        ['Today Tab',      'today_tab_visits'],
+        ['Symptoms Log',   'symptom_logs'],
+        ['Peak Flow',      'peak_flow_logs'],
+        ['Sleep Log',      'sleep_logs'],
+        ['Treatment View', 'treatment_views'],
+        ['Progress View',  'progress_views'],
+        ['Health Profile', 'health_profile_events'],
+        ['OTP',            'otp_events'],
+        ['Login',          'login_events'],
+        ['Onboarding',     'onboarding_events'],
+      ];
+      const featTbody = document.getElementById('fbFeatureTbody');
+      if (featTbody) featTbody.innerHTML = features.map(([label,key],i) => {
+        const total = userBehavior.reduce((s,u) => s+(u[key]||0), 0);
+        const users = userBehavior.filter(u => (u[key]||0) > 0).length;
+        return `<tr${i%2?' class="ra"':''}><td>${label}</td><td class="num">${total}</td><td class="num">${users}</td></tr>`;
+      }).join('');
+
+      const fbUserTbody = document.getElementById('fbUserTbody');
+      if (fbUserTbody) fbUserTbody.innerHTML = userBehavior.map((u,i) => {
+        const sc = u.current_status === 'Active' ? 'var(--grn)' : 'var(--t4)';
+        return `<tr${i%2?' class="ra"':''}>
+          <td style="font-family:monospace;font-size:11px">${(u.user_pseudo_id||'—').slice(0,12)}…</td>
+          <td>${u.city||'—'}</td>
+          <td>${u.country||'—'}</td>
+          <td>${u.journey_stage||'—'}</td>
+          <td style="color:${sc};font-weight:600">${u.current_status||'—'}</td>
+          <td class="num">${u.days_actually_active||0}</td>
+          <td class="num">${u.total_sessions||0}</td>
+          <td class="num">${u.total_events||0}</td>
+          <td class="num">${u.symptom_logs||0}</td>
+          <td class="num">${u.peak_flow_logs||0}</td>
+          <td class="num">${u.sleep_logs||0}</td>
+        </tr>`;
+      }).join('');
     }
 
     return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily, hasYT, ytVidDaily, hasVidDaily, appStore, hasAppStore };
