@@ -269,7 +269,6 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <button class="hn" data-tab="t-firebase">🔥 Firebase</button>
     <button class="hn" data-tab="t-users">👥 Users</button>
     <button class="hn" data-tab="t-meta">📘 Meta</button>
-    <button class="hn" data-tab="t-funnel">🔄 Funnel</button>
   </nav>
 
   <div class="hright">
@@ -655,107 +654,6 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 </div><!-- /t-meta -->
 
 
-<!-- ══════════════════════════════════════
-  ⑦ FULL CONVERSION FUNNEL
-══════════════════════════════════════ -->
-<div id="t-funnel" class="tab-pane">
-  <div class="stitle">
-    <div class="snum">7</div>
-    <div>
-      <h2>Full Conversion Funnel</h2>
-      <p>End-to-end user journey · awareness → download → active user · Feb 6 – Mar 7</p>
-    </div>
-  </div>
-
-  <div class="g32">
-    <div>
-      <!-- FUNNEL STEPS -->
-      <div class="fn">
-        <div class="fstep" style="border-color:var(--apb);background:var(--apl)">
-          <div class="fbg" style="width:100%;background:rgba(29,85,217,.05)"></div>
-          <div class="fic">👁️</div>
-          <div class="ftx"><strong>Total Ad Impressions</strong><small>All paid channels combined</small></div>
-          <div class="fnum" id="fn-adimpr">⏳</div>
-        </div>
-        <div class="fdrop" id="fn-drop1">↓ calculating…</div>
-
-        <div class="fstep" style="border-color:var(--apb);background:var(--apl)">
-          <div class="fbg" style="width:17.5%;background:rgba(29,85,217,.1)"></div>
-          <div class="fic">📱</div>
-          <div class="ftx"><strong>App Store Impressions</strong><small>Paid + organic search + browse</small></div>
-          <div class="fnum" id="fn-storeimpr">⏳</div>
-        </div>
-        <div class="fdrop" id="fn-drop2">↓ calculating…</div>
-
-        <div class="fstep" style="border-color:var(--border);background:#f7f9ff">
-          <div class="fbg" style="width:3%;background:rgba(92,110,138,.1)"></div>
-          <div class="fic">📄</div>
-          <div class="ftx"><strong>Product Page Views</strong><small id="fn-pv-sub">App Store listing views</small></div>
-          <div class="fnum" id="fn-pv">⏳</div>
-        </div>
-        <div class="fdrop" id="fn-drop3">↓ calculating…</div>
-
-        <div class="fstep" style="border-color:var(--gnb);background:var(--gnl)">
-          <div class="fbg" style="width:0.5%;background:rgba(10,138,95,.15)"></div>
-          <div class="fic">⬇️</div>
-          <div class="ftx"><strong>Downloads</strong><small id="fn-dl-sub">Page→install rate</small></div>
-          <div class="fnum" style="color:var(--grn)" id="fn-dl">⏳</div>
-        </div>
-        <div class="fdrop" id="fn-drop4">↓ calculating…</div>
-
-        <div class="fstep" style="border-color:var(--mtb);background:var(--mtl)">
-          <div class="fbg" style="width:0.25%;background:rgba(104,48,216,.1)"></div>
-          <div class="fic">🔄</div>
-          <div class="ftx"><strong>App Sessions</strong><small id="fn-sess-sub">Firebase session data</small></div>
-          <div class="fnum" style="color:var(--meta)" id="fn-sess">⏳</div>
-        </div>
-        <div class="fdrop">↓ estimated <em>~7–10%</em> retained</div>
-
-        <div class="fstep" style="border-color:var(--border);background:#f7f9ff">
-          <div class="fic">⭐</div>
-          <div class="ftx"><strong>Active Users (D7+)</strong><small>Estimated from session clustering</small></div>
-          <div class="fnum">~2–3</div>
-        </div>
-        <div class="fdrop">↓</div>
-
-        <div class="fstep" style="border-color:#e2e8f0;background:#f8fafc">
-          <div class="fic">💰</div>
-          <div class="ftx"><strong>Revenue</strong><small>No monetisation active yet</small></div>
-          <div class="fnum dt">$0</div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="card data-ok">
-        <div class="ch"><div><h3>Funnel Bar Chart</h3><p>Log scale · all steps</p></div></div>
-        <div class="clg"><canvas id="funnelChart"></canvas></div>
-      </div>
-
-      <!-- CHANNEL ATTRIBUTION WATERFALL -->
-      <div class="card">
-        <div class="ch"><div><h3>Channel Attribution Waterfall</h3><p>Spend → installs → CPI by source</p></div></div>
-        <table class="tbl">
-          <thead><tr><th>Channel</th><th>Spend</th><th>Installs</th><th>CPI</th><th>ROI Signal</th></tr></thead>
-          <tbody id="attrBody">
-            <tr><td colspan="5" style="text-align:center;color:var(--t4);padding:20px">⏳ Loading live data…</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- CONVERSION RATES -->
-      <div class="card data-ok">
-        <div class="ch"><div><h3>Conversion Rate Summary</h3></div></div>
-        <div class="rrow"><div class="rlbl" style="width:170px">Ad Impr → App Store</div><div class="rtrk"><div class="rfil" style="width:17.5%;background:var(--apple)"></div></div><div class="rval">17.5%</div></div>
-        <div class="rrow"><div class="rlbl" style="width:170px">App Store → Page View</div><div class="rtrk"><div class="rfil" style="width:30%;background:var(--org)"></div></div><div class="rval" style="color:var(--org)">3.0%</div></div>
-        <div class="rrow"><div class="rlbl" style="width:170px">Page View → Download</div><div class="rtrk"><div class="rfil" style="width:100%;background:var(--grn)"></div></div><div class="rval" style="color:var(--grn)">16.4%</div></div>
-        <div class="rrow"><div class="rlbl" style="width:170px">Download → Session</div><div class="rtrk"><div class="rfil" style="width:100%;background:var(--meta)"></div></div><div class="rval" style="color:var(--meta)">100%</div></div>
-        <div class="rrow"><div class="rlbl" style="width:170px">Install → D7 Active</div><div class="rtrk"><div class="rfil" style="width:10%;background:var(--t3)"></div></div><div class="rval">~7–10%</div></div>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /t-funnel -->
 
 
 
@@ -1420,92 +1318,6 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
       } else {
         tbody.innerHTML = `<tr><td colspan="2" class="dt" style="text-align:center;padding:24px">No App Store data yet — run the pipeline</td></tr>`;
       }
-    }
-  }
-
-  // ─── FUNNEL CHART (live data) ────────────────────────────
-  {
-    const ctx = document.getElementById('funnelChart');
-    const totalImp  = imp.reduce((a,b)=>a+b,0);
-    const totalPv   = pv.reduce((a,b)=>a+b,0);
-    const totalDl   = dl.reduce((a,b)=>a+b,0);
-    const totalSess = sess.reduce((a,b)=>a+b,0);
-    const peakActD  = actD.length > 0 ? Math.max(...actD) : 0;
-    const appleImpr = hasKw ? kwData.reduce((a,k)=>a+k.imp,0) : 0;
-    if(ctx) new Chart(ctx, {
-      type:'bar',
-      data:{
-        labels:['Ad Impressions','App Store Impr','Page Views','Downloads','Sessions','Active D7+'],
-        datasets:[{
-          data:[appleImpr||1, totalImp||1, totalPv||1, totalDl||1, totalSess||1, peakActD||1],
-          backgroundColor:['#1d55d9','#3b6fef','#5c8caa','#0a8a5f','#6830d8','#94a3b8'],
-          borderRadius:5
-        }]
-      },
-      options:{
-        indexAxis:'y', responsive:true, maintainAspectRatio:true,
-        plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>' '+(c.raw===1&&!hasData?'No data':c.raw.toLocaleString())}}},
-        scales:{
-          x:{type:'logarithmic', grid:{color:'#f0f3fa'}, ticks:{font:{size:9}, callback:v=>v>=1000?Math.round(v/1000)+'k':v}},
-          y:{grid:{display:false}, ticks:{font:{size:10}}}
-        }
-      }
-    });
-  }
-
-  // ─── FUNNEL STEPS (live numbers) ────────────────────────
-  {
-    const totalImp  = imp.reduce((a,b)=>a+b,0);
-    const totalPv   = pv.reduce((a,b)=>a+b,0);
-    const totalDl   = dl.reduce((a,b)=>a+b,0);
-    const totalSess = sess.reduce((a,b)=>a+b,0);
-    const adImpr    = hasKw ? kwData.reduce((a,k)=>a+k.imp,0) : 0;
-    const pvRate    = totalImp > 0 ? ((totalPv/totalImp)*100).toFixed(1)+'%' : '—';
-    const dlRate    = totalPv  > 0 ? ((totalDl/totalPv)*100).toFixed(1)+'%'  : '—';
-    const sessRate  = totalDl  > 0 ? (totalSess/totalDl).toFixed(1)+'×'      : '—';
-
-    const _set = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
-    _set('fn-adimpr',   adImpr   > 0 ? adImpr.toLocaleString()   : '—');
-    _set('fn-storeimpr',totalImp > 0 ? totalImp.toLocaleString() : '—');
-    _set('fn-pv',       totalPv  > 0 ? totalPv.toLocaleString()  : '—');
-    _set('fn-dl',       totalDl  > 0 ? totalDl.toString()        : '—');
-    _set('fn-sess',     totalSess> 0 ? totalSess.toString()       : '—');
-    _set('fn-pv-sub',   totalImp > 0 ? pvRate+' of Store impressions' : 'App Store listing views');
-    _set('fn-dl-sub',   totalPv  > 0 ? dlRate+' page→install ✓'       : 'Page→install rate');
-    _set('fn-sess-sub', totalDl  > 0 ? sessRate+' sessions per install' : 'Firebase session data');
-    _set('fn-drop1',    adImpr>0&&totalImp>0 ? '↓ '+((totalImp/adImpr)*100).toFixed(1)+'% reach App Store' : '↓');
-    _set('fn-drop2',    totalImp>0&&totalPv>0 ? '↓ '+pvRate+' tap to view page' : '↓');
-    _set('fn-drop3',    dlRate !== '—' ? '↓ '+dlRate+' download' : '↓');
-    _set('fn-drop4',    sessRate !== '—' ? '↓ '+sessRate+' sessions per install' : '↓');
-
-    // ── Channel attribution waterfall (Insights tab) ──────
-    const attrBody = document.getElementById('attrBody');
-    if (attrBody) {
-      const appleSpend = hasKw ? kwData.reduce((a,k)=>a+k.spend,0) : 0;
-      const appleInst  = hasKw ? kwData.reduce((a,k)=>a+k.inst,0)  : 0;
-      const appleCpi   = appleInst > 0 ? '$'+(appleSpend/appleInst).toFixed(2) : '—';
-      const orgInst    = Math.max(0, totalDl - appleInst);
-      attrBody.innerHTML = `
-        <tr><td><strong>🍎 Apple Ads</strong></td>
-          <td class="num">${hasKw?'$'+appleSpend.toFixed(2):'—'}</td>
-          <td class="num">${hasKw?appleInst+' confirmed':'—'}</td>
-          <td class="num ${hasKw&&appleInst>0?'rt':''}">${appleCpi}</td>
-          <td><span class="pill po">Optimise KWs</span></td></tr>
-        <tr class="ra"><td><strong>▶ YouTube Paid</strong></td>
-          <td class="dt">—</td><td class="dt">—</td><td class="dt">—</td>
-          <td><span class="pill px">No data</span></td></tr>
-        <tr><td><strong>📲 Organic App Store</strong></td>
-          <td class="num gt">$0</td>
-          <td class="num gt">${orgInst > 0 ? '~'+orgInst : '—'}</td>
-          <td class="num gt">$0.00</td>
-          <td><span class="pill pG">Best ROI ✓</span></td></tr>
-        <tr class="ra"><td><strong>▶ YouTube Organic</strong></td>
-          <td class="num gt">$0</td><td class="dt">~</td><td class="dt">Untracked</td>
-          <td><span class="pill po">Add link</span></td></tr>
-        <tr><td><strong>f Meta / G Google</strong></td>
-          <td class="num">$0</td><td class="dt">—</td><td class="dt">—</td>
-          <td><span class="pill px">Not started</span></td></tr>
-      `;
     }
   }
 
