@@ -1298,17 +1298,18 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
   {
     const tbody = document.getElementById('ytDetailsBody');
     if (tbody) {
-      // Separate total row from video rows
-      const totalRow = ytVideoStats.find(r => r.video_id === '_TOTAL_');
-      const videoRows = ytVideoStats.filter(r => r.video_id !== '_TOTAL_');
-      if (videoRows.length > 0) {
+      // Total row = video_id '_TOTAL_' OR no video_title (robust detection)
+      const isTotalRow = r => r.video_id === '_TOTAL_' || (!r.video_title && !r.publish_time);
+      const totalRow  = ytVideoStats.find(r => isTotalRow(r));
+      const videoRows = ytVideoStats.filter(r => !isTotalRow(r));
+      if (ytVideoStats.length > 0) {
         const fmt = (v, decimals=0) => v != null ? Number(v).toLocaleString(undefined, {minimumFractionDigits:decimals,maximumFractionDigits:decimals}) : '—';
         tbody.innerHTML = '';
-        // Total row first (highlighted)
+        // Total row first (highlighted in yellow)
         if (totalRow) {
-          tbody.innerHTML += `<tr style="background:#fff8eb;font-weight:700">
-            <td style="color:var(--t2)">TOTAL (all videos)</td>
-            <td class="num">—</td>
+          tbody.innerHTML += `<tr style="background:#fff8eb;font-weight:700;border-bottom:2px solid var(--ogb)">
+            <td style="color:var(--org)">&#9654; All Videos — Total</td>
+            <td class="num" style="color:var(--t4)">—</td>
             <td class="num">${fmt(totalRow.views)}</td>
             <td class="num">${fmt(totalRow.engaged_views)}</td>
             <td class="num">${fmt(totalRow.watch_time_hours,2)}</td>
