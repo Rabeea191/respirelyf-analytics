@@ -335,27 +335,33 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <div><strong>CTR & Impressions:</strong> YouTube restricts impression data to channels with 1,000+ subscribers via API. Data will appear automatically once the threshold is reached.</div>
   </div>
 
-  <!-- YouTube Details CSV -->
-  <div class="card" style="margin-top:16px" id="ytCsvCard">
+  <!-- YouTube Details — from Supabase yt_video_stats -->
+  <div class="card" style="margin-top:16px">
     <div class="ch">
-      <div>
-        <h3>▶ YouTube Details</h3>
-        <p>Upload a CSV to update — data stays saved until you upload a new file</p>
-      </div>
-      <label for="ytCsvInput" style="cursor:pointer;display:flex;align-items:center">
-        <span class="ctag cty" style="padding:6px 16px;cursor:pointer;font-size:10px">📁 Upload New CSV</span>
-        <input type="file" id="ytCsvInput" accept=".csv,text/csv" style="display:none">
-      </label>
+      <div><h3>▶ YouTube Details</h3><p>Per-video stats · uploaded via pipeline/upload_yt_details.py</p></div>
+      <span class="ctag cty">YOUTUBE</span>
     </div>
-    <div id="ytCsvInfo" style="font-size:11px;margin-bottom:12px;display:none"></div>
-    <div id="ytCsvTableWrap" style="overflow-x:auto;display:none">
-      <table class="tbl" id="ytCsvTable">
-        <thead id="ytCsvHead"></thead>
-        <tbody id="ytCsvBody"></tbody>
+    <div style="overflow-x:auto">
+      <table class="tbl" id="ytDetailsTable">
+        <thead>
+          <tr>
+            <th>Video Title</th>
+            <th>Published</th>
+            <th>Views</th>
+            <th>Engaged Views</th>
+            <th>Watch Time (hrs)</th>
+            <th>Avg Duration</th>
+            <th>Impressions</th>
+            <th>CTR %</th>
+            <th>Likes</th>
+            <th>Shares</th>
+            <th>Unique Viewers</th>
+          </tr>
+        </thead>
+        <tbody id="ytDetailsBody">
+          <tr><td colspan="11" style="text-align:center;color:var(--t3);padding:20px">Loading…</td></tr>
+        </tbody>
       </table>
-    </div>
-    <div id="ytCsvEmpty" style="text-align:center;padding:28px 16px;color:var(--t4);font-size:12px">
-      No data yet — upload a CSV file to display YouTube details
     </div>
   </div>
 </div>
@@ -706,7 +712,7 @@ function _fmtDate(iso) {
 
 async function _loadFromSupabase() {
   try {
-    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney, metaPageDaily, metaPosts, userBehavior] = await Promise.all([
+    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney, metaPageDaily, metaPosts, userBehavior, ytVideoStats] = await Promise.all([
       _sb('app_store_daily?order=date.asc&limit=90'),
       _sb('apple_ads_keywords?order=impressions.desc&limit=50'),
       _sb('youtube_channel_daily?order=date.asc&limit=90'),
@@ -717,6 +723,7 @@ async function _loadFromSupabase() {
       _sb('meta_page_daily?order=date.desc&limit=90'),
       _sb('meta_post_insights?order=date.desc&limit=200'),
       _sb('firebase_user_behavior?order=days_actually_active.desc&limit=500'),
+      _sb('yt_video_stats?order=views.desc.nullslast&limit=100'),
     ]);
 
     // Each platform has independent fallback — no early return if one is empty
@@ -1080,7 +1087,7 @@ async function _loadFromSupabase() {
       }).join('');
     }
 
-    return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily, hasYT, ytVidDaily, hasVidDaily, appStore, hasAppStore };
+    return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily, hasYT, ytVidDaily, hasVidDaily, appStore, hasAppStore, ytVideoStats: Array.isArray(ytVideoStats) ? ytVideoStats : [] };
   } catch(e) {
     console.error('[dashboard] _loadFromSupabase CRASHED:', e.message, e.stack);
     return null;
@@ -1190,7 +1197,7 @@ function mkDonut(id, labels, data, colors) {
 }
 
 // ── Render all charts with given data ─────────────────────
-function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily = [], hasYT = false, ytVidDaily = [], hasVidDaily = false, appStore = [], hasAppStore = false }) {
+function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily = [], hasYT = false, ytVidDaily = [], hasVidDaily = false, appStore = [], hasAppStore = false, ytVideoStats = [] }) {
 
   const hasData  = FL.length > 0;
   const hasKw    = kwData.length > 0;
@@ -1284,6 +1291,53 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
       });
     } else if(tbody) {
       tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">No video data in Supabase yet — run GitHub Actions workflow</td></tr>';
+    }
+  }
+
+  // ─── YOUTUBE DETAILS TABLE (from yt_video_stats) ────────
+  {
+    const tbody = document.getElementById('ytDetailsBody');
+    if (tbody) {
+      // Separate total row from video rows
+      const totalRow = ytVideoStats.find(r => r.video_id === '_TOTAL_');
+      const videoRows = ytVideoStats.filter(r => r.video_id !== '_TOTAL_');
+      if (videoRows.length > 0) {
+        const fmt = (v, decimals=0) => v != null ? Number(v).toLocaleString(undefined, {minimumFractionDigits:decimals,maximumFractionDigits:decimals}) : '—';
+        tbody.innerHTML = '';
+        // Total row first (highlighted)
+        if (totalRow) {
+          tbody.innerHTML += `<tr style="background:#fff8eb;font-weight:700">
+            <td style="color:var(--t2)">TOTAL (all videos)</td>
+            <td class="num">—</td>
+            <td class="num">${fmt(totalRow.views)}</td>
+            <td class="num">${fmt(totalRow.engaged_views)}</td>
+            <td class="num">${fmt(totalRow.watch_time_hours,2)}</td>
+            <td class="num">${totalRow.avg_view_duration||'—'}</td>
+            <td class="num">${fmt(totalRow.impressions)}</td>
+            <td class="num">${fmt(totalRow.impressions_ctr_pct,2)}</td>
+            <td class="num">${fmt(totalRow.likes)}</td>
+            <td class="num">${fmt(totalRow.shares)}</td>
+            <td class="num">${fmt(totalRow.unique_viewers)}</td>
+          </tr>`;
+        }
+        videoRows.forEach((v, i) => {
+          tbody.innerHTML += `<tr class="${i%2===0?'ra':''}">
+            <td style="max-width:260px"><div style="font-size:11px;font-weight:500;color:var(--t1);line-height:1.4">${v.video_title||'—'}</div></td>
+            <td style="font-size:11px;color:var(--t3);white-space:nowrap">${v.publish_time||'—'}</td>
+            <td class="num"><strong>${fmt(v.views)}</strong></td>
+            <td class="num">${fmt(v.engaged_views)}</td>
+            <td class="num">${fmt(v.watch_time_hours,2)}</td>
+            <td class="num">${v.avg_view_duration||'—'}</td>
+            <td class="num">${fmt(v.impressions)}</td>
+            <td class="num">${fmt(v.impressions_ctr_pct,2)}</td>
+            <td class="num">${fmt(v.likes)}</td>
+            <td class="num">${fmt(v.shares)}</td>
+            <td class="num">${fmt(v.unique_viewers)}</td>
+          </tr>`;
+        });
+      } else {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--t3);padding:24px">No data yet — run: python -m pipeline.upload_yt_details</td></tr>';
+      }
     }
   }
 
@@ -1433,7 +1487,7 @@ async function boot() {
 
   // No data — show empty state (no fake static fallback)
   if (!data) {
-    data = { FL: [], imp: [], pv: [], dl: [], sess: [], actD: [], ytVw: [], kwData: [], vids: [], ytDaily: [], hasYT: false, ytVidDaily: [], hasVidDaily: false };
+    data = { FL: [], imp: [], pv: [], dl: [], sess: [], actD: [], ytVw: [], kwData: [], vids: [], ytDaily: [], hasYT: false, ytVidDaily: [], hasVidDaily: false, ytVideoStats: [] };
     if (lastEl) {
       lastEl.textContent = 'No pipeline data — connect platforms to see live data';
       lastEl.style.color = '#c97209';
@@ -1448,78 +1502,8 @@ async function boot() {
   }
 }
 
-// ─── YouTube Details CSV (with localStorage persistence) ─────
-(function() {
-  const STORE_KEY = 'yt_csv_data';
-  const input = document.getElementById('ytCsvInput');
-  if (!input) return;
-
-  function _esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function _parseCSV(text) {
-    const rows = []; let row = [], cell = '', inQ = false;
-    for (let i = 0; i < text.length; i++) {
-      const c = text[i];
-      if (inQ) {
-        if (c==='"' && text[i+1]==='"') { cell+='"'; i++; }
-        else if (c==='"') { inQ=false; }
-        else { cell+=c; }
-      } else {
-        if (c==='"') { inQ=true; }
-        else if (c===',') { row.push(cell); cell=''; }
-        else if (c==='\n' || (c==='\r' && text[i+1]==='\n')) {
-          if(c==='\r') i++;
-          row.push(cell); cell=''; rows.push(row); row=[];
-        } else { cell+=c; }
-      }
-    }
-    if (cell || row.length) { row.push(cell); rows.push(row); }
-    return rows;
-  }
-
-  function _render(rows, fileName) {
-    const info  = document.getElementById('ytCsvInfo');
-    const wrap  = document.getElementById('ytCsvTableWrap');
-    const empty = document.getElementById('ytCsvEmpty');
-    const head  = document.getElementById('ytCsvHead');
-    const body  = document.getElementById('ytCsvBody');
-    if (!rows || rows.length < 2) {
-      info.textContent = '⚠️ File appears empty or has no data rows.';
-      info.style.color = 'var(--org)'; info.style.display = 'block';
-      wrap.style.display = 'none'; empty.style.display = 'none'; return;
-    }
-    const headers  = rows[0];
-    const dataRows = rows.slice(1).filter(r => r.some(c => c.trim()));
-    head.innerHTML = '<tr>' + headers.map(h => `<th>${_esc(h)}</th>`).join('') + '</tr>';
-    body.innerHTML = dataRows.map((row, i) =>
-      `<tr class="${i%2===0?'ra':''}">${row.map(c => `<td>${_esc(c)}</td>`).join('')}</tr>`
-    ).join('');
-    info.innerHTML = `<span style="color:var(--grn);font-weight:600">✓ ${_esc(fileName)}</span>&nbsp;·&nbsp;${dataRows.length} rows&nbsp;·&nbsp;${headers.length} columns`;
-    info.style.display = 'block'; wrap.style.display = 'block'; empty.style.display = 'none';
-  }
-
-  // Restore saved data on page load
-  try {
-    const saved = localStorage.getItem(STORE_KEY);
-    if (saved) {
-      const {rows, fileName} = JSON.parse(saved);
-      _render(rows, fileName);
-    }
-  } catch(e) {}
-
-  // Handle new file upload
-  input.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      const rows = _parseCSV(ev.target.result);
-      _render(rows, file.name);
-      // Save to localStorage so data persists on refresh
-      try { localStorage.setItem(STORE_KEY, JSON.stringify({rows, fileName: file.name})); } catch(e) {}
-    };
-    reader.readAsText(file);
-  });
-})();
+// ─── YouTube Details render (from Supabase yt_video_stats) ───
+// Called by renderDashboard — see below in renderDashboard body
 
 boot();
 </script>

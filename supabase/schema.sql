@@ -337,6 +337,65 @@ ALTER TABLE firebase_events      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE firebase_user_props  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reddit_ads_daily     ENABLE ROW LEVEL SECURITY;
 
+-- ── YouTube Details (manual CSV upload via pipeline/upload_yt_details.py) ──
+
+CREATE TABLE IF NOT EXISTS yt_totals (
+    period          TEXT    PRIMARY KEY,   -- e.g. "2026-03"
+    engaged_views   INTEGER NOT NULL DEFAULT 0,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS yt_chart_data (
+    period           TEXT    NOT NULL,
+    video_id         TEXT    NOT NULL,
+    video_title      TEXT,
+    publish_time     TEXT,
+    duration_seconds INTEGER,
+    engaged_views    INTEGER NOT NULL DEFAULT 0,
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (period, video_id)
+);
+
+CREATE TABLE IF NOT EXISTS yt_video_stats (
+    video_id                TEXT    PRIMARY KEY,   -- "_TOTAL_" for aggregate row
+    video_title             TEXT,
+    publish_time            TEXT,
+    duration_seconds        INTEGER,
+    engaged_views           INTEGER,
+    avg_view_duration       TEXT,
+    avg_pct_viewed          NUMERIC(6,2),
+    stayed_to_watch_pct     NUMERIC(6,2),
+    unique_viewers          INTEGER,
+    avg_views_per_viewer    NUMERIC(6,4),
+    new_viewers             INTEGER,
+    returning_viewers       INTEGER,
+    casual_viewers          INTEGER,
+    regular_viewers         INTEGER,
+    subs_gained             INTEGER,
+    likes                   INTEGER,
+    dislikes                INTEGER,
+    likes_vs_dislikes_pct   NUMERIC(6,2),
+    shares                  INTEGER,
+    comments_added          INTEGER,
+    playlist_watch_time_hrs NUMERIC(10,4),
+    views_from_playlist     INTEGER,
+    post_subscribers        INTEGER,
+    views                   INTEGER,
+    watch_time_hours        NUMERIC(10,4),
+    subscribers             INTEGER,
+    impressions             INTEGER,
+    impressions_ctr_pct     NUMERIC(6,2),
+    created_at              TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE yt_totals     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE yt_chart_data ENABLE ROW LEVEL SECURITY;
+ALTER TABLE yt_video_stats ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY IF NOT EXISTS "anon read yt_totals"      ON yt_totals      FOR SELECT TO anon USING (true);
+CREATE POLICY IF NOT EXISTS "anon read yt_chart_data"  ON yt_chart_data  FOR SELECT TO anon USING (true);
+CREATE POLICY IF NOT EXISTS "anon read yt_video_stats" ON yt_video_stats FOR SELECT TO anon USING (true);
+
 CREATE POLICY "anon_read" ON app_store_daily       FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON apple_ads_keywords    FOR SELECT TO anon USING (true);
 CREATE POLICY "anon_read" ON youtube_channel_daily FOR SELECT TO anon USING (true);
