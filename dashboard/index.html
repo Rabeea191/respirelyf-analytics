@@ -335,15 +335,15 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
     <div><strong>CTR & Impressions:</strong> YouTube restricts impression data to channels with 1,000+ subscribers via API. Data will appear automatically once the threshold is reached.</div>
   </div>
 
-  <!-- Manual CSV Upload -->
+  <!-- YouTube Details CSV -->
   <div class="card" style="margin-top:16px" id="ytCsvCard">
     <div class="ch">
       <div>
-        <h3>📊 Manual Data Upload</h3>
-        <p>Upload a CSV file (e.g. YouTube Studio export) to view data here</p>
+        <h3>▶ YouTube Details</h3>
+        <p>Upload a CSV to update — data stays saved until you upload a new file</p>
       </div>
       <label for="ytCsvInput" style="cursor:pointer;display:flex;align-items:center">
-        <span class="ctag cty" style="padding:6px 16px;cursor:pointer;font-size:10px">📁 Choose CSV File</span>
+        <span class="ctag cty" style="padding:6px 16px;cursor:pointer;font-size:10px">📁 Upload New CSV</span>
         <input type="file" id="ytCsvInput" accept=".csv,text/csv" style="display:none">
       </label>
     </div>
@@ -355,7 +355,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
       </table>
     </div>
     <div id="ytCsvEmpty" style="text-align:center;padding:28px 16px;color:var(--t4);font-size:12px">
-      No file selected — choose a CSV file above to display data
+      No data yet — upload a CSV file to display YouTube details
     </div>
   </div>
 </div>
@@ -1448,37 +1448,12 @@ async function boot() {
   }
 }
 
-// ─── YouTube Manual CSV Upload ────────────────────────────
+// ─── YouTube Details CSV (with localStorage persistence) ─────
 (function() {
+  const STORE_KEY = 'yt_csv_data';
   const input = document.getElementById('ytCsvInput');
   if (!input) return;
-  input.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const info  = document.getElementById('ytCsvInfo');
-    const wrap  = document.getElementById('ytCsvTableWrap');
-    const empty = document.getElementById('ytCsvEmpty');
-    const head  = document.getElementById('ytCsvHead');
-    const body  = document.getElementById('ytCsvBody');
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      const rows = _parseCSV(ev.target.result);
-      if (!rows || rows.length < 2) {
-        info.textContent = '⚠️ File appears empty or has no data rows.';
-        info.style.color = 'var(--org)'; info.style.display = 'block';
-        wrap.style.display = 'none'; empty.style.display = 'none'; return;
-      }
-      const headers  = rows[0];
-      const dataRows = rows.slice(1).filter(r => r.some(c => c.trim()));
-      head.innerHTML = '<tr>' + headers.map(h => `<th>${_esc(h)}</th>`).join('') + '</tr>';
-      body.innerHTML = dataRows.map((row, i) =>
-        `<tr class="${i%2===0?'ra':''}">${row.map(c => `<td>${_esc(c)}</td>`).join('')}</tr>`
-      ).join('');
-      info.innerHTML = `<span style="color:var(--grn);font-weight:600">✓ ${_esc(file.name)}</span>&nbsp;·&nbsp;${dataRows.length} rows&nbsp;·&nbsp;${headers.length} columns`;
-      info.style.display = 'block'; wrap.style.display = 'block'; empty.style.display = 'none';
-    };
-    reader.readAsText(file);
-  });
+
   function _esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function _parseCSV(text) {
     const rows = []; let row = [], cell = '', inQ = false;
@@ -1500,6 +1475,50 @@ async function boot() {
     if (cell || row.length) { row.push(cell); rows.push(row); }
     return rows;
   }
+
+  function _render(rows, fileName) {
+    const info  = document.getElementById('ytCsvInfo');
+    const wrap  = document.getElementById('ytCsvTableWrap');
+    const empty = document.getElementById('ytCsvEmpty');
+    const head  = document.getElementById('ytCsvHead');
+    const body  = document.getElementById('ytCsvBody');
+    if (!rows || rows.length < 2) {
+      info.textContent = '⚠️ File appears empty or has no data rows.';
+      info.style.color = 'var(--org)'; info.style.display = 'block';
+      wrap.style.display = 'none'; empty.style.display = 'none'; return;
+    }
+    const headers  = rows[0];
+    const dataRows = rows.slice(1).filter(r => r.some(c => c.trim()));
+    head.innerHTML = '<tr>' + headers.map(h => `<th>${_esc(h)}</th>`).join('') + '</tr>';
+    body.innerHTML = dataRows.map((row, i) =>
+      `<tr class="${i%2===0?'ra':''}">${row.map(c => `<td>${_esc(c)}</td>`).join('')}</tr>`
+    ).join('');
+    info.innerHTML = `<span style="color:var(--grn);font-weight:600">✓ ${_esc(fileName)}</span>&nbsp;·&nbsp;${dataRows.length} rows&nbsp;·&nbsp;${headers.length} columns`;
+    info.style.display = 'block'; wrap.style.display = 'block'; empty.style.display = 'none';
+  }
+
+  // Restore saved data on page load
+  try {
+    const saved = localStorage.getItem(STORE_KEY);
+    if (saved) {
+      const {rows, fileName} = JSON.parse(saved);
+      _render(rows, fileName);
+    }
+  } catch(e) {}
+
+  // Handle new file upload
+  input.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const rows = _parseCSV(ev.target.result);
+      _render(rows, file.name);
+      // Save to localStorage so data persists on refresh
+      try { localStorage.setItem(STORE_KEY, JSON.stringify({rows, fileName: file.name})); } catch(e) {}
+    };
+    reader.readAsText(file);
+  });
 })();
 
 boot();
