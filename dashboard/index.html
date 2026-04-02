@@ -245,6 +245,13 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   .hnav{display:none}
   .hright{display:none}
 }
+/* TABLE SORT + SEARCH */
+th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+th.sortable::after{content:' ⇅';opacity:.3;font-size:9px;margin-left:2px}
+th.sort-asc::after{content:' ▲';opacity:1;color:var(--apple)}
+th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
+.tbl-search{width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:11px;margin-bottom:10px;outline:none;font-family:inherit;background:var(--white);color:var(--t1)}
+.tbl-search:focus{border-color:var(--apple);box-shadow:0 0 0 3px rgba(29,85,217,.08)}
 </style>
 </head>
 <body>
@@ -316,6 +323,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   <!-- Videos Table -->
   <div class="card data-ok" style="margin-top:16px">
     <div class="ch"><div><h3>Video Performance</h3><p>All published videos · sorted by views</p></div><span class="ctag cty">YOUTUBE</span></div>
+    <input class="tbl-search" id="searchYtVids" placeholder="Search videos...">
     <div style="overflow-x:auto">
       <table class="tbl" id="yt2VidTable">
         <thead><tr><th>Title</th><th>Views</th><th>Watch Time (min)</th><th>Likes</th><th>Comments</th><th>Avg Duration (s)</th><th>Published</th></tr></thead>
@@ -341,6 +349,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
       <div><h3>▶ YouTube Details</h3><p>Per-video stats · uploaded via pipeline/upload_yt_details.py</p></div>
       <span class="ctag cty">YOUTUBE</span>
     </div>
+    <input class="tbl-search" id="searchYtDetails" placeholder="Search videos...">
     <div style="overflow-x:auto">
       <table class="tbl" id="ytDetailsTable">
         <thead>
@@ -431,6 +440,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
   <!-- Per-user detail table -->
   <div class="card">
     <h3>Per-User Detail <span style="font-size:12px;font-weight:400;color:var(--t4)">last 7 days · excl. internal</span></h3>
+    <input class="tbl-search" id="searchFbUsers" placeholder="Search by user, city, country, stage...">
     <div style="overflow-x:auto">
     <table class="tbl"><thead><tr>
       <th>User ID</th><th>City</th><th>Country</th>
@@ -566,6 +576,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
       <div><h3>User Detail</h3><p>All users · sorted by last active · <span id="ujUserCount">—</span> total</p></div>
       <span class="ctag" style="background:#f0eeff;color:#6c63ff;border-color:#d4d0ff">LIVE DATA</span>
     </div>
+    <input class="tbl-search" id="searchUsers" placeholder="Search by user, city, country, stage, status...">
     <div style="overflow-x:auto">
       <table class="tbl" style="font-size:11px">
         <thead>
@@ -651,6 +662,7 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
       <div>
         <div style="font-size:13px;font-weight:700;color:var(--t1)">All Posts — Last 30 Days</div>
         <div style="font-size:11px;color:var(--t3);margin-top:2px">FB &amp; IG combined · sorted by date</div>
+        <input class="tbl-search" id="searchMetaPosts" placeholder="Search by caption, date..." style="margin-top:8px;margin-bottom:0">
       </div>
       <div style="display:flex;gap:8px">
         <button onclick="mtFilter('all')"  id="mtBtn-all"  style="padding:4px 12px;border-radius:6px;border:1px solid var(--border);background:var(--meta);color:#fff;font-size:11px;font-weight:600;cursor:pointer">All</button>
@@ -1505,6 +1517,59 @@ async function boot() {
 
 // ─── YouTube Details render (from Supabase yt_video_stats) ───
 // Called by renderDashboard — see below in renderDashboard body
+
+// ─── Table sort + search utilities ──────────────────────────
+function makeTableSortable(tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  const table = tbody.closest('table');
+  if (!table) return;
+  const ths = table.querySelectorAll('thead th');
+  let lastCol = -1, lastDir = 1;
+  ths.forEach((th, ci) => {
+    th.classList.add('sortable');
+    th.addEventListener('click', () => {
+      const dir = (ci === lastCol) ? -lastDir : 1;
+      lastCol = ci; lastDir = dir;
+      ths.forEach(t => t.classList.remove('sort-asc','sort-desc'));
+      th.classList.add(dir === 1 ? 'sort-asc' : 'sort-desc');
+      const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none' || true);
+      rows.sort((a, b) => {
+        const av = a.cells[ci]?.textContent.trim() || '';
+        const bv = b.cells[ci]?.textContent.trim() || '';
+        const an = parseFloat(av.replace(/[^0-9.-]/g,'')), bn = parseFloat(bv.replace(/[^0-9.-]/g,''));
+        if (!isNaN(an) && !isNaN(bn)) return (an - bn) * dir;
+        return av.localeCompare(bv) * dir;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+}
+
+function addTableSearch(inputId, tbodyId) {
+  const input = document.getElementById(inputId);
+  const tbody = document.getElementById(tbodyId);
+  if (!input || !tbody) return;
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase();
+    tbody.querySelectorAll('tr').forEach(r => {
+      r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
+}
+
+// Wire up after DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  // Sort — all tables
+  ['ytDetailsBody','yt2VidBody','fbUserTbody','ujUserTbody','mtPostsTbody',
+   'asDailyTbody','fbFeatureTbody','ujHDTbody','ujHITbody'].forEach(makeTableSortable);
+  // Search — large tables
+  addTableSearch('searchYtDetails',  'ytDetailsBody');
+  addTableSearch('searchYtVids',     'yt2VidBody');
+  addTableSearch('searchFbUsers',    'fbUserTbody');
+  addTableSearch('searchUsers',      'ujUserTbody');
+  addTableSearch('searchMetaPosts',  'mtPostsTbody');
+});
 
 boot();
 </script>
