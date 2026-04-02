@@ -140,6 +140,32 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 .bgrey{background:#f7f9ff;border-color:var(--border2);color:var(--t2)}
 .box strong{font-weight:700}
 
+/* USER CARDS */
+.ucard{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:14px 15px;font-size:11px;position:relative;transition:box-shadow .2s,transform .15s;display:flex;flex-direction:column;gap:10px}
+.ucard:hover{box-shadow:var(--sh2);transform:translateY(-1px)}
+.ucard-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ucard-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+.ucard-id{font-family:monospace;font-size:10px;color:var(--t2);font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ucard-ago{font-size:9.5px;color:var(--t4);white-space:nowrap}
+.ucard-badge{font-size:8.5px;font-weight:800;padding:2px 8px;border-radius:5px;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;margin-left:auto}
+.ubadge-active{background:#d1fae5;color:#065f46}
+.ubadge-risk{background:#fff3cd;color:#92400e}
+.ubadge-churned{background:#fee2e2;color:#b91c1c}
+.ucard-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;color:var(--t3);font-size:10px}
+.ucard-meta span{display:flex;align-items:center;gap:3px}
+.ucard-sec-title{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--t4);margin-bottom:5px}
+.ucard-bar-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.ucard-bar-lbl{width:72px;font-size:10px;color:var(--t2);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ucard-bar-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.ucard-bar-fill{height:100%;border-radius:3px;transition:width .4s ease}
+.ucard-bar-val{font-size:9.5px;color:var(--t3);width:18px;text-align:right;flex-shrink:0}
+.ucard-moric{display:flex;gap:6px;flex-wrap:wrap}
+.ucard-moric span{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:9.5px;color:var(--t2);font-weight:600}
+.ucard-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+.utag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:.3px}
+.utag-done{background:#d1fae5;color:#065f46}
+.utag-miss{background:#fee2e2;color:#b91c1c;text-decoration:line-through;opacity:.7}
+
 /* KPI + COLUMN INFO TOOLTIP */
 .kpi-info{position:absolute;top:10px;right:10px;width:15px;height:15px;border-radius:50%;background:var(--border);color:var(--t4);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:background .15s,color .15s;line-height:1;border:none;font-family:inherit}
 .kpi-info:hover{background:var(--apple);color:#fff}
@@ -591,26 +617,15 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     </div>
   </div>
 
-  <!-- ── Row 6: Per-user detail table ── -->
+  <!-- ── Row 6: Per-user cards ── -->
   <div class="card" style="margin-top:14px">
     <div class="ch">
-      <div><h3>User Detail</h3><p>All users · sorted by last active · <span id="ujUserCount">—</span> total</p></div>
+      <div><h3>User Detail</h3><p>All users · sorted by days active · <span id="ujUserCount">—</span> total</p></div>
       <span class="ctag" style="background:#f0eeff;color:#6c63ff;border-color:#d4d0ff">LIVE DATA</span>
     </div>
     <input class="tbl-search" id="searchUsers" placeholder="Search by user, city, country, stage, status...">
-    <div style="overflow-x:auto">
-      <table class="tbl" style="font-size:11px">
-        <thead>
-          <tr>
-            <th>User ID</th><th>City</th><th>Country</th><th>Platform</th>
-            <th data-tip="col_journey_stage">Stage</th><th data-tip="col_status">Status</th><th data-tip="col_days_active">Days Active</th><th data-tip="col_total_logs">Total Logs</th>
-            <th data-tip="col_symptoms">Symptoms</th><th data-tip="col_peak_flow">Peak Flow</th><th data-tip="col_meeps">Meeps</th><th data-tip="col_profile_pct">Profile %</th>
-          </tr>
-        </thead>
-        <tbody id="ujUserTbody">
-          <tr><td colspan="12" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
-        </tbody>
-      </table>
+    <div id="ujUserCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;margin-top:6px">
+      <div style="text-align:center;color:var(--t4);padding:24px;grid-column:1/-1">Loading…</div>
     </div>
   </div>
 
@@ -1019,28 +1034,101 @@ async function _loadFromSupabase(days) {
         ).join('');
       }
 
-      // ── Per-user detail table ──
-      const utbody = document.getElementById('ujUserTbody');
-      if (utbody) {
+      // ── Per-user cards ──
+      const ucards = document.getElementById('ujUserCards');
+      if (ucards && userJourney.length > 0) {
         const sorted = [...userJourney].sort((a,b) => (b.days_active||0)-(a.days_active||0));
-        utbody.innerHTML = sorted.map((u,i) => {
+        // Compute max values for progress bar normalization
+        const _max = (field) => Math.max(1, ...sorted.map(u => u[field]||0));
+        const maxHD = Math.max(1, _max('hd_food'),_max('hd_hydration'),_max('hd_sleep'),_max('hd_activity'),_max('hd_stress'));
+        const maxHI = Math.max(1, _max('hi_symptoms'),_max('hi_peak_flow'),_max('hi_flareups'),_max('hi_vitals'),_max('hi_surveys'));
+        const _bar  = (val, maxVal, color) => {
+          const pct = Math.min(100, Math.round((val||0)/maxVal*100));
+          return `<div class="ucard-bar-track"><div class="ucard-bar-fill" style="width:${pct}%;background:${color}"></div></div>`;
+        };
+        const _cardColors = ['#1d55d9','#e8743b','#0a8a5f','#6c63ff','#d42b2b','#0891b2','#c97209','#be185d'];
+        const _relTime = (dateStr) => {
+          if (!dateStr) return '';
+          const d = new Date(dateStr); const now = new Date();
+          const days = Math.round((now-d)/864e5);
+          return days < 1 ? 'today' : days < 7 ? days+'d ago' : days < 30 ? Math.round(days/7)+'w ago' : Math.round(days/30)+'mo ago';
+        };
+        ucards.innerHTML = sorted.map((u, i) => {
           const profPct = [u.profile_about_you,u.profile_symptoms,u.profile_root_causes,u.profile_medication].filter(Boolean).length * 25;
-          const statusColor = u.current_status==='active' ? 'var(--grn)' : 'var(--t4)';
-          return `<tr${i%2?' class="ra"':''}>
-            <td style="font-family:monospace">${(u.user_id||'—').slice(0,10)}…</td>
-            <td>${u.city||'—'}</td>
-            <td>${u.session_country||u.device_country||'—'}</td>
-            <td>${u.auth_platform||u.app_source||'—'}</td>
-            <td>${u.journey_stage||'—'}</td>
-            <td style="color:${statusColor};font-weight:600">${u.current_status||'—'}</td>
-            <td class="num">${u.days_active||0}</td>
-            <td class="num">${u.total_logs||0}</td>
-            <td class="num">${u.hi_symptoms||0}</td>
-            <td class="num">${u.hi_peak_flow||0}</td>
-            <td class="num gt">${u.mdric_meeps||0}</td>
-            <td class="num">${profPct}%</td>
-          </tr>`;
+          const isActive  = (u.current_status||'').toLowerCase() === 'active';
+          const isChurned = !isActive && (u.days_active||0) === 0;
+          const isRisk    = !isActive && !isChurned;
+          const badgeCls  = isActive ? 'ubadge-active' : isChurned ? 'ubadge-churned' : 'ubadge-risk';
+          const badgeTxt  = isActive ? 'Active' : isChurned ? 'Churned' : 'At Risk';
+          const color     = _cardColors[i % _cardColors.length];
+          const country   = u.session_country || u.device_country || '';
+          const platform  = u.auth_platform || u.app_source || '';
+          const iosVer    = u.app_version ? 'iOS '+u.app_version : '';
+          const signedUp  = _relTime(u.created_at || u.first_event_date);
+          const uid       = (u.user_id||'—').length > 14 ? (u.user_id||'—').slice(0,14)+'…' : (u.user_id||'—');
+          // Health Determinants bars
+          const hd = [
+            ['Food',       u.hd_food||0,      '#e8743b'],
+            ['Hydration',  u.hd_hydration||0, '#0891b2'],
+            ['Sleep',      u.hd_sleep||0,     '#6c63ff'],
+            ['Stress',     u.hd_stress||0,    '#ef4444'],
+            ['Activity',   u.hd_activity||0,  '#0a8a5f'],
+          ].filter(r=>r[1]>0);
+          // Health Indicators bars
+          const hi = [
+            ['Symptoms',  u.hi_symptoms||0,  '#d42b2b'],
+            ['Peak Flow', u.hi_peak_flow||0, '#1d55d9'],
+            ['Flare-ups', u.hi_flareups||0,  '#c97209'],
+            ['Surveys',   u.hi_surveys||0,   '#0a8a5f'],
+          ].filter(r=>r[1]>0);
+          // Profile tags
+          const tags = [
+            ['About You',    u.profile_about_you],
+            ['Symptoms',     u.profile_symptoms],
+            ['Root Causes',  u.profile_root_causes],
+            ['Medication',   u.profile_medication],
+          ];
+          return `<div class="ucard" data-search="${[uid,country,platform,u.journey_stage||'',badgeTxt,u.city||''].join(' ').toLowerCase()}">
+            <div class="ucard-head">
+              <div class="ucard-num" style="background:${color}">${i+1}</div>
+              <div class="ucard-id">${uid}</div>
+              ${signedUp ? `<div class="ucard-ago">Signed up ${signedUp}</div>` : ''}
+              <div class="ucard-badge ${badgeCls}">${badgeTxt}</div>
+            </div>
+            <div class="ucard-meta">
+              ${country ? `<span>🌍 ${country}</span>` : ''}
+              ${platform ? `<span>📱 ${platform}</span>` : ''}
+              ${iosVer ? `<span>${iosVer}</span>` : ''}
+              ${u.days_active ? `<span>📅 ${u.days_active}d active</span>` : ''}
+            </div>
+            ${hd.length ? `<div>
+              <div class="ucard-sec-title">Health Determinants</div>
+              ${hd.map(([lbl,val,clr])=>`<div class="ucard-bar-row">
+                <div class="ucard-bar-lbl">${lbl}</div>
+                ${_bar(val,maxHD,clr)}
+                <div class="ucard-bar-val">${val}</div>
+              </div>`).join('')}
+            </div>` : ''}
+            ${hi.length ? `<div>
+              <div class="ucard-sec-title">Health Indicators</div>
+              ${hi.map(([lbl,val,clr])=>`<div class="ucard-bar-row">
+                <div class="ucard-bar-lbl">${lbl}</div>
+                ${_bar(val,maxHI,clr)}
+                <div class="ucard-bar-val">${val}</div>
+              </div>`).join('')}
+            </div>` : ''}
+            <div class="ucard-moric">
+              <span>🤖 ${u.mdric_meeps||0} Meeps</span>
+              <span>🧠 ${u.mdric_memories||0} Memories</span>
+              <span>📄 ${u.mdric_report||0} Reports</span>
+            </div>
+            <div class="ucard-tags">
+              ${tags.map(([lbl,done])=>`<span class="utag ${done?'utag-done':'utag-miss'}">${lbl}${done?'':' ✕'}</span>`).join('')}
+            </div>
+          </div>`;
         }).join('');
+      } else if (ucards) {
+        ucards.innerHTML = '<div style="text-align:center;color:var(--t4);padding:32px;grid-column:1/-1">No user data yet — run GitHub Actions workflow</div>';
       }
     }
 
@@ -1777,13 +1865,24 @@ document.addEventListener('DOMContentLoaded', () => {
   _injectKpiIcons();
   _injectColIcons();
   // Sort — all tables
-  ['ytDetailsBody','yt2VidBody','fbUserTbody','ujUserTbody','mtPostsTbody',
+  ['ytDetailsBody','yt2VidBody','fbUserTbody','mtPostsTbody',
    'asDailyTbody','fbFeatureTbody','ujHDTbody','ujHITbody'].forEach(makeTableSortable);
   // Search — large tables
   addTableSearch('searchYtDetails',  'ytDetailsBody');
   addTableSearch('searchYtVids',     'yt2VidBody');
   addTableSearch('searchFbUsers',    'fbUserTbody');
-  addTableSearch('searchUsers',      'ujUserTbody');
+  // Users tab — card search (not table rows)
+  (function(){
+    const inp = document.getElementById('searchUsers');
+    const wrap = document.getElementById('ujUserCards');
+    if (!inp || !wrap) return;
+    inp.addEventListener('input', () => {
+      const q = inp.value.toLowerCase();
+      wrap.querySelectorAll('.ucard').forEach(card => {
+        card.style.display = (card.dataset.search||'').includes(q) ? '' : 'none';
+      });
+    });
+  })();
   addTableSearch('searchMetaPosts',  'mtPostsTbody');
 
   // Date range buttons
