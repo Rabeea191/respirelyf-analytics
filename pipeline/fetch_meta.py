@@ -20,8 +20,11 @@ Writes to:
 
 Run: python -m pipeline.fetch_meta
 """
+import os
 import sys
 from datetime import date, timedelta
+
+_FETCH_DAYS = int(os.environ.get("FETCH_DAYS", "30"))
 
 import requests
 
@@ -405,8 +408,8 @@ def run(target_date: date | None = None) -> None:
         target_date = date.today() - timedelta(days=1)
 
     date_str  = target_date.isoformat()
-    since_30d = (target_date - timedelta(days=30)).isoformat()
-    print(f"[meta] fetching {date_str} (posts since {since_30d})")
+    since_30d = (target_date - timedelta(days=_FETCH_DAYS)).isoformat()
+    print(f"[meta] fetching {date_str} (posts since {since_30d}, {_FETCH_DAYS}d window)")
 
     # 1. Token exchange → permanent page token
     long_token = _get_long_lived_token(META_ACCESS_TOKEN)

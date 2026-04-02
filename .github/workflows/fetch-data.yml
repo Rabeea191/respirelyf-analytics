@@ -3,7 +3,12 @@ name: Fetch Analytics Data
 on:
   schedule:
     - cron: '0 2 * * *'   # 02:00 UTC daily — data ready for morning review
-  workflow_dispatch:        # Manual trigger for testing / backfill
+  workflow_dispatch:        # Manual trigger — set fetch_days for backfill
+    inputs:
+      fetch_days:
+        description: 'Days of history to fetch (default 30, use 90 for backfill)'
+        required: false
+        default: '30'
 
 jobs:
   fetch-all:
@@ -30,6 +35,7 @@ jobs:
           APPSTORE_PRIVATE_KEY:     ${{ secrets.APPSTORE_PRIVATE_KEY }}
           APPSTORE_APP_ID:          ${{ secrets.APPSTORE_APP_ID }}
           APPSTORE_VENDOR_NUMBER:   "93247691"
+          FETCH_DAYS:               ${{ github.event.inputs.fetch_days || '30' }}
           SUPABASE_URL:             https://jxanvdhpqzxehupxkmee.supabase.co
           SUPABASE_SERVICE_KEY:     ${{ secrets.SUPABASE_SERVICE_KEY }}
 
@@ -40,6 +46,7 @@ jobs:
           GCP_SERVICE_ACCOUNT_JSON: ${{ secrets.GCP_SERVICE_ACCOUNT_JSON }}
           FIREBASE_PROJECT_ID:      ${{ secrets.FIREBASE_PROJECT_ID }}
           BIGQUERY_DATASET_ID:      ${{ secrets.BIGQUERY_DATASET_ID }}
+          FETCH_DAYS:               ${{ github.event.inputs.fetch_days || '30' }}
           SUPABASE_URL:             https://jxanvdhpqzxehupxkmee.supabase.co
           SUPABASE_SERVICE_KEY:     ${{ secrets.SUPABASE_SERVICE_KEY }}
 
@@ -78,6 +85,7 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           YOUTUBE_CHANNEL_ID:   ${{ secrets.YOUTUBE_CHANNEL_ID }}
+          FETCH_DAYS:           ${{ github.event.inputs.fetch_days || '30' }}
           SUPABASE_URL:         https://jxanvdhpqzxehupxkmee.supabase.co
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
 
@@ -103,6 +111,7 @@ jobs:
           META_AD_ACCOUNT_ID:   ${{ secrets.META_AD_ACCOUNT_ID }}
           META_PAGE_ID:         ${{ secrets.META_PAGE_ID }}
           META_IG_ACCOUNT_ID:   ${{ secrets.META_IG_ACCOUNT_ID }}
+          FETCH_DAYS:           ${{ github.event.inputs.fetch_days || '30' }}
           SUPABASE_URL:         https://jxanvdhpqzxehupxkmee.supabase.co
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
 

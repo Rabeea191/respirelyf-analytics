@@ -11,8 +11,11 @@ Writes to:
 Run:  python -m pipeline.fetch_firebase
 """
 import json
+import os
 import sys
 from datetime import date, timedelta
+
+_FETCH_DAYS = int(os.environ.get("FETCH_DAYS", "30"))
 
 from google.cloud import bigquery
 from google.oauth2 import service_account
@@ -55,6 +58,18 @@ GROUP BY event_date, event_name
 ORDER BY event_count DESC
 """
 
+_EVENTS_RANGE_SQL = """
+SELECT
+    event_date,
+    event_name,
+    COUNT(*)                      AS event_count,
+    COUNT(DISTINCT user_pseudo_id) AS unique_users
+FROM `{project}.{dataset}.events_*`
+WHERE _TABLE_SUFFIX BETWEEN '{start_sfx}' AND '{end_sfx}'
+GROUP BY event_date, event_name
+ORDER BY event_count DESC
+"""
+
 _USER_PROPS_SQL = """
 SELECT
     event_date,
@@ -67,6 +82,21 @@ WHERE up.value.string_value IS NOT NULL
 GROUP BY event_date, up.key, up.value.string_value
 ORDER BY user_count DESC
 LIMIT 500
+"""
+
+_USER_PROPS_RANGE_SQL = """
+SELECT
+    event_date,
+    up.key           AS property,
+    up.value.string_value AS value,
+    COUNT(DISTINCT user_pseudo_id) AS user_count
+FROM `{project}.{dataset}.events_*`
+CROSS JOIN UNNEST(user_properties) AS up
+WHERE _TABLE_SUFFIX BETWEEN '{start_sfx}' AND '{end_sfx}'
+  AND up.value.string_value IS NOT NULL
+GROUP BY event_date, up.key, up.value.string_value
+ORDER BY user_count DESC
+LIMIT 1000
 """
 
 _USER_BEHAVIOR_SQL = """
@@ -166,10 +196,12 @@ def run(target_date: date | None = None) -> None:
     if target_date is None:
         target_date = date.today() - timedelta(days=1)
 
-    client = _get_bq_client()
-    print(f"[firebase] authenticated as project: {FIREBASE_PROJECT_ID}")
+    start_date = target_date - timedelta(days=_FETCH_DAYS - 1)
 
-    # Look back up to 30 days — covers intraday tables and slow exports
+    client = _get_bq_client()
+    print(f"[firebase] authenticated as project: {FIREBASE_PROJECT_ID} | fetching {_FETCH_DAYS}d ({start_date} → {target_date})")
+
+    # Look back up to 30 days from target_date to find the most recent available table
     table_name = None
     for days_back in range(0, 31):
         check_date = target_date - timedelta(days=days_back)
@@ -178,11 +210,11 @@ def run(target_date: date | None = None) -> None:
         if found:
             table_name = found
             target_date = check_date
-            print(f"[firebase] using table {table_name}")
+            print(f"[firebase] latest table: {table_name}")
             break
 
     # ── User behavior (wildcard query — runs regardless of daily table) ──
-    print("[firebase] querying user behavior (last 7 days)...")
+    print("[firebase] querying user behavior...")
     beh_fmt = dict(project=FIREBASE_PROJECT_ID, dataset=BIGQUERY_DATASET_ID)
     rows_beh = client.query(_USER_BEHAVIOR_SQL.format(**beh_fmt)).result()
     behavior_rows = [
@@ -220,36 +252,50 @@ def run(target_date: date | None = None) -> None:
         print("[firebase] no specific daily table found — skipping events/user_props")
         return
 
-    fmt = dict(project=FIREBASE_PROJECT_ID, dataset=BIGQUERY_DATASET_ID, suffix=table_name)
+    base_fmt = dict(project=FIREBASE_PROJECT_ID, dataset=BIGQUERY_DATASET_ID)
 
-    # ── Events ──────────────────────────────────────────────────────────
-    print("[firebase] querying events...")
-    rows_events = client.query(_EVENTS_SQL.format(**fmt)).result()
-    event_rows = [
-        {
-            "date":        row.event_date,
-            "event_name":  row.event_name,
-            "event_count": row.event_count,
-            "unique_users": row.unique_users,
-        }
-        for row in rows_events
-    ]
-    upsert("firebase_events", event_rows)
+    if _FETCH_DAYS > 1:
+        # Multi-day range: use wildcard query (_TABLE_SUFFIX BETWEEN ...)
+        start_sfx = start_date.strftime("%Y%m%d")
+        end_sfx   = target_date.strftime("%Y%m%d")
+        range_fmt = dict(**base_fmt, start_sfx=start_sfx, end_sfx=end_sfx)
+        print(f"[firebase] querying events {start_sfx} → {end_sfx} (range)...")
+        rows_events = client.query(_EVENTS_RANGE_SQL.format(**range_fmt)).result()
+        event_rows = [
+            {"date": row.event_date, "event_name": row.event_name,
+             "event_count": row.event_count, "unique_users": row.unique_users}
+            for row in rows_events
+        ]
+        upsert("firebase_events", event_rows)
 
-    # ── User properties ──────────────────────────────────────────────────
-    print("[firebase] querying user properties...")
-    rows_props = client.query(_USER_PROPS_SQL.format(**fmt)).result()
-    prop_rows = [
-        {
-            "date":       row.event_date,
-            "property":   row.property,
-            "value":      row.value or "(none)",
-            "user_count": row.user_count,
-        }
-        for row in rows_props
-        if row.value  # skip null values
-    ]
-    upsert("firebase_user_props", prop_rows)
+        print("[firebase] querying user properties (range)...")
+        rows_props = client.query(_USER_PROPS_RANGE_SQL.format(**range_fmt)).result()
+        prop_rows = [
+            {"date": row.event_date, "property": row.property,
+             "value": row.value or "(none)", "user_count": row.user_count}
+            for row in rows_props if row.value
+        ]
+        upsert("firebase_user_props", prop_rows)
+    else:
+        # Single-day (normal daily run)
+        fmt = dict(**base_fmt, suffix=table_name)
+        print("[firebase] querying events (single day)...")
+        rows_events = client.query(_EVENTS_SQL.format(**fmt)).result()
+        event_rows = [
+            {"date": row.event_date, "event_name": row.event_name,
+             "event_count": row.event_count, "unique_users": row.unique_users}
+            for row in rows_events
+        ]
+        upsert("firebase_events", event_rows)
+
+        print("[firebase] querying user properties...")
+        rows_props = client.query(_USER_PROPS_SQL.format(**fmt)).result()
+        prop_rows = [
+            {"date": row.event_date, "property": row.property,
+             "value": row.value or "(none)", "user_count": row.user_count}
+            for row in rows_props if row.value
+        ]
+        upsert("firebase_user_props", prop_rows)
 
     print(f"[firebase] done — {len(event_rows)} events, {len(prop_rows)} user props, {len(behavior_rows)} user behavior rows")
 

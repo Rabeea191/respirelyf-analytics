@@ -12,8 +12,13 @@ Writes to:
 
 Run:  python -m pipeline.fetch_youtube
 """
+import os
 import sys
 from datetime import date, timedelta
+
+# How many days of history to fetch — override via FETCH_DAYS env var
+# Default 30 for daily runs; set to 90+ for backfill
+_FETCH_DAYS = int(os.environ.get("FETCH_DAYS", "30"))
 
 import requests
 
@@ -263,8 +268,8 @@ def run(target_date: date | None = None) -> None:
     if target_date is None:
         target_date = date.today() - timedelta(days=1)
 
-    # Fetch a 30-day window ending on target_date to keep video rankings current
-    start = (target_date - timedelta(days=29)).isoformat()
+    # Fetch a window ending on target_date — width set by FETCH_DAYS (default 30)
+    start = (target_date - timedelta(days=_FETCH_DAYS - 1)).isoformat()
     end   = target_date.isoformat()
 
     token = _get_access_token()
