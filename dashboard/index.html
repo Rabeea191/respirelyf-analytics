@@ -140,9 +140,11 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 .bgrey{background:#f7f9ff;border-color:var(--border2);color:var(--t2)}
 .box strong{font-weight:700}
 
-/* KPI INFO TOOLTIP */
+/* KPI + COLUMN INFO TOOLTIP */
 .kpi-info{position:absolute;top:10px;right:10px;width:15px;height:15px;border-radius:50%;background:var(--border);color:var(--t4);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:background .15s,color .15s;line-height:1;border:none;font-family:inherit}
 .kpi-info:hover{background:var(--apple);color:#fff}
+.col-info{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;background:transparent;border:1px solid var(--border2);color:var(--t4);font-size:8px;font-weight:800;cursor:pointer;vertical-align:middle;margin-left:3px;transition:background .15s,color .15s,border-color .15s;line-height:1;font-family:inherit;flex-shrink:0}
+.col-info:hover{background:var(--apple);color:#fff;border-color:var(--apple)}
 .kpi-tip{position:fixed;z-index:9999;max-width:260px;background:var(--t1);color:#e8edf8;padding:11px 14px;border-radius:11px;font-size:11px;line-height:1.6;box-shadow:0 8px 32px rgba(13,21,38,.28);pointer-events:none;opacity:0;transition:opacity .15s;word-break:break-word}
 .kpi-tip strong{color:#fff;font-weight:700;display:block;margin-bottom:4px;font-size:11.5px}
 .kpi-tip em{color:#94a8cc;font-size:10px;display:block;margin-top:5px;font-style:normal}
@@ -344,7 +346,7 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     <input class="tbl-search" id="searchYtVids" placeholder="Search videos...">
     <div style="overflow-x:auto">
       <table class="tbl" id="yt2VidTable">
-        <thead><tr><th>Title</th><th>Views</th><th>Watch Time (min)</th><th>Likes</th><th>Comments</th><th>Avg Duration (s)</th><th>% Watched</th><th>Published</th></tr></thead>
+        <thead><tr><th>Title</th><th data-tip="col_views">Views</th><th data-tip="col_watch_min">Watch Time (min)</th><th data-tip="col_likes">Likes</th><th data-tip="col_comments">Comments</th><th data-tip="col_avg_dur_s">Avg Duration (s)</th><th data-tip="col_pct_watched">% Watched</th><th>Published</th></tr></thead>
         <tbody id="yt2VidBody"><tr><td colspan="8" style="text-align:center;color:var(--t3);padding:20px">Loading...</td></tr></tbody>
       </table>
     </div>
@@ -374,16 +376,16 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
           <tr>
             <th>Video Title</th>
             <th>Published</th>
-            <th>Views</th>
-            <th>Engaged Views</th>
-            <th>Watch Time (hrs)</th>
-            <th>Avg Duration</th>
-            <th>Avg % Viewed</th>
-            <th>Impressions</th>
-            <th>CTR %</th>
-            <th>Likes</th>
-            <th>Shares</th>
-            <th>Unique Viewers</th>
+            <th data-tip="col_views">Views</th>
+            <th data-tip="col_engaged_views">Engaged Views</th>
+            <th data-tip="col_watch_hrs">Watch Time (hrs)</th>
+            <th data-tip="col_avg_dur_s">Avg Duration</th>
+            <th data-tip="col_pct_watched">Avg % Viewed</th>
+            <th data-tip="col_impressions">Impressions</th>
+            <th data-tip="col_ctr">CTR %</th>
+            <th data-tip="col_likes">Likes</th>
+            <th data-tip="col_shares">Shares</th>
+            <th data-tip="col_unique_viewers">Unique Viewers</th>
           </tr>
         </thead>
         <tbody id="ytDetailsBody">
@@ -451,7 +453,7 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     </div>
     <div class="card">
       <h3>Feature Usage</h3>
-      <table class="tbl"><thead><tr><th>Feature</th><th>Total Events</th><th>Users</th></tr></thead>
+      <table class="tbl"><thead><tr><th>Feature</th><th data-tip="col_total_events">Total Events</th><th data-tip="col_unique_users">Users</th></tr></thead>
       <tbody id="fbFeatureTbody"><tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr></tbody></table>
     </div>
   </div>
@@ -463,9 +465,9 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     <div style="overflow-x:auto">
     <table class="tbl"><thead><tr>
       <th>User ID</th><th>City</th><th>Country</th>
-      <th>Journey Stage</th><th>Status</th>
-      <th>Days Active</th><th>Sessions</th><th>Events</th>
-      <th>Symptoms</th><th>Peak Flow</th><th>Sleep</th>
+      <th data-tip="col_journey_stage">Journey Stage</th><th data-tip="col_status">Status</th>
+      <th data-tip="col_days_active">Days Active</th><th data-tip="col_sessions">Sessions</th><th data-tip="col_events">Events</th>
+      <th data-tip="col_symptoms">Symptoms</th><th data-tip="col_peak_flow">Peak Flow</th><th data-tip="col_sleep">Sleep</th>
     </tr></thead>
     <tbody id="fbUserTbody"><tr><td colspan="11" class="dt" style="text-align:center;padding:16px">Loading…</td></tr></tbody></table>
     </div>
@@ -533,7 +535,7 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     <div class="card">
       <div class="ch"><div><h3>Health Determinants</h3><p>Lifestyle logs across all users</p></div><span class="ctag" style="background:#e8f8f0;color:#27ae60;border-color:#a8e6c0">LIFESTYLE</span></div>
       <table class="tbl">
-        <thead><tr><th>Determinant</th><th>Total Logs</th><th>Avg / User</th></tr></thead>
+        <thead><tr><th data-tip="col_determinant">Determinant</th><th data-tip="col_total_logs">Total Logs</th><th data-tip="col_avg_per_user">Avg / User</th></tr></thead>
         <tbody id="ujHDTbody">
           <tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
         </tbody>
@@ -544,7 +546,7 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     <div class="card">
       <div class="ch"><div><h3>Health Indicators</h3><p>Clinical tracking across all users</p></div><span class="ctag" style="background:#fff0f0;color:#e74c3c;border-color:#f5c0c0">CLINICAL</span></div>
       <table class="tbl">
-        <thead><tr><th>Indicator</th><th>Total Logs</th><th>Avg / User</th></tr></thead>
+        <thead><tr><th data-tip="col_indicator">Indicator</th><th data-tip="col_total_logs">Total Logs</th><th data-tip="col_avg_per_user">Avg / User</th></tr></thead>
         <tbody id="ujHITbody">
           <tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr>
         </tbody>
@@ -601,8 +603,8 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
         <thead>
           <tr>
             <th>User ID</th><th>City</th><th>Country</th><th>Platform</th>
-            <th>Stage</th><th>Status</th><th>Days Active</th><th>Total Logs</th>
-            <th>Symptoms</th><th>Peak Flow</th><th>Meeps</th><th>Profile %</th>
+            <th data-tip="col_journey_stage">Stage</th><th data-tip="col_status">Status</th><th data-tip="col_days_active">Days Active</th><th data-tip="col_total_logs">Total Logs</th>
+            <th data-tip="col_symptoms">Symptoms</th><th data-tip="col_peak_flow">Peak Flow</th><th data-tip="col_meeps">Meeps</th><th data-tip="col_profile_pct">Profile %</th>
           </tr>
         </thead>
         <tbody id="ujUserTbody">
@@ -696,14 +698,14 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
             <th style="text-align:left;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Date</th>
             <th style="text-align:left;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Platform</th>
             <th style="text-align:left;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px;max-width:220px">Caption</th>
-            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Reach</th>
-            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Views</th>
-            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Likes</th>
-            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Comments</th>
-            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Shares</th>
-            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Saves</th>
-            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Eng.</th>
-            <th style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Avg Watch (s)</th>
+            <th data-tip="col_reach" style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Reach</th>
+            <th data-tip="col_post_views" style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Views</th>
+            <th data-tip="col_likes" style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Likes</th>
+            <th data-tip="col_comments" style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Comments</th>
+            <th data-tip="col_shares" style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Shares</th>
+            <th data-tip="col_saves" style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Saves</th>
+            <th data-tip="col_engagement" style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Eng.</th>
+            <th data-tip="col_avg_watch_s" style="text-align:right;padding:8px 10px;color:var(--t3);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.6px">Avg Watch (s)</th>
           </tr>
         </thead>
         <tbody id="mtPostsTbody"></tbody>
@@ -1563,6 +1565,7 @@ async function boot(days) {
   try {
     renderDashboard(data);
     _injectKpiIcons(); // re-run after dynamic cards (Apple Ads) are rendered
+    _injectColIcons(); // re-run after any dynamic table headers
     // If YouTube tab is currently active, re-init its charts immediately (no tab click needed)
     if (document.getElementById('t-youtube')?.classList.contains('active') && window._ytCharts) {
       window._ytChartsReady = false;
@@ -1672,6 +1675,47 @@ const KPI_TIPS = {
   mtIgAvgWatch:  { title:'IG Avg Watch Time', body:'Average number of seconds viewers watched your Reels before stopping. Instagram\'s algorithm heavily weights watch time — content that holds attention past 15 seconds gets significantly wider distribution.', src:'Meta Graph API — ig_reels_avg_watch_time metric' },
 };
 
+// ─── Column header tooltip definitions ──────────────────────
+const COL_TIPS = {
+  // ── YouTube ────────────────────────────────────────────────
+  col_views:          { title:'Views', body:'Total number of times the video was watched for at least 30 seconds (or full duration if shorter). Counted once per viewing session, not per person.', src:'YouTube Analytics API' },
+  col_watch_min:      { title:'Watch Time (minutes)', body:'Total cumulative minutes spent watching videos in this period. Watch time is the single most important signal YouTube uses to rank and recommend content.', src:'YouTube Analytics API' },
+  col_watch_hrs:      { title:'Watch Time (hours)', body:'Total cumulative hours of watch time across all videos. Converts from minutes for readability. Longer total watch time = stronger channel authority signal.', src:'YouTube Analytics API / YouTube Studio' },
+  col_avg_dur_s:      { title:'Average View Duration (seconds)', body:'Mean number of seconds viewers watched per play session. Divide by total video length to get retention %. Higher duration means content keeps viewers engaged longer.', src:'YouTube Analytics API — averageViewDuration' },
+  col_pct_watched:    { title:'Average % of Video Watched', body:'The average percentage of the video that viewers watched before leaving. YouTube\'s own "averageViewPercentage" metric. Above 50% = strong retention. YouTube uses this to decide how widely to recommend your video.', src:'YouTube Analytics API — averageViewPercentage' },
+  col_engaged_views:  { title:'Engaged Views', body:'Views where the viewer watched for a meaningful duration AND showed engagement (e.g., clicked like, commented, or watched a significant %). Higher than raw views means active, not passive, watching.', src:'YouTube Studio Export' },
+  col_impressions:    { title:'Impressions', body:'Number of times your video thumbnail was shown to a logged-in YouTube user. Impressions count only when at least 50% of the thumbnail is visible for at least 1 second. Does not count external embeds.', src:'YouTube Analytics API — impressions' },
+  col_ctr:            { title:'Click-Through Rate (CTR %)', body:'Percentage of impressions that resulted in a click to watch the video. Industry average is 2–10%. A higher CTR means your thumbnail and title are compelling. YouTube weighs CTR heavily in search ranking.', src:'YouTube Analytics API — impressionsClickThroughRate' },
+  col_likes:          { title:'Likes', body:'Total number of thumbs-up reactions. Likes are a direct audience approval signal. YouTube uses like rate (likes ÷ views) as a quality signal, though it has less algorithmic weight than watch time and CTR.', src:'YouTube Analytics API / Meta Graph API' },
+  col_shares:         { title:'Shares', body:'Number of times viewers used the Share button to send the video/post to another platform or person. Shares are the highest-intent engagement action — they mean a viewer valued the content enough to recommend it.', src:'YouTube Studio / Meta Graph API' },
+  col_comments:       { title:'Comments', body:'Total number of comments left on the video or post. Comments signal deep engagement — a viewer stopped, thought about the content, and typed a response. Also a strong community-building metric.', src:'YouTube Analytics API / Meta Graph API' },
+  col_unique_viewers: { title:'Unique Viewers', body:'Estimated number of distinct people who watched at least part of a video. Different from views because one person can watch multiple times. Useful for measuring actual audience size vs. replay frequency.', src:'YouTube Studio Export — unique_viewers' },
+  // ── Meta ────────────────────────────────────────────────────
+  col_reach:          { title:'Reach', body:'Number of unique accounts that saw the post at least once. Unlike impressions, each account is counted only once no matter how many times they saw it. Reach = actual audience size.', src:'Meta Graph API — post_impressions_unique' },
+  col_post_views:     { title:'Video Views', body:'Number of times the video was played for 3+ seconds (Facebook) or 3+ seconds (Instagram). Does not require sound-on. A "view" threshold is intentionally low — it captures interest, not completion.', src:'Meta Graph API — post_video_views' },
+  col_saves:          { title:'Saves', body:'Number of times a user bookmarked the post to view later. Saves are the strongest purchase-intent signal on Instagram — more predictive of conversion than likes or comments. Instagram\'s algorithm weights saves heavily for Explore distribution.', src:'Meta Graph API — saved metric' },
+  col_engagement:     { title:'Total Engagement', body:'Sum of all interactions: likes + comments + shares + saves. Engagement rate = engagement ÷ reach × 100. Meta\'s algorithm uses engagement rate (not absolute numbers) to decide how many more people to show the post to.', src:'Meta Graph API — post_engaged_users' },
+  col_avg_watch_s:    { title:'Average Watch Time (seconds)', body:'For video/reel posts only — the average number of seconds viewers watched before scrolling away. Reels with avg watch time above 7–10 seconds get significantly stronger algorithmic distribution on Instagram.', src:'Meta Graph API — ig_reels_avg_watch_time' },
+  // ── Firebase / User Journey ────────────────────────────────
+  col_journey_stage:  { title:'Journey Stage', body:'Custom funnel stage derived from Firebase events. Stages in order: Bounced → Onboarding Only → Reached Login → Reached OTP → Health Profile Done → Fully Activated. A user advances when they fire the corresponding event for the first time.', src:'Firebase Analytics — custom journey classification' },
+  col_status:         { title:'Active / Churned', body:'Current engagement status. "Active" = the user fired at least one event within the selected lookback window. "Churned" = no events in the lookback period, suggesting the user has stopped using the app.', src:'Internal Journey API / BigQuery' },
+  col_days_active:    { title:'Days Active', body:'Number of distinct calendar days on which the user fired at least one event. A user who opens the app every day for 30 days = 30 days active. This is the strongest single indicator of habit formation and long-term retention.', src:'Firebase Analytics / BigQuery — COUNT DISTINCT date' },
+  col_sessions:       { title:'Sessions', body:'Total number of session_start events. A new session begins when the app is brought to the foreground after 30+ minutes of inactivity (Firebase default). More sessions = more frequent engagement.', src:'Firebase Analytics — session_start event' },
+  col_events:         { title:'Total Events', body:'Total count of all Firebase events fired by this user across all event types. A high event count means the user is interacting deeply with multiple features, not just opening the app.', src:'Firebase Analytics / BigQuery — COUNT(*)' },
+  col_symptoms:       { title:'Symptom Logs', body:'Number of times the user tapped the Symptoms card (rl_symptoms_card_ios). Logging symptoms is the core daily action in RespireLYF — high symptom logs = clinically engaged user actively tracking their respiratory health.', src:'Firebase Analytics — rl_symptoms_card_ios event' },
+  col_peak_flow:      { title:'Peak Flow Logs', body:'Number of times the user tapped the Peak Flow card (rl_peak_flow_card_ios). Peak flow measurement is the gold-standard clinical metric for asthma management. Users who log peak flow regularly are the highest-value, most clinically engaged segment.', src:'Firebase Analytics — rl_peak_flow_card_ios event' },
+  col_sleep:          { title:'Sleep Logs', body:'Number of times the user logged sleep data (rl_sleep_card_ios). Sleep quality is a major respiratory health determinant — tracking it signals a holistic, highly motivated user.', src:'Firebase Analytics — rl_sleep_card_ios event' },
+  col_meeps:          { title:'AI Meep Messages', body:'Total number of messages sent to Meep, the in-app AI health companion. Each message = one active AI interaction. A high Meep count means the user trusts and engages with the AI guidance feature — the strongest personalisation signal.', src:'Internal Journey API' },
+  col_profile_pct:    { title:'Profile Completion %', body:'Percentage of the 4-section health profile completed (personal info, conditions, medications, goals). Users with 100% profile completion receive fully personalised recommendations. Profile completion is the strongest predictor of 30-day retention.', src:'Internal Journey API' },
+  col_total_logs:     { title:'Total Logs', body:'Total number of health data logs submitted by the user across all tracked categories (symptoms, peak flow, sleep, flare-ups). High total logs = deeply engaged user building a longitudinal health record.', src:'Internal Journey API' },
+  col_total_events:   { title:'Total Events', body:'Sum of all Firebase event firings for this feature across all users in the period. A high event count means many interactions — but check the Users column to distinguish few heavy users vs. many casual ones.', src:'Firebase Analytics / BigQuery' },
+  col_unique_users:   { title:'Unique Users', body:'Number of distinct users who triggered this feature at least once. Compare with Total Events to get avg events per user. If unique users is much lower than total events, a small group of power users is driving activity.', src:'Firebase Analytics / BigQuery — COUNT DISTINCT user_pseudo_id' },
+  // ── Health Determinants / Indicators ─────────────────────
+  col_determinant:    { title:'Health Determinant', body:'Social and lifestyle factors that influence respiratory health outcomes — e.g. sleep quality, stress, exercise, diet, environment. Determinants are upstream causes; tracking them helps identify why symptoms fluctuate.', src:'RespireLYF Internal Classification' },
+  col_indicator:      { title:'Health Indicator', body:'Clinical measurements that directly reflect respiratory function — e.g. peak flow, FEV1, oxygen saturation. Indicators are downstream measurements; they tell you the current state of health, not the cause.', src:'RespireLYF Internal Classification' },
+  col_avg_per_user:   { title:'Average per User', body:'Total logs divided by unique users who logged at least once in this category. Shows the intensity of engagement per person — a high avg means users log frequently, not just once.', src:'Calculated — Total Logs ÷ Unique Users' },
+};
+
 // Build shared tooltip popup once
 const _tipEl = document.createElement('div');
 _tipEl.className = 'kpi-tip';
@@ -1710,9 +1754,28 @@ function _injectKpiIcons() {
   });
 }
 
+function _injectColIcons() {
+  document.querySelectorAll('th[data-tip]').forEach(th => {
+    if (th.querySelector('.col-info')) return; // already injected
+    const key = th.dataset.tip;
+    const def = COL_TIPS[key];
+    if (!def) return;
+    const btn = document.createElement('button');
+    btn.className = 'col-info';
+    btn.textContent = 'i';
+    btn.title = 'What is this column?';
+    btn.addEventListener('mouseenter', e => _showTip(def, e));
+    btn.addEventListener('mousemove',  e => _positionTip(e));
+    btn.addEventListener('mouseleave', _hideTip);
+    btn.addEventListener('click', e => { e.stopPropagation(); _showTip(def, e); });
+    th.appendChild(btn);
+  });
+}
+
 // Wire up after DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   _injectKpiIcons();
+  _injectColIcons();
   // Sort — all tables
   ['ytDetailsBody','yt2VidBody','fbUserTbody','ujUserTbody','mtPostsTbody',
    'asDailyTbody','fbFeatureTbody','ujHDTbody','ujHITbody'].forEach(makeTableSortable);
