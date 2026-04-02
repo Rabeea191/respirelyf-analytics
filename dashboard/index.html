@@ -320,7 +320,7 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
   <div class="kband">
     <div class="kpi" style="--kc:#d42b2b"><div class="klbl">Total Views</div><div class="kval" id="yt2TotalViews">—</div><div class="ksub">Last 30 days</div></div>
     <div class="kpi" style="--kc:#d42b2b"><div class="klbl">Watch Time</div><div class="kval" id="yt2WatchTime">—</div><div class="ksub">Minutes watched</div></div>
-    <div class="kpi" style="--kc:#d42b2b"><div class="klbl">Avg View Duration</div><div class="kval" id="yt2AvgDuration">—</div><div class="ksub">Seconds per view</div></div>
+    <div class="kpi" style="--kc:#d42b2b"><div class="klbl">Avg % Watched</div><div class="kval" id="yt2AvgDuration">—</div><div class="ksub">of video length</div></div>
     <div class="kpi" style="--kc:var(--grn)"><div class="klbl">Subs Gained</div><div class="kval" id="yt2SubsGained">—</div><div class="ksub">New subscribers</div></div>
     <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Avg Daily Views</div><div class="kval" id="yt2AvgDaily">—</div><div class="ksub">Per day average</div></div>
     <div class="kpi" style="--kc:var(--t3)"><div class="klbl">Peak Day Views</div><div class="kval" id="yt2PeakDay">—</div><div class="ksub">Best single day</div></div>
@@ -344,8 +344,8 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     <input class="tbl-search" id="searchYtVids" placeholder="Search videos...">
     <div style="overflow-x:auto">
       <table class="tbl" id="yt2VidTable">
-        <thead><tr><th>Title</th><th>Views</th><th>Watch Time (min)</th><th>Likes</th><th>Comments</th><th>Avg Duration (s)</th><th>Published</th></tr></thead>
-        <tbody id="yt2VidBody"><tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">Loading...</td></tr></tbody>
+        <thead><tr><th>Title</th><th>Views</th><th>Watch Time (min)</th><th>Likes</th><th>Comments</th><th>Avg Duration (s)</th><th>% Watched</th><th>Published</th></tr></thead>
+        <tbody id="yt2VidBody"><tr><td colspan="8" style="text-align:center;color:var(--t3);padding:20px">Loading...</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -378,6 +378,7 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
             <th>Engaged Views</th>
             <th>Watch Time (hrs)</th>
             <th>Avg Duration</th>
+            <th>Avg % Viewed</th>
             <th>Impressions</th>
             <th>CTR %</th>
             <th>Likes</th>
@@ -386,7 +387,7 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
           </tr>
         </thead>
         <tbody id="ytDetailsBody">
-          <tr><td colspan="11" style="text-align:center;color:var(--t3);padding:20px">Loading…</td></tr>
+          <tr><td colspan="12" style="text-align:center;color:var(--t3);padding:20px">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -817,10 +818,23 @@ async function _loadFromSupabase(days) {
       const avgDaily     = ytVw.length ? Math.round(totalViews/ytVw.length) : 0;
       const peakDay      = ytVw.length ? Math.max(...ytVw) : 0;
 
+      // Avg % Watched — prefer _TOTAL_ row from yt_video_stats CSV data, else weighted avg
+      const isTotalStat  = r => r.video_id === '_TOTAL_' || (!r.video_title && !r.publish_time);
+      const totalStatRow = ytVideoStats.find(isTotalStat);
+      let avgPctWatched  = null;
+      if (totalStatRow?.avg_pct_viewed) {
+        avgPctWatched = parseFloat(totalStatRow.avg_pct_viewed).toFixed(1);
+      } else {
+        const vids = ytVideoStats.filter(r => !isTotalStat(r) && r.avg_pct_viewed && r.views);
+        const totV = vids.reduce((s, v) => s + (v.views || 0), 0);
+        if (totV > 0)
+          avgPctWatched = (vids.reduce((s, v) => s + (parseFloat(v.avg_pct_viewed) * (v.views || 0)), 0) / totV).toFixed(1);
+      }
+
       const _set = (id, val) => { const el=document.getElementById(id); if(el&&val!==null) el.textContent=val; };
       _set('yt2TotalViews',  totalViews.toLocaleString());
       _set('yt2WatchTime',   totalWatch >= 1000 ? (totalWatch/1000).toFixed(1)+'k min' : Math.round(totalWatch)+' min');
-      _set('yt2AvgDuration', avgDurVal ? avgDurVal+'s' : '—');
+      _set('yt2AvgDuration', avgPctWatched ? avgPctWatched + '%' : (avgDurVal ? avgDurVal + 's' : '—'));
       _set('yt2SubsGained',  subsGained > 0 ? '+'+subsGained : '—');
       _set('yt2AvgDaily',    avgDaily);
       _set('yt2PeakDay',     peakDay);
@@ -1310,6 +1324,9 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
   {
     const tbody = document.getElementById('yt2VidBody');
     const ytVidArr = Array.isArray(ytVideos) ? ytVideos : [];
+    // Build % watched lookup: video_id → avg_pct_viewed (from ytVideoStats CSV data)
+    const ytPctMap = {};
+    ytVideoStats.forEach(r => { if (r.video_id && r.avg_pct_viewed) ytPctMap[r.video_id] = parseFloat(r.avg_pct_viewed); });
     if(tbody && ytVidArr.length > 0) {
       tbody.innerHTML = '';
       ytVidArr.forEach((v,i) => {
@@ -1320,7 +1337,8 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
         const durArr = agg.dur||[];
         const dur    = durArr.length ? Math.round(durArr.reduce((a,b)=>a+b,0)/durArr.length) : '—';
         const pub    = v.published_at ? _fmtDate(v.published_at.slice(0,10)) : '—';
-        const views  = (v.views||agg.views||0).toLocaleString(); // prefer youtube_videos (correctly upserted) over daily aggregate
+        const views  = (v.views||agg.views||0).toLocaleString();
+        const pct    = ytPctMap[v.video_id] != null ? ytPctMap[v.video_id].toFixed(1) + '%' : '—';
         tbody.innerHTML += `<tr class="${i%2===0?'ra':''}">
           <td style="max-width:260px"><div style="font-size:11px;font-weight:500;color:var(--t1);line-height:1.4">${v.title||'—'}</div></td>
           <td class="num"><strong>${views}</strong></td>
@@ -1328,11 +1346,12 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
           <td class="num">${likes||'—'}</td>
           <td class="num">${cmts||'—'}</td>
           <td class="num">${dur}</td>
+          <td class="num">${pct}</td>
           <td style="font-size:11px;color:var(--t3)">${pub}</td>
         </tr>`;
       });
     } else if(tbody) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:20px">No video data in Supabase yet — run GitHub Actions workflow</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--t3);padding:20px">No video data in Supabase yet — run GitHub Actions workflow</td></tr>';
     }
   }
 
@@ -1356,6 +1375,7 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
             <td class="num">${fmt(totalRow.engaged_views)}</td>
             <td class="num">${fmt(totalRow.watch_time_hours,2)}</td>
             <td class="num">${totalRow.avg_view_duration||'—'}</td>
+            <td class="num">${totalRow.avg_pct_viewed ? parseFloat(totalRow.avg_pct_viewed).toFixed(1)+'%' : '—'}</td>
             <td class="num">${fmt(totalRow.impressions)}</td>
             <td class="num">${fmt(totalRow.impressions_ctr_pct,2)}</td>
             <td class="num">${fmt(totalRow.likes)}</td>
@@ -1371,6 +1391,7 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
             <td class="num">${fmt(v.engaged_views)}</td>
             <td class="num">${fmt(v.watch_time_hours,2)}</td>
             <td class="num">${v.avg_view_duration||'—'}</td>
+            <td class="num">${v.avg_pct_viewed ? parseFloat(v.avg_pct_viewed).toFixed(1)+'%' : '—'}</td>
             <td class="num">${fmt(v.impressions)}</td>
             <td class="num">${fmt(v.impressions_ctr_pct,2)}</td>
             <td class="num">${fmt(v.likes)}</td>
@@ -1379,7 +1400,7 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
           </tr>`;
         });
       } else {
-        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--t3);padding:24px">No data yet — run: python -m pipeline.upload_yt_details</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:var(--t3);padding:24px">No data yet — run: python -m pipeline.upload_yt_details</td></tr>';
       }
     }
   }
@@ -1607,7 +1628,7 @@ const KPI_TIPS = {
   // ── YouTube Analytics API ──────────────────────────────────
   yt2TotalViews:   { title:'Views', body:'The number of times videos were watched for at least 30 seconds, or the video duration if it is shorter than 30 seconds.', src:'YouTube Analytics API' },
   yt2WatchTime:    { title:'Watch Time (minutes)', body:'The cumulative time in minutes that viewers spent watching your videos. Higher watch time signals to the algorithm that your content keeps people engaged.', src:'YouTube Analytics API' },
-  yt2AvgDuration:  { title:'Average View Duration', body:'The average time (seconds) a viewer spends watching a single video play. Calculated as total watch time ÷ total views. A key retention signal used by YouTube ranking.', src:'YouTube Analytics API' },
+  yt2AvgDuration:  { title:'Average % of Video Watched', body:'The average percentage of each video that viewers watched before stopping. YouTube calls this "averageViewPercentage". Above 50% = strong retention; below 30% = viewers leave early. Calculated as avg view duration ÷ video length × 100.', src:'YouTube Analytics API / YouTube Studio Export' },
   yt2SubsGained:   { title:'Subscribers Gained', body:'The number of new subscribers added in the period. This is net of any subscribers lost — so a positive number means channel growth.', src:'YouTube Analytics API' },
   yt2AvgDaily:     { title:'Average Daily Views', body:'Total views in the period divided by number of days. Shows the baseline daily audience size regardless of upload frequency.', src:'Calculated from YouTube Analytics API' },
   yt2PeakDay:      { title:'Peak Day Views', body:'The single day with the highest view count. Useful for identifying which publish days or content types spike performance.', src:'Calculated from YouTube Analytics API' },

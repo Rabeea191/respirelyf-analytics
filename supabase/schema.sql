@@ -50,9 +50,12 @@ CREATE TABLE IF NOT EXISTS youtube_video_daily (
     likes             INTEGER     NOT NULL DEFAULT 0,
     comments          INTEGER     NOT NULL DEFAULT 0,
     avg_view_duration NUMERIC(8,1) NOT NULL DEFAULT 0,
+    avg_view_pct      NUMERIC(6,2) NOT NULL DEFAULT 0,
     updated_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (video_id, date)
 );
+-- Run in Supabase SQL Editor if table already exists:
+-- ALTER TABLE youtube_video_daily ADD COLUMN IF NOT EXISTS avg_view_pct NUMERIC(6,2) NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS youtube_videos (
     video_id     TEXT PRIMARY KEY,

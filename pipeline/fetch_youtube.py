@@ -221,7 +221,7 @@ def _video_daily(
         "ids":        "channel==MINE",
         "startDate":  start,
         "endDate":    end,
-        "metrics":    "views,estimatedMinutesWatched,averageViewDuration,likes,comments",
+        "metrics":    "views,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,likes,comments",
         "dimensions": "video",
         "sort":       "-views",
         "maxResults": 50,
@@ -255,6 +255,7 @@ def _video_daily(
             "likes":             int(d.get("likes", 0)),
             "comments":          int(d.get("comments", 0)),
             "avg_view_duration": round(float(d.get("averageViewDuration", 0)), 1),
+            "avg_view_pct":      round(float(d.get("averageViewPercentage", 0)), 2),
         })
     return rows
 
