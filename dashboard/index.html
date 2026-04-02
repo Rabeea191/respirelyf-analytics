@@ -140,6 +140,14 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 .bgrey{background:#f7f9ff;border-color:var(--border2);color:var(--t2)}
 .box strong{font-weight:700}
 
+/* KPI INFO TOOLTIP */
+.kpi-info{position:absolute;top:10px;right:10px;width:15px;height:15px;border-radius:50%;background:var(--border);color:var(--t4);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:background .15s,color .15s;line-height:1;border:none;font-family:inherit}
+.kpi-info:hover{background:var(--apple);color:#fff}
+.kpi-tip{position:fixed;z-index:9999;max-width:260px;background:var(--t1);color:#e8edf8;padding:11px 14px;border-radius:11px;font-size:11px;line-height:1.6;box-shadow:0 8px 32px rgba(13,21,38,.28);pointer-events:none;opacity:0;transition:opacity .15s;word-break:break-word}
+.kpi-tip strong{color:#fff;font-weight:700;display:block;margin-bottom:4px;font-size:11.5px}
+.kpi-tip em{color:#94a8cc;font-size:10px;display:block;margin-top:5px;font-style:normal}
+.kpi-tip.show{opacity:1}
+
 /* TABLES */
 .tbl{width:100%;border-collapse:collapse;font-size:12px}
 .tbl thead th{padding:10px 13px;text-align:left;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--t4);border-bottom:2px solid var(--border);background:#f7f9ff;white-space:nowrap}
@@ -1533,6 +1541,7 @@ async function boot(days) {
 
   try {
     renderDashboard(data);
+    _injectKpiIcons(); // re-run after dynamic cards (Apple Ads) are rendered
     // If YouTube tab is currently active, re-init its charts immediately (no tab click needed)
     if (document.getElementById('t-youtube')?.classList.contains('active') && window._ytCharts) {
       window._ytChartsReady = false;
@@ -1593,8 +1602,96 @@ function addTableSearch(inputId, tbodyId) {
   });
 }
 
+// ─── KPI Tooltip definitions (API-sourced) ──────────────────
+const KPI_TIPS = {
+  // ── YouTube Analytics API ──────────────────────────────────
+  yt2TotalViews:   { title:'Views', body:'The number of times videos were watched for at least 30 seconds, or the video duration if it is shorter than 30 seconds.', src:'YouTube Analytics API' },
+  yt2WatchTime:    { title:'Watch Time (minutes)', body:'The cumulative time in minutes that viewers spent watching your videos. Higher watch time signals to the algorithm that your content keeps people engaged.', src:'YouTube Analytics API' },
+  yt2AvgDuration:  { title:'Average View Duration', body:'The average time (seconds) a viewer spends watching a single video play. Calculated as total watch time ÷ total views. A key retention signal used by YouTube ranking.', src:'YouTube Analytics API' },
+  yt2SubsGained:   { title:'Subscribers Gained', body:'The number of new subscribers added in the period. This is net of any subscribers lost — so a positive number means channel growth.', src:'YouTube Analytics API' },
+  yt2AvgDaily:     { title:'Average Daily Views', body:'Total views in the period divided by number of days. Shows the baseline daily audience size regardless of upload frequency.', src:'Calculated from YouTube Analytics API' },
+  yt2PeakDay:      { title:'Peak Day Views', body:'The single day with the highest view count. Useful for identifying which publish days or content types spike performance.', src:'Calculated from YouTube Analytics API' },
+
+  // ── App Store Connect API ──────────────────────────────────
+  asImpr:   { title:'Impressions', body:'The number of times your app icon was seen in the App Store, including search results, Featured, Top Charts, and product pages. Does not count repeat views in the same hour by the same user.', src:'App Store Connect API' },
+  asPv:     { title:'Product Page Views', body:'The number of times your app\'s product page was viewed on the App Store. A high view/impression ratio means your icon and metadata are compelling enough to click through.', src:'App Store Connect API' },
+  asDl:     { title:'First-Time Downloads', body:'The number of new installations where the user has never downloaded this app before on any device. Re-downloads and updates are excluded. This is the primary acquisition metric.', src:'App Store Connect API' },
+  asAvgDl:  { title:'Avg Daily Downloads', body:'Total first-time downloads divided by number of days in the period. Helps normalize performance across periods of different lengths.', src:'Calculated from App Store Connect API' },
+  asPeakDl: { title:'Peak Day Downloads', body:'The single day with the most first-time downloads. Often correlates with a feature, press mention, or ad campaign spike.', src:'Calculated from App Store Connect API' },
+
+  // ── Firebase / BigQuery ────────────────────────────────────
+  fbTotalUsers:  { title:'Total Users', body:'Distinct user_pseudo_id values that fired at least one event in the selected period. Each device installation is one user ID — not tied to a login account.', src:'Firebase Analytics / BigQuery' },
+  fbActiveUsers: { title:'Active Users', body:'Users whose last event timestamp falls within the selected period. An "active" user has opened the app at least once; excludes users who only appeared in earlier periods.', src:'Firebase Analytics / BigQuery' },
+  fbActivated:   { title:'Fully Activated', body:'Users who have triggered the rl_today_tab_ios event — meaning they completed onboarding, set up their health profile, and reached the core Today tab. This is the primary activation milestone.', src:'Firebase Analytics — custom journey stage' },
+  fbAvgSess:     { title:'Average Sessions per User', body:'Total session_start events divided by total distinct users. A session starts when the app comes to the foreground after 30+ minutes of inactivity. Higher sessions = stronger habit formation.', src:'Firebase Analytics / BigQuery' },
+
+  // ── User Journey (Internal API) ────────────────────────────
+  ujTotalUsers:   { title:'Total Users', body:'All users currently tracked in the internal journey API. Includes every account that has been created regardless of activity level.', src:'Internal Journey API' },
+  ujActiveUsers:  { title:'Active Users', body:'Users whose current_status is "Active" — meaning they have had a session within the selected lookback window. Users with no recent sessions are marked "Churned".', src:'Internal Journey API' },
+  ujProfilePct:   { title:'Profile Complete', body:'Percentage of users who have completed all 4 health profile sections (personal info, health conditions, medications, goals). Profile completion strongly predicts long-term retention.', src:'Internal Journey API' },
+  ujAvgDays:      { title:'Avg Days Active', body:'The average number of distinct calendar days on which a user has logged any event. A higher number means users return repeatedly, not just for a one-time visit.', src:'Internal Journey API / BigQuery' },
+  ujSymptom:      { title:'Symptom Logs', body:'Total number of times users have tapped the Symptoms card (rl_symptoms_card_ios). Reflects core product engagement — users tracking their respiratory health daily.', src:'Firebase Analytics — rl_symptoms_card_ios event' },
+  ujPeakFlow:     { title:'Peak Flow Logs', body:'Total taps on the Peak Flow card (rl_peak_flow_card_ios). Peak flow is the primary clinical metric for asthma management — high logs indicate medically engaged users.', src:'Firebase Analytics — rl_peak_flow_card_ios event' },
+  ujSleep:        { title:'Sleep Tracked', body:'Total sleep logging events (rl_sleep_card_ios). Sleep quality is a key respiratory health determinant — tracking it signals a highly engaged user.', src:'Firebase Analytics — rl_sleep_card_ios event' },
+  ujFlareups:     { title:'Flare-ups Logged', body:'Total flare-up events recorded by users. A flare-up log indicates the user experienced a worsening episode and actively used the app to record it — high clinical engagement signal.', src:'Internal Journey API' },
+  ujMeeps:        { title:'AI Meeps Sent', body:'Total messages sent to Meep, the in-app AI companion. Each message represents an active user-AI interaction — a proxy for trust and engagement with the AI-driven health guidance feature.', src:'Internal Journey API' },
+  ujWeekly:       { title:'Weekly Reports', body:'Total weekly health summary reports generated and sent to users. Receiving a weekly report requires sufficient logged data — a marker of sustained engagement over 7+ days.', src:'Internal Journey API' },
+  ujMonthly:      { title:'Monthly Reports', body:'Total monthly health summary reports sent. A user receiving a monthly report has been active for 30+ days — the strongest long-term retention signal.', src:'Internal Journey API' },
+  ujReports:      { title:'PDF Reports', body:'Total PDF health reports generated. PDFs are typically shared with a clinician — the highest-intent action a user can take, indicating clinical integration of the app.', src:'Internal Journey API' },
+  ujMemories:     { title:'Memories Stored', body:'Total health memories saved by the AI companion. Memories let Meep personalize future responses — a higher count means richer AI context and a more personalised experience.', src:'Internal Journey API' },
+
+  // ── Meta Graph API ─────────────────────────────────────────
+  mtTotalReach:  { title:'Reach', body:'The number of unique accounts that saw any of your content at least once. Unlike impressions, reach counts each person only once no matter how many times they saw your post.', src:'Meta Graph API — page_impressions_unique metric' },
+  mtTotalImpr:   { title:'Impressions', body:'The total number of times your content was displayed on screen, including multiple views by the same person. Impressions ÷ Reach = average frequency (how often each person saw your content).', src:'Meta Graph API — page_impressions metric' },
+  mtTotalEng:    { title:'Total Engagement', body:'Sum of likes, comments, shares, and saves across all posts. Engagement measures active audience interaction — the algorithm uses this signal to determine whether to show your content to more people.', src:'Meta Graph API — post_engaged_users metric' },
+  mtTotalPosts:  { title:'Total Posts', body:'Number of posts published (Facebook + Instagram combined) in the selected period. A consistent posting cadence is one of the strongest predictors of organic reach growth.', src:'Meta Graph API — media count' },
+  mtFbPosts:     { title:'Facebook Posts', body:'Number of posts published to your Facebook Page in the period. Facebook organic reach has declined industry-wide to ~2–5% of page followers — consistent posting is essential to maintain visibility.', src:'Meta Graph API — /page/feed' },
+  mtFbReach:     { title:'Facebook Page Reach', body:'Unique accounts reached by your Facebook Page per day (organic + paid combined). Pulled from the page-level daily insights endpoint, not individual posts.', src:'Meta Graph API — page_impressions_unique / day' },
+  mtIgPosts:     { title:'Instagram Posts', body:'Number of Instagram posts and reels published in the period. Reels currently receive significantly higher organic distribution than static posts on Instagram.', src:'Meta Graph API — /media endpoint' },
+  mtIgAvgWatch:  { title:'IG Avg Watch Time', body:'Average number of seconds viewers watched your Reels before stopping. Instagram\'s algorithm heavily weights watch time — content that holds attention past 15 seconds gets significantly wider distribution.', src:'Meta Graph API — ig_reels_avg_watch_time metric' },
+};
+
+// Build shared tooltip popup once
+const _tipEl = document.createElement('div');
+_tipEl.className = 'kpi-tip';
+document.body.appendChild(_tipEl);
+
+function _showTip(def, e) {
+  _tipEl.innerHTML = `<strong>${def.title}</strong>${def.body}<em>Source: ${def.src}</em>`;
+  _tipEl.classList.add('show');
+  _positionTip(e);
+}
+function _positionTip(e) {
+  const pad = 12, pw = 260;
+  let x = e.clientX + pad, y = e.clientY + pad;
+  if (x + pw > window.innerWidth - pad) x = e.clientX - pw - pad;
+  if (y + 160 > window.innerHeight) y = e.clientY - 160;
+  _tipEl.style.left = x + 'px';
+  _tipEl.style.top  = y + 'px';
+}
+function _hideTip() { _tipEl.classList.remove('show'); }
+
+function _injectKpiIcons() {
+  Object.entries(KPI_TIPS).forEach(([id, def]) => {
+    const valEl = document.getElementById(id);
+    if (!valEl) return;
+    const card = valEl.closest('.kpi');
+    if (!card || card.querySelector('.kpi-info')) return;
+    const btn = document.createElement('button');
+    btn.className = 'kpi-info';
+    btn.textContent = 'i';
+    btn.title = 'What is this metric?';
+    btn.addEventListener('mouseenter', e => _showTip(def, e));
+    btn.addEventListener('mousemove',  e => _positionTip(e));
+    btn.addEventListener('mouseleave', _hideTip);
+    btn.addEventListener('click', e => { e.stopPropagation(); _showTip(def, e); });
+    card.appendChild(btn);
+  });
+}
+
 // Wire up after DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+  _injectKpiIcons();
   // Sort — all tables
   ['ytDetailsBody','yt2VidBody','fbUserTbody','ujUserTbody','mtPostsTbody',
    'asDailyTbody','fbFeatureTbody','ujHDTbody','ujHITbody'].forEach(makeTableSortable);
