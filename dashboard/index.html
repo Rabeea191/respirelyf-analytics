@@ -252,6 +252,11 @@ th.sort-asc::after{content:' ▲';opacity:1;color:var(--apple)}
 th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
 .tbl-search{width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:11px;margin-bottom:10px;outline:none;font-family:inherit;background:var(--white);color:var(--t1)}
 .tbl-search:focus{border-color:var(--apple);box-shadow:0 0 0 3px rgba(29,85,217,.08)}
+/* Date range picker */
+.drp-wrap{display:flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:3px}
+.drb{padding:3px 10px;border:none;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;background:transparent;color:var(--t3);font-family:inherit;transition:background .15s,color .15s;white-space:nowrap}
+.drb:hover{background:var(--white);color:var(--t1)}
+.drb.act{background:var(--apple);color:#fff}
 </style>
 </head>
 <body>
@@ -279,6 +284,11 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
   </nav>
 
   <div class="hright">
+    <div class="drp-wrap">
+      <button class="drb" data-days="7">7D</button>
+      <button class="drb" data-days="30">30D</button>
+      <button class="drb act" data-days="90">90D</button>
+    </div>
     <span class="hlast">Last updated: —</span>
   </div>
 </header>
@@ -722,18 +732,21 @@ function _fmtDate(iso) {
   return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
 }
 
-async function _loadFromSupabase() {
+async function _loadFromSupabase(days) {
+  days = days || window._activeDays || 90;
+  const since = new Date(Date.now() - days * 864e5).toISOString().slice(0,10);
+  const df = `date=gte.${since}&`;
   try {
     const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney, metaPageDaily, metaPosts, userBehavior, ytVideoStats] = await Promise.all([
-      _sb('app_store_daily?order=date.asc&limit=90'),
+      _sb(`app_store_daily?${df}order=date.asc&limit=90`),
       _sb('apple_ads_keywords?order=impressions.desc&limit=50'),
-      _sb('youtube_channel_daily?order=date.asc&limit=90'),
+      _sb(`youtube_channel_daily?${df}order=date.asc&limit=90`),
       _sb('youtube_videos?order=views.desc&limit=50'),
-      _sb('youtube_video_daily?order=date.asc&limit=500'),
-      _sb('firebase_events?order=date.asc'),
+      _sb(`youtube_video_daily?${df}order=date.asc&limit=500`),
+      _sb(`firebase_events?${df}order=date.asc`),
       _sb('firebase_user_journey?order=updated_at.desc&limit=200'),
-      _sb('meta_page_daily?order=date.desc&limit=90'),
-      _sb('meta_post_insights?order=date.desc&limit=200'),
+      _sb(`meta_page_daily?${df}order=date.desc&limit=90`),
+      _sb(`meta_post_insights?${df}order=date.desc&limit=200`),
       _sb('firebase_user_behavior?order=days_actually_active.desc&limit=500'),
       _sb('yt_video_stats?order=views.desc.nullslast&limit=100'),
     ]);
@@ -1158,6 +1171,7 @@ Chart.defaults.plugins.legend.display = false;
 function mkLine(id, labels, datasets, opts={}) {
   const ctx = document.getElementById(id);
   if(!ctx) return;
+  Chart.getChart(ctx)?.destroy();
   return new Chart(ctx, {
     type:'line',
     data:{labels, datasets},
@@ -1178,6 +1192,7 @@ function mkLine(id, labels, datasets, opts={}) {
 function mkBar(id, labels, datasets, opts={}) {
   const ctx = document.getElementById(id);
   if(!ctx) return;
+  Chart.getChart(ctx)?.destroy();
   return new Chart(ctx, {
     type:'bar',
     data:{labels, datasets},
@@ -1197,6 +1212,7 @@ function mkBar(id, labels, datasets, opts={}) {
 function mkDonut(id, labels, data, colors) {
   const ctx = document.getElementById(id);
   if(!ctx) return;
+  Chart.getChart(ctx)?.destroy();
   return new Chart(ctx, {
     type:'doughnut',
     data:{labels, datasets:[{data, backgroundColor:colors, borderWidth:2, borderColor:'#fff'}]},
@@ -1484,17 +1500,19 @@ document.querySelectorAll('.hn[data-tab]').forEach(btn => {
 });
 
 // ─── Boot ────────────────────────────────────────────────
-async function boot() {
+async function boot(days) {
+  days = days || window._activeDays || 90;
+  window._activeDays = days;
   // Show loading indicator
   const lastEl = document.querySelector('.hlast');
-  if (lastEl) lastEl.textContent = 'Loading live data…';
+  if (lastEl) lastEl.textContent = 'Loading…';
 
   const isConfigured = SUPABASE_URL.startsWith('https://') && SUPABASE_ANON.startsWith('eyJ');
   let data = null;
   let isLive = false;
 
   if (isConfigured) {
-    data = await _loadFromSupabase();
+    data = await _loadFromSupabase(days);
     if (data) isLive = true;
   }
 
@@ -1509,6 +1527,17 @@ async function boot() {
 
   try {
     renderDashboard(data);
+    // If YouTube tab is currently active, re-init its charts immediately (no tab click needed)
+    if (document.getElementById('t-youtube')?.classList.contains('active') && window._ytCharts) {
+      window._ytChartsReady = false;
+      setTimeout(() => {
+        const {ytFL, ytVw, ytWt, ytSubs} = window._ytCharts;
+        mkLine('yt2ViewsChart', ytFL, [{label:'Views', data:ytVw, borderColor:'#d42b2b', backgroundColor:'rgba(212,43,43,.1)', fill:true, borderWidth:2}]);
+        mkLine('yt2WatchChart', ytFL, [{label:'Watch Time (min)', data:ytWt, borderColor:'#e8743b', backgroundColor:'rgba(232,116,59,.1)', fill:true, borderWidth:2}]);
+        mkBar('yt2SubsChart',   ytFL, [{label:'Subs Gained', data:ytSubs, backgroundColor:'rgba(16,185,129,.7)', borderRadius:4}]);
+        window._ytChartsReady = true;
+      }, 100);
+    }
   } catch(e) {
     console.error('[renderDashboard] CRASH at:', e.message);
     console.error('[renderDashboard] Stack:', e.stack);
@@ -1569,6 +1598,15 @@ document.addEventListener('DOMContentLoaded', () => {
   addTableSearch('searchFbUsers',    'fbUserTbody');
   addTableSearch('searchUsers',      'ujUserTbody');
   addTableSearch('searchMetaPosts',  'mtPostsTbody');
+
+  // Date range buttons
+  document.querySelectorAll('.drb[data-days]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      document.querySelectorAll('.drb[data-days]').forEach(b => b.classList.remove('act'));
+      btn.classList.add('act');
+      await boot(parseInt(btn.dataset.days));
+    });
+  });
 });
 
 boot();
