@@ -421,14 +421,14 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     <div class="snum">5</div>
     <div>
       <h2>Firebase &amp; BigQuery — In-App Analytics</h2>
-      <p>Last 7 days · excl. internal users · data via BigQuery events_intraday_*</p>
+      <p id="fbSubtitle">Last 30 days · excl. internal users · data via BigQuery events_intraday_*</p>
     </div>
   </div>
 
   <!-- KPI Band -->
   <div class="kband kband4">
-    <div class="kpi" style="--kc:#ff6b35"><div class="klbl">Total Users</div><div class="kval" id="fbTotalUsers">—</div><div class="ksub">last 7 days</div></div>
-    <div class="kpi" style="--kc:#4caf50"><div class="klbl">Active Users</div><div class="kval" id="fbActiveUsers">—</div><div class="ksub">seen in last 7d</div></div>
+    <div class="kpi" style="--kc:#ff6b35"><div class="klbl">Total Users</div><div class="kval" id="fbTotalUsers">—</div><div class="ksub" id="fbTotalUsersSub">last 30 days</div></div>
+    <div class="kpi" style="--kc:#4caf50"><div class="klbl">Active Users</div><div class="kval" id="fbActiveUsers">—</div><div class="ksub" id="fbActiveUsersSub">seen in last 30d</div></div>
     <div class="kpi" style="--kc:#6c63ff"><div class="klbl">Fully Activated</div><div class="kval" id="fbActivated">—</div><div class="ksub">reached Today tab</div></div>
     <div class="kpi" style="--kc:#ff9800"><div class="klbl">Avg Sessions</div><div class="kval" id="fbAvgSess">—</div><div class="ksub">per user</div></div>
   </div>
@@ -449,7 +449,7 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
 
   <!-- Per-user detail table -->
   <div class="card">
-    <h3>Per-User Detail <span style="font-size:12px;font-weight:400;color:var(--t4)">last 7 days · excl. internal</span></h3>
+    <h3>Per-User Detail <span id="fbPerUserSub" style="font-size:12px;font-weight:400;color:var(--t4)">last 30 days · excl. internal</span></h3>
     <input class="tbl-search" id="searchFbUsers" placeholder="Search by user, city, country, stage...">
     <div style="overflow-x:auto">
     <table class="tbl"><thead><tr>
@@ -1065,6 +1065,12 @@ async function _loadFromSupabase(days) {
       _fb('fbActiveUsers', active);
       _fb('fbActivated',   activated);
       _fb('fbAvgSess',     avgSess);
+      // Update dynamic day labels
+      const _d = window._activeDays || 30;
+      _fb('fbSubtitle',      `Last ${_d} days · excl. internal users · data via BigQuery events_intraday_*`);
+      _fb('fbTotalUsersSub', `last ${_d} days`);
+      _fb('fbActiveUsersSub',`seen in last ${_d}d`);
+      _fb('fbPerUserSub',    `last ${_d} days · excl. internal`);
 
       const stages = ['Fully Activated','Health Profile Done','Reached OTP','Reached Login','Onboarding Only','Bounced'];
       const stageTbody = document.getElementById('fbStageTbody');

@@ -135,11 +135,11 @@ SELECT
     ELSE 'Bounced'
   END AS journey_stage,
   CASE
-    WHEN MAX(DATE(TIMESTAMP_MICROS(event_timestamp))) >= DATE_SUB(CURRENT_DATE(), INTERVAL 8 DAY)
+    WHEN MAX(DATE(TIMESTAMP_MICROS(event_timestamp))) >= DATE_SUB(CURRENT_DATE(), INTERVAL {fetch_days_p1} DAY)
     THEN 'Active' ELSE 'Churned'
   END AS current_status
 FROM `{project}.{dataset}.events_intraday_*`
-WHERE DATE(TIMESTAMP_MICROS(event_timestamp)) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 8 DAY) AND DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+WHERE DATE(TIMESTAMP_MICROS(event_timestamp)) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL {fetch_days_p1} DAY) AND DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
   AND geo.city != 'Ashburn'
   AND geo.country != 'Pakistan'
   AND user_pseudo_id != '19BA69FD-ECA7-46A5-BD25-766587D2574B'
@@ -214,8 +214,8 @@ def run(target_date: date | None = None) -> None:
             break
 
     # ── User behavior (wildcard query — runs regardless of daily table) ──
-    print("[firebase] querying user behavior...")
-    beh_fmt = dict(project=FIREBASE_PROJECT_ID, dataset=BIGQUERY_DATASET_ID)
+    print(f"[firebase] querying user behavior (last {_FETCH_DAYS} days)...")
+    beh_fmt = dict(project=FIREBASE_PROJECT_ID, dataset=BIGQUERY_DATASET_ID, fetch_days_p1=_FETCH_DAYS + 1)
     rows_beh = client.query(_USER_BEHAVIOR_SQL.format(**beh_fmt)).result()
     behavior_rows = [
         {
