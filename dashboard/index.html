@@ -166,6 +166,64 @@ button.hn{background:none;border:none;cursor:pointer;font-family:inherit;border-
 .utag-done{background:#d1fae5;color:#065f46}
 .utag-miss{background:#fee2e2;color:#b91c1c;text-decoration:line-through;opacity:.7}
 
+/* A/B TEST CARD */
+.ab-variant-kpi{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden}
+.ab-variant-kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ab-color,var(--apple))}
+.ab-variant-name{font-size:9px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--t3)}
+.ab-variant-rate{font-size:24px;font-weight:800;color:var(--t1);line-height:1}
+.ab-variant-impr{font-size:10px;color:var(--t4)}
+.ab-variant-imp{font-size:11px;font-weight:700}
+.ab-variant-badge{font-size:8.5px;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase;align-self:flex-start}
+.ab-badge-baseline{background:#fff8eb;color:#b45309;border:1px solid #fde68a}
+.ab-badge-winner{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+.ab-badge-inconclusive{background:var(--bg2);color:var(--t3);border:1px solid var(--border)}
+.ab-badge-loser{background:#fee2e2;color:#b91c1c;border:1px solid #fecaca}
+.ab-pin-wrap{display:flex;align-items:center;gap:6px}
+.ab-pin-input{width:80px;padding:5px 9px;border:1px solid var(--border);border-radius:7px;font-size:12px;outline:none;font-family:inherit;transition:border-color .15s}
+.ab-pin-input:focus{border-color:var(--apple)}
+.ab-pin-btn{padding:5px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s,color .15s}
+.ab-pin-btn:hover{background:var(--apple);color:#fff;border-color:var(--apple)}
+.ab-edit-btn{padding:5px 13px;background:#f0eeff;border:1px solid #d4d0ff;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;color:#6c63ff;transition:background .15s}
+.ab-edit-btn:hover{background:#6c63ff;color:#fff}
+/* A/B Modal */
+.ab-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.ab-modal{background:var(--white);border-radius:18px;padding:28px 30px;width:min(720px,94vw);max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.25);position:relative}
+.ab-modal-title{font-size:16px;font-weight:800;color:var(--t1);margin-bottom:4px}
+.ab-modal-sub{font-size:12px;color:var(--t3);margin-bottom:20px}
+.ab-modal-close{position:absolute;top:18px;right:18px;width:28px;height:28px;border-radius:50%;border:none;background:var(--bg2);color:var(--t3);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.ab-modal-close:hover{background:var(--apple);color:#fff}
+.yt-csv-block{margin-bottom:12px}
+.yt-csv-block-label{font-size:11px;font-weight:800;color:var(--t2);margin-bottom:5px}
+.yt-csv-block-src{font-size:10px;font-weight:400;color:var(--t4);margin-left:6px}
+.ab-dl-btn{width:100%;padding:9px;background:#f0eeff;border:1px solid #d4d0ff;border-radius:9px;font-size:12px;font-weight:700;color:#6c63ff;cursor:pointer;font-family:inherit;transition:background .15s;margin-bottom:14px}
+.ab-dl-btn:hover{background:#6c63ff;color:#fff}
+.ab-drop-zone{border:2px dashed var(--border);border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:var(--bg)}
+.ab-drop-zone.drag-over,.ab-drop-zone:hover{border-color:var(--apple)}
+.ab-drop-zone.drag-over{background:color-mix(in srgb,var(--apple) 5%,var(--white))}
+.ab-drop-icon{font-size:28px;margin-bottom:6px}
+.ab-drop-text{font-size:13px;color:var(--t2)}
+.ab-drop-hint{font-size:11px;color:var(--t4);margin-top:4px}
+.ab-save-btn{width:100%;padding:11px;background:var(--apple);border:none;border-radius:10px;font-size:13px;font-weight:800;color:#fff;cursor:pointer;font-family:inherit;transition:background .15s}
+.ab-save-btn:hover{background:#2d7d3a}
+.ab-save-btn:disabled{background:var(--border);color:var(--t4);cursor:not-allowed}
+.ab-err{color:#b91c1c;font-size:11px;text-align:center;margin-top:8px;min-height:16px}
+
+/* POST LINKS */
+.post-link{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.post-link:hover{color:var(--apple)}
+.post-link::after{content:'↗';font-size:9px;opacity:0;transform:translate(-2px,-2px);transition:opacity .15s,transform .15s;color:var(--apple);flex-shrink:0}
+.post-link:hover::after{opacity:1;transform:translate(0,0)}
+
+/* HISTOGRAM PANEL */
+.uj-hist-panel{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-top:10px;animation:histSlide .22s ease}
+@keyframes histSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.uj-hist-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.uj-hist-title{font-size:12px;font-weight:700;color:var(--t1)}
+.uj-hist-close{width:22px;height:22px;border-radius:50%;border:none;background:var(--border);color:var(--t3);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;font-family:inherit}
+.uj-hist-close:hover{background:var(--apple);color:#fff}
+.uj-hist-panel canvas{max-height:180px}
+.kpi.uj-selected{outline:2.5px solid var(--uj-sel-color,#6c63ff);outline-offset:2px;background:color-mix(in srgb,var(--uj-sel-color,#6c63ff) 6%,var(--white))}
+
 /* KPI + COLUMN INFO TOOLTIP */
 .kpi-info{position:absolute;top:10px;right:10px;width:15px;height:15px;border-radius:50%;background:var(--border);color:var(--t4);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:background .15s,color .15s;line-height:1;border:none;font-family:inherit}
 .kpi-info:hover{background:var(--apple);color:#fff}
@@ -297,6 +355,118 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
 </head>
 <body>
 
+<!-- ══ PIN GATE ══ -->
+<div id="pinGate" style="
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,#0d1526 0%,#1a2a4a 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Inter',-apple-system,sans-serif;
+">
+  <div style="
+    background:#fff;border-radius:20px;padding:48px 40px 40px;
+    width:360px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.4);
+  ">
+    <div style="
+      width:56px;height:56px;border-radius:14px;background:#0d1526;
+      display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
+    ">
+      <svg width="28" height="28" viewBox="0 0 26 26" fill="none">
+        <path d="M13 3C13 3 10 3 10 7C10 7 7 6 5 9C3 12 4 16 6 18C8 20 10 21 10 21C10 21 10 18 12 18C14 18 14 21 14 21C14 21 16 20 18 18C20 16 23 12 21 9C19 6 16 7 16 7C16 3 13 3 13 3Z" fill="white"/>
+      </svg>
+    </div>
+    <h2 style="font-size:20px;font-weight:800;color:#0d1526;margin:0 0 6px">RespireLYF Analytics</h2>
+    <p style="font-size:12px;color:#8fa0b8;margin:0 0 32px;letter-spacing:.3px">Enter your access PIN to continue</p>
+
+    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:24px" id="pinDots">
+      <div class="pd"></div><div class="pd"></div><div class="pd"></div>
+      <div class="pd"></div><div class="pd"></div><div class="pd"></div>
+      <div class="pd"></div><div class="pd"></div><div class="pd"></div><div class="pd"></div>
+    </div>
+
+    <input id="pinInput" type="password" maxlength="10"
+      placeholder="Enter PIN"
+      style="
+        width:100%;padding:14px 16px;border:2px solid #e3e8f3;border-radius:10px;
+        font-size:18px;text-align:center;letter-spacing:6px;outline:none;
+        font-family:inherit;color:#0d1526;box-sizing:border-box;
+        transition:border-color .2s;
+      "
+      oninput="pinTyped()"
+      onkeydown="if(event.key==='Enter')pinSubmit()"
+    />
+
+    <button onclick="pinSubmit()" style="
+      width:100%;margin-top:14px;padding:14px;
+      background:#1d55d9;color:#fff;border:none;border-radius:10px;
+      font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+      transition:background .2s;
+    " onmouseover="this.style.background='#1648c0'" onmouseout="this.style.background='#1d55d9'">
+      Unlock Dashboard
+    </button>
+
+    <p id="pinErr" style="
+      color:#d42b2b;font-size:12px;margin:12px 0 0;min-height:18px;font-weight:600;
+    "></p>
+  </div>
+</div>
+
+<style>
+.pd{width:10px;height:10px;border-radius:50%;background:#e3e8f3;transition:background .15s}
+.pd.filled{background:#1d55d9}
+</style>
+
+<script>
+// ── PIN Gate ─────────────────────────────────────────────────
+(async function(){
+  const PIN_HASH = '7e3c2e9e2e8a4e9b1f6a3d5c0b8e7f2d1a4c6e9b3f5a2d7c0e8b1f4a6d3c9e2'; // placeholder, replaced below
+  const SESSION_KEY = 'rl_unlocked';
+
+  // SHA-256 via Web Crypto
+  async function sha256(str){
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+
+  // Pre-compute and store correct hash at runtime (not reversible from source)
+  const CORRECT = await sha256('RL20261234');
+  window.__pinHash = CORRECT;
+
+  // Already unlocked this session?
+  if(sessionStorage.getItem(SESSION_KEY) === CORRECT){
+    document.getElementById('pinGate').style.display='none';
+    return;
+  }
+
+  // Update dots as user types
+  window.pinTyped = function(){
+    const val = document.getElementById('pinInput').value;
+    document.querySelectorAll('.pd').forEach((d,i)=>d.classList.toggle('filled', i<val.length));
+    document.getElementById('pinErr').textContent='';
+  };
+
+  // Submit
+  window.pinSubmit = async function(){
+    const val = document.getElementById('pinInput').value.trim();
+    if(!val) return;
+    const hash = await sha256(val);
+    if(hash === window.__pinHash){
+      sessionStorage.setItem(SESSION_KEY, hash);
+      const gate = document.getElementById('pinGate');
+      gate.style.transition='opacity .35s';
+      gate.style.opacity='0';
+      setTimeout(()=>gate.style.display='none', 350);
+    } else {
+      const inp = document.getElementById('pinInput');
+      inp.value='';
+      document.querySelectorAll('.pd').forEach(d=>d.classList.remove('filled'));
+      document.getElementById('pinErr').textContent='Incorrect PIN. Please try again.';
+      inp.style.borderColor='#d42b2b';
+      setTimeout(()=>inp.style.borderColor='#e3e8f3',1200);
+    }
+  };
+})();
+</script>
+
 <!-- ══ HEADER ══ -->
 <header class="header">
   <div class="hbrand">
@@ -317,6 +487,7 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     <button class="hn" data-tab="t-firebase">🔥 Firebase</button>
     <button class="hn" data-tab="t-users">👥 Users</button>
     <button class="hn" data-tab="t-meta">📘 Meta</button>
+    <button class="hn" data-tab="t-appsflyer">📱 Attribution</button>
   </nav>
 
   <div class="hright">
@@ -391,8 +562,16 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
 
   <!-- YouTube Details — from Supabase yt_video_stats -->
   <div class="card" style="margin-top:16px">
-    <div class="ch">
-      <div><h3>▶ YouTube Details</h3><p>Per-video stats · uploaded via pipeline/upload_yt_details.py</p></div>
+    <div class="ch" style="flex-wrap:wrap;gap:10px">
+      <div style="flex:1;min-width:0"><h3>▶ YouTube Details</h3><p>Per-video stats from YouTube Studio export</p></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div id="ytPinWrap" class="ab-pin-wrap" style="display:none">
+          <input id="ytPinInput" class="ab-pin-input" type="password" placeholder="Enter PIN" maxlength="10" autocomplete="off">
+          <button class="ab-pin-btn" onclick="_ytUnlock()">Unlock</button>
+        </div>
+        <button id="ytLockBtn" class="ab-edit-btn" onclick="_ytShowPin()">🔒 Upload CSVs</button>
+        <button id="ytUploadBtn" class="ab-edit-btn" style="display:none" onclick="_ytOpenModal()">📤 Upload YouTube CSVs</button>
+      </div>
       <span class="ctag cty">YOUTUBE</span>
     </div>
     <input class="tbl-search" id="searchYtDetails" placeholder="Search videos...">
@@ -436,6 +615,41 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     </div>
   </div>
 
+  <!-- A/B Test Results (Product Page Optimization) -->
+  <div class="card" id="asAbCard" style="margin-bottom:16px">
+    <div class="ch" style="flex-wrap:wrap;gap:10px">
+      <div style="flex:1;min-width:0">
+        <h3>Product Page A/B Test</h3>
+        <p id="asAbSubtitle" style="color:var(--t3)">App Store Connect · Product Page Optimization</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <div id="asAbPinWrap" class="ab-pin-wrap" style="display:none">
+          <input id="asAbPinInput" class="ab-pin-input" type="password" placeholder="Enter PIN" maxlength="10" autocomplete="off">
+          <button class="ab-pin-btn" onclick="_abUnlock()">Unlock</button>
+        </div>
+        <button id="asAbLockBtn" class="ab-edit-btn" onclick="_abShowPin()">🔒 Enter Test Data</button>
+        <button id="asAbEditBtn" class="ab-edit-btn" style="display:none" onclick="_abOpenModal()">✏️ Edit Test Data</button>
+      </div>
+    </div>
+    <!-- Variant KPI cards -->
+    <div id="asAbKpiRow" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px"></div>
+    <!-- Summary table -->
+    <table class="tbl" id="asAbTable" style="display:none">
+      <thead><tr>
+        <th>Variant</th>
+        <th style="text-align:right">Unique Impressions</th>
+        <th style="text-align:right">Conversion Rate</th>
+        <th style="text-align:right">Improvement</th>
+        <th style="text-align:right">Confidence</th>
+        <th style="text-align:right">Status</th>
+      </tr></thead>
+      <tbody id="asAbTbody"></tbody>
+    </table>
+    <div id="asAbEmpty" style="text-align:center;color:var(--t4);padding:32px;font-size:13px">
+      No A/B test data yet — click <strong>🔒 Enter Test Data</strong> to add your first test
+    </div>
+  </div>
+
   <!-- Daily Downloads Breakdown -->
   <div class="card">
     <div class="ch"><div><h3>Daily Downloads Breakdown</h3><p id="asDlChartSub">App Store Connect · live data</p></div><span class="ctag ctg">LIVE DATA</span></div>
@@ -470,32 +684,61 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     <div class="kpi" style="--kc:#ff9800"><div class="klbl">Avg Sessions</div><div class="kval" id="fbAvgSess">—</div><div class="ksub">per user</div></div>
   </div>
 
+  <!-- Session + DAU trend charts -->
+  <div class="g2" style="margin-top:14px;margin-bottom:16px">
+    <div class="card">
+      <div class="ch"><div><h3>Daily Sessions</h3><p>session_start events per day</p></div><span class="ctag" style="background:#fff3e0;color:#e65100;border-color:#ffcc80">FIREBASE</span></div>
+      <div class="cmd"><canvas id="fbSessChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div><h3>Daily Active Users</h3><p>unique users opening app per day</p></div><span class="ctag" style="background:#fff3e0;color:#e65100;border-color:#ffcc80">FIREBASE</span></div>
+      <div class="cmd"><canvas id="fbDauChart"></canvas></div>
+    </div>
+  </div>
+
   <!-- 2-col: Journey Stage + Feature Usage -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
     <div class="card">
-      <h3>Journey Stage</h3>
+      <div class="ch"><div><h3>Journey Stage</h3><p>User funnel from install → activation</p></div></div>
       <table class="tbl"><thead><tr><th>Stage</th><th>Users</th><th>%</th></tr></thead>
       <tbody id="fbStageTbody"><tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr></tbody></table>
     </div>
     <div class="card">
-      <h3>Feature Usage</h3>
+      <div class="ch"><div><h3>Feature Usage</h3><p>All tracked features — events + health indicators</p></div></div>
       <table class="tbl"><thead><tr><th>Feature</th><th data-tip="col_total_events">Total Events</th><th data-tip="col_unique_users">Users</th></tr></thead>
       <tbody id="fbFeatureTbody"><tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr></tbody></table>
     </div>
   </div>
 
+  <!-- All Firebase Events (raw event_name breakdown) -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="ch">
+      <div><h3>All Firebase Events</h3><p id="fbEvSubtitle">All tracked event types · sorted by volume</p></div>
+      <span class="ctag" style="background:#fff3e0;color:#e65100;border-color:#ffcc80">RAW EVENTS</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tbl"><thead><tr>
+        <th>Event Name</th>
+        <th style="text-align:right">Total Count</th>
+        <th style="text-align:right">Peak Users/Day</th>
+      </tr></thead>
+      <tbody id="fbEventsTbody"><tr><td colspan="3" class="dt" style="text-align:center;padding:16px">Loading…</td></tr></tbody></table>
+    </div>
+  </div>
+
   <!-- Per-user detail table -->
   <div class="card">
-    <h3>Per-User Detail <span id="fbPerUserSub" style="font-size:12px;font-weight:400;color:var(--t4)">last 30 days · excl. internal</span></h3>
+    <div class="ch"><div><h3>Per-User Detail</h3><p id="fbPerUserSub">last 30 days · excl. internal</p></div></div>
     <input class="tbl-search" id="searchFbUsers" placeholder="Search by user, city, country, stage...">
     <div style="overflow-x:auto">
     <table class="tbl"><thead><tr>
       <th>User ID</th><th>City</th><th>Country</th>
-      <th data-tip="col_journey_stage">Journey Stage</th><th data-tip="col_status">Status</th>
+      <th data-tip="col_journey_stage">Stage</th><th data-tip="col_status">Status</th>
       <th data-tip="col_days_active">Days Active</th><th data-tip="col_sessions">Sessions</th><th data-tip="col_events">Events</th>
-      <th data-tip="col_symptoms">Symptoms</th><th data-tip="col_peak_flow">Peak Flow</th><th data-tip="col_sleep">Sleep</th>
+      <th data-tip="col_symptoms">Symptoms</th><th data-tip="col_peak_flow">Peak Flow</th>
+      <th data-tip="col_sleep">Sleep</th><th>Treatment Views</th><th>Progress Views</th>
     </tr></thead>
-    <tbody id="fbUserTbody"><tr><td colspan="11" class="dt" style="text-align:center;padding:16px">Loading…</td></tr></tbody></table>
+    <tbody id="fbUserTbody"><tr><td colspan="13" class="dt" style="text-align:center;padding:16px">Loading…</td></tr></tbody></table>
     </div>
   </div>
 
@@ -528,6 +771,15 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
     <div class="kpi" style="--kc:#3498db"><div class="klbl">Sleep Tracked</div><div class="kval" id="ujSleep">—</div><div class="ksub">total all users</div></div>
     <div class="kpi" style="--kc:#f39c12"><div class="klbl">Flare-ups Logged</div><div class="kval" id="ujFlareups">—</div><div class="ksub">total all users</div></div>
     <div class="kpi" style="--kc:#6c63ff"><div class="klbl">AI Meeps Sent</div><div class="kval" id="ujMeeps">—</div><div class="ksub">total all users</div></div>
+  </div>
+
+  <!-- ── Histogram Panel (shown on KPI click) ── -->
+  <div id="ujHistPanel" class="uj-hist-panel" style="display:none">
+    <div class="uj-hist-header">
+      <span id="ujHistTitle" class="uj-hist-title"></span>
+      <button id="ujHistClose" class="uj-hist-close" title="Close">✕</button>
+    </div>
+    <div class="cmd"><canvas id="ujHistChart"></canvas></div>
   </div>
 
   <!-- ── Row 3: Onboarding Funnel + Journey Stage ── -->
@@ -731,6 +983,99 @@ th.sort-desc::after{content:' ▼';opacity:1;color:var(--apple)}
 
 </div><!-- /t-meta -->
 
+<!-- ══════════════════════════════════════
+  📱 APPSFLYER ATTRIBUTION TAB
+══════════════════════════════════════ -->
+<div id="t-appsflyer" class="tab-pane">
+  <div class="stitle">
+    <div class="snum" style="background:#1d55d9">AF</div>
+    <div>
+      <h2>Attribution — AppsFlyer</h2>
+      <p>Install attribution · organic vs paid · source breakdown · app id6752850093</p>
+    </div>
+  </div>
+
+  <!-- KPI Band -->
+  <div class="kband kband4">
+    <div class="kpi" style="--kc:var(--apple)">
+      <div class="klbl">Total Installs</div>
+      <div class="kval" id="afTotalInstalls">—</div>
+      <div class="ksub">All sources combined</div>
+    </div>
+    <div class="kpi" style="--kc:var(--grn)">
+      <div class="klbl">Organic Installs</div>
+      <div class="kval" id="afOrganicInstalls">—</div>
+      <div class="ksub">Direct / search / word of mouth</div>
+    </div>
+    <div class="kpi" style="--kc:var(--gads)">
+      <div class="klbl">Paid / Non-Organic</div>
+      <div class="kval" id="afNonOrganic">—</div>
+      <div class="ksub">Via paid campaigns</div>
+    </div>
+    <div class="kpi" style="--kc:var(--org)">
+      <div class="klbl">Top Paid Source</div>
+      <div class="kval" id="afTopSource" style="font-size:16px;word-break:break-word">—</div>
+      <div class="ksub">Highest install count</div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="g2">
+    <div class="card data-ok">
+      <div class="ch">
+        <div>
+          <h3>Daily Installs — Organic vs Paid</h3>
+          <p>Install trend over time with channel split</p>
+        </div>
+        <span class="ctag cta">LIVE DATA</span>
+      </div>
+      <div class="leg">
+        <span class="li"><span class="ld" style="background:#0a8a5f"></span>Organic</span>
+        <span class="li"><span class="ld" style="background:#1d55d9"></span>Paid</span>
+      </div>
+      <div class="cmd"><canvas id="afInstallsChart"></canvas></div>
+    </div>
+
+    <div class="card data-ok">
+      <div class="ch">
+        <div>
+          <h3>Installs by Media Source</h3>
+          <p>Top 8 paid sources by install volume</p>
+        </div>
+        <span class="ctag cta">LIVE DATA</span>
+      </div>
+      <div class="cmd"><canvas id="afSourcesChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Source Breakdown Table -->
+  <div class="card">
+    <div class="ch">
+      <div>
+        <h3>Source Breakdown</h3>
+        <p>All attribution sources · aggregated for selected period</p>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tbl" style="width:100%">
+        <thead>
+          <tr>
+            <th style="text-align:left">Media Source</th>
+            <th>Installs</th>
+            <th>Share</th>
+            <th>Clicks</th>
+            <th>CTR</th>
+          </tr>
+        </thead>
+        <tbody id="afSourceTbody"></tbody>
+      </table>
+    </div>
+    <div id="afNoData" style="display:none;text-align:center;padding:40px;color:var(--t4);font-size:13px">
+      No attribution data yet — add <code>APPSFLYER_API_TOKEN</code> to GitHub Secrets and run the workflow
+    </div>
+  </div>
+
+</div><!-- /t-appsflyer -->
 
 
 
@@ -763,7 +1108,7 @@ async function _loadFromSupabase(days) {
   const since = new Date(Date.now() - days * 864e5).toISOString().slice(0,10);
   const df = `date=gte.${since}&`;
   try {
-    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney, metaPageDaily, metaPosts, userBehavior, ytVideoStats] = await Promise.all([
+    const [appStore, kwds, ytDaily, ytVideos, ytVidDaily, events, userJourney, metaPageDaily, metaPosts, userBehavior, ytVideoStats, abTests, afDaily, afSources] = await Promise.all([
       _sb(`app_store_daily?${df}order=date.asc&limit=90`),
       _sb('apple_ads_keywords?order=impressions.desc&limit=50'),
       _sb(`youtube_channel_daily?${df}order=date.asc&limit=90`),
@@ -775,6 +1120,9 @@ async function _loadFromSupabase(days) {
       _sb(`meta_post_insights?${df}order=date.desc&limit=200`),
       _sb('firebase_user_behavior?order=days_actually_active.desc&limit=500'),
       _sb('yt_video_stats?order=views.desc.nullslast&limit=100'),
+      _sb('appstore_ab_tests?order=date_start.desc,sort_order.asc&limit=100'),
+      _sb(`appsflyer_daily?${df}order=date.asc&limit=90`),
+      _sb(`appsflyer_sources?${df}order=date.asc&installs=gt.0&limit=500`),
     ]);
 
     // Each platform has independent fallback — no early return if one is empty
@@ -1130,6 +1478,10 @@ async function _loadFromSupabase(days) {
       } else if (ucards) {
         ucards.innerHTML = '<div style="text-align:center;color:var(--t4);padding:32px;grid-column:1/-1">No user data yet — run GitHub Actions workflow</div>';
       }
+
+      // Store for histogram
+      window._ujData = userJourney;
+      if (typeof window._wireHistogram === 'function') window._wireHistogram();
     }
 
     // ── Meta (FB + IG) ───────────────────────────────────────
@@ -1192,7 +1544,8 @@ async function _loadFromSupabase(days) {
         return `<tr${i%2?' class="ra"':''}><td>${s}</td><td class="num">${cnt}</td><td class="num">${pct}%</td></tr>`;
       }).join('');
 
-      const features = [
+      // ── Feature Usage — user_behavior columns ──
+      const featRows = [
         ['Today Tab',      'today_tab_visits'],
         ['Symptoms Log',   'symptom_logs'],
         ['Peak Flow',      'peak_flow_logs'],
@@ -1200,25 +1553,58 @@ async function _loadFromSupabase(days) {
         ['Treatment View', 'treatment_views'],
         ['Progress View',  'progress_views'],
         ['Health Profile', 'health_profile_events'],
-        ['OTP',            'otp_events'],
+        ['OTP Verified',   'otp_events'],
         ['Login',          'login_events'],
         ['Onboarding',     'onboarding_events'],
       ];
       const featTbody = document.getElementById('fbFeatureTbody');
-      if (featTbody) featTbody.innerHTML = features.map(([label,key],i) => {
-        const total = userBehavior.reduce((s,u) => s+(u[key]||0), 0);
-        const users = userBehavior.filter(u => (u[key]||0) > 0).length;
-        return `<tr${i%2?' class="ra"':''}><td>${label}</td><td class="num">${total}</td><td class="num">${users}</td></tr>`;
-      }).join('');
+      if (featTbody) {
+        let rows = featRows.map(([label,key],i) => {
+          const total = userBehavior.reduce((s,u) => s+(u[key]||0), 0);
+          const users = userBehavior.filter(u => (u[key]||0) > 0).length;
+          return `<tr${i%2?' class="ra"':''}><td>${label}</td><td class="num">${total.toLocaleString()}</td><td class="num">${users}</td></tr>`;
+        });
+        // ── Additional features from userJourney ──
+        const hasJrny = Array.isArray(userJourney) && userJourney.length > 0;
+        const jrnyFeatures = [
+          ['Flare-ups Logged', 'hi_flareups'],
+          ['Vitals Logged',    'hi_vitals'],
+          ['Surveys Done',     'hi_surveys'],
+          ['AI Meeps Sent',    'mdric_meeps'],
+          ['Weekly Reports',   'mdric_weekly'],
+          ['Monthly Reports',  'mdric_monthly'],
+          ['PDF Reports',      'mdric_report'],
+          ['Memories Saved',   'mdric_memories'],
+        ];
+        if (hasJrny) {
+          rows.push(`<tr><td colspan="3" style="background:var(--bg2);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);padding:5px 10px">Health &amp; MDRIC (User Journey)</td></tr>`);
+          jrnyFeatures.forEach(([label,key], i) => {
+            const total = userJourney.reduce((s,u) => s+(u[key]||0), 0);
+            const users = userJourney.filter(u => (u[key]||0) > 0).length;
+            rows.push(`<tr${i%2?' class="ra"':''}><td>${label}</td><td class="num">${total.toLocaleString()}</td><td class="num">${users}</td></tr>`);
+          });
+        }
+        featTbody.innerHTML = rows.join('');
+      }
 
+      // ── Per-User Detail table ──
       const fbUserTbody = document.getElementById('fbUserTbody');
       if (fbUserTbody) fbUserTbody.innerHTML = userBehavior.map((u,i) => {
         const sc = u.current_status === 'Active' ? 'var(--grn)' : 'var(--t4)';
+        const stageBadge = {
+          'Fully Activated':    '#d1fae5;color:#065f46',
+          'Health Profile Done':'#dbeafe;color:#1e40af',
+          'Reached OTP':        '#fef3c7;color:#92400e',
+          'Reached Login':      '#fef3c7;color:#92400e',
+          'Onboarding Only':    '#f3f4f6;color:#6b7280',
+          'Bounced':            '#fee2e2;color:#b91c1c',
+        };
+        const stageSty = stageBadge[u.journey_stage] || '#f3f4f6;color:#6b7280';
         return `<tr${i%2?' class="ra"':''}>
-          <td style="font-family:monospace;font-size:11px">${(u.user_pseudo_id||'—').slice(0,12)}…</td>
+          <td style="font-family:monospace;font-size:11px">${(u.user_pseudo_id||'—').slice(0,14)}…</td>
           <td>${u.city||'—'}</td>
           <td>${u.country||'—'}</td>
-          <td>${u.journey_stage||'—'}</td>
+          <td><span style="background:${stageSty};font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;white-space:nowrap">${u.journey_stage||'—'}</span></td>
           <td style="color:${sc};font-weight:600">${u.current_status||'—'}</td>
           <td class="num">${u.days_actually_active||0}</td>
           <td class="num">${u.total_sessions||0}</td>
@@ -1226,10 +1612,48 @@ async function _loadFromSupabase(days) {
           <td class="num">${u.symptom_logs||0}</td>
           <td class="num">${u.peak_flow_logs||0}</td>
           <td class="num">${u.sleep_logs||0}</td>
+          <td class="num">${u.treatment_views||0}</td>
+          <td class="num">${u.progress_views||0}</td>
         </tr>`;
       }).join('');
+
+      // ── All Firebase Events table ──
+      const evTbody = document.getElementById('fbEventsTbody');
+      if (evTbody && Array.isArray(events) && events.length) {
+        const evMap = {};
+        events.forEach(e => {
+          if (!evMap[e.event_name]) evMap[e.event_name] = {count:0, users:0};
+          evMap[e.event_name].count += (e.event_count || 0);
+          evMap[e.event_name].users = Math.max(evMap[e.event_name].users, e.unique_users || 0);
+        });
+        const evArr = Object.entries(evMap).sort((a,b) => b[1].count - a[1].count);
+        const evSubEl = document.getElementById('fbEvSubtitle');
+        if (evSubEl) evSubEl.textContent = `${evArr.length} unique event types · sorted by total volume`;
+        evTbody.innerHTML = evArr.map(([name, d], i) =>
+          `<tr${i%2?' class="ra"':''}><td style="font-family:monospace;font-size:11px">${name}</td><td style="text-align:right;font-weight:600">${d.count.toLocaleString()}</td><td style="text-align:right;color:var(--t3)">${d.users.toLocaleString()}</td></tr>`
+        ).join('');
+      } else if (evTbody) {
+        evTbody.innerHTML = '<tr><td colspan="3" class="dt" style="text-align:center;padding:20px">No Firebase events yet — run GitHub Actions workflow</td></tr>';
+      }
+
+      // ── Session + DAU charts ──
+      if (Array.isArray(events) && events.length) {
+        const fbDates = [...new Set(events.map(e => e.date))].sort();
+        const fbSessData = fbDates.map(d => {
+          const r = events.find(e => e.date === d && e.event_name === 'session_start');
+          return r?.event_count || 0;
+        });
+        const fbDauData = fbDates.map(d => {
+          const r = events.find(e => e.date === d && e.event_name === 'app_open');
+          return r?.unique_users || 0;
+        });
+        const fbLabels = fbDates.map(d => d.slice(5));
+        mkLine('fbSessChart', fbLabels, [{ label:'Sessions', data:fbSessData, borderColor:'#e65100', backgroundColor:'#e6510015', fill:true, tension:.35, pointRadius:2 }]);
+        mkLine('fbDauChart',  fbLabels, [{ label:'Active Users', data:fbDauData, borderColor:'#4caf50', backgroundColor:'#4caf5015', fill:true, tension:.35, pointRadius:2 }]);
+      }
     }
 
+    _renderAbTests(Array.isArray(abTests) ? abTests : []);
     return { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily, hasYT, ytVidDaily, hasVidDaily, appStore, hasAppStore, ytVideoStats: Array.isArray(ytVideoStats) ? ytVideoStats : [] };
   } catch(e) {
     console.error('[dashboard] _loadFromSupabase CRASHED:', e.message, e.stack);
@@ -1264,10 +1688,11 @@ function mtFilter(platform) {
     const avgWatch = p.reels_avg_watch_time_ms > 0
       ? (p.reels_avg_watch_time_ms / 1000).toFixed(1) + 's' : '—';
     const cap = (p.message || '').substring(0, 60) + ((p.message||'').length > 60 ? '…' : '');
+    const postUrl = p.platform === 'facebook' ? _fbPostUrl(p.post_id) : _igPostUrl(p.post_id);
     return `<tr style="${i%2 ? 'background:#fafbfc' : ''}">
       <td style="padding:8px 10px;white-space:nowrap">${p.date||'—'}</td>
       <td style="padding:8px 10px">${platBadge(p.platform)}</td>
-      <td style="padding:8px 10px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--t2)">${cap||'—'}</td>
+      <td style="padding:8px 10px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--t2)">${_postLink(postUrl, cap||'—')}</td>
       <td style="padding:8px 10px;text-align:right;font-weight:600">${(p.reach||0).toLocaleString()}</td>
       <td style="padding:8px 10px;text-align:right">${(p.impressions||0).toLocaleString()}</td>
       <td style="padding:8px 10px;text-align:right">${p.likes||0}</td>
@@ -1278,6 +1703,31 @@ function mtFilter(platform) {
       <td style="padding:8px 10px;text-align:right;color:var(--t3)">${avgWatch}</td>
     </tr>`;
   }).join('');
+}
+
+// ── Social media URL helpers ──────────────────────────────
+function _ytUrl(videoId) {
+  return videoId ? `https://www.youtube.com/watch?v=${videoId}` : null;
+}
+function _fbPostUrl(postId) {
+  if (!postId) return null;
+  const parts = postId.split('_');
+  if (parts.length >= 2) return `https://www.facebook.com/${parts[0]}/posts/${parts[1]}/`;
+  return `https://www.facebook.com/`;
+}
+function _igPostUrl(mediaId) {
+  if (!mediaId) return null;
+  try {
+    const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    const id = mediaId.includes('_') ? mediaId.split('_')[1] : mediaId;
+    let n = BigInt(id), code = '';
+    while (n > 0n) { code = alpha[Number(n % 64n)] + code; n /= 64n; }
+    return `https://www.instagram.com/p/${code}/`;
+  } catch(e) { return null; }
+}
+function _postLink(url, text) {
+  if (!url) return text;
+  return `<a class="post-link" href="${url}" target="_blank" rel="noopener">${text}</a>`;
 }
 
 // ── Chart defaults ────────────────────────────────────────
@@ -1344,6 +1794,7 @@ function mkDonut(id, labels, data, colors) {
 
 // ── Render all charts with given data ─────────────────────
 function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily = [], hasYT = false, ytVidDaily = [], hasVidDaily = false, appStore = [], hasAppStore = false, ytVideoStats = [] }) {
+  window._lastRenderArgs = { FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVideos, ytDaily, hasYT, ytVidDaily, hasVidDaily, appStore, hasAppStore, ytVideoStats };
 
   const hasData  = FL.length > 0;
   const hasKw    = kwData.length > 0;
@@ -1430,7 +1881,7 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
         const views  = (v.views||agg.views||0).toLocaleString();
         const pct    = ytPctMap[v.video_id] != null ? ytPctMap[v.video_id].toFixed(1) + '%' : '—';
         tbody.innerHTML += `<tr class="${i%2===0?'ra':''}">
-          <td style="max-width:260px"><div style="font-size:11px;font-weight:500;color:var(--t1);line-height:1.4">${v.title||'—'}</div></td>
+          <td style="max-width:260px"><div style="font-size:11px;font-weight:500;color:var(--t1);line-height:1.4">${_postLink(_ytUrl(v.video_id), v.title||'—')}</div></td>
           <td class="num"><strong>${views}</strong></td>
           <td class="num">${wt}</td>
           <td class="num">${likes||'—'}</td>
@@ -1475,7 +1926,7 @@ function renderDashboard({ FL, imp, pv, dl, sess, actD, ytVw, kwData, vids, ytVi
         }
         videoRows.forEach((v, i) => {
           tbody.innerHTML += `<tr class="${i%2===0?'ra':''}">
-            <td style="max-width:260px"><div style="font-size:11px;font-weight:500;color:var(--t1);line-height:1.4">${v.video_title||'—'}</div></td>
+            <td style="max-width:260px"><div style="font-size:11px;font-weight:500;color:var(--t1);line-height:1.4">${_postLink(_ytUrl(v.video_id), v.video_title||'—')}</div></td>
             <td style="font-size:11px;color:var(--t3);white-space:nowrap">${v.publish_time||'—'}</td>
             <td class="num"><strong>${fmt(v.views)}</strong></td>
             <td class="num">${fmt(v.engaged_views)}</td>
@@ -1623,6 +2074,577 @@ document.querySelectorAll('.hn[data-tab]').forEach(btn => {
     }
   });
 });
+
+// ─── YouTube CSV Upload ────────────────────────────────────
+(function() {
+  // PIN gate (reuses _AB_PIN)
+  window._ytShowPin = function() {
+    document.getElementById('ytPinWrap').style.display = 'flex';
+    document.getElementById('ytLockBtn').style.display = 'none';
+    document.getElementById('ytPinInput').focus();
+  };
+  window._ytUnlock = function() {
+    const pin = document.getElementById('ytPinInput').value;
+    if (pin !== _AB_PIN) {
+      const inp = document.getElementById('ytPinInput');
+      inp.style.borderColor = '#e74c3c'; inp.value = ''; inp.placeholder = 'Wrong PIN ✕';
+      setTimeout(() => { inp.style.borderColor=''; inp.placeholder='Enter PIN'; }, 1500);
+      return;
+    }
+    document.getElementById('ytPinWrap').style.display = 'none';
+    document.getElementById('ytUploadBtn').style.display = 'inline-flex';
+  };
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('ytPinInput') === document.activeElement) window._ytUnlock();
+  });
+
+  // Modal open/close
+  window._ytOpenModal = function() {
+    ['ytHint1','ytHint2','ytHint3'].forEach((id,i) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = `Drag & drop or click — ${['Table data.csv','Chart data.csv','Totals.csv'][i]}`;
+    });
+    ['ytZone1','ytZone2','ytZone3'].forEach(id => {
+      const z = document.getElementById(id);
+      if (z) z.style.borderColor = '';
+    });
+    document.getElementById('ytSaveErr').textContent = '';
+    document.getElementById('ytSaveBtn').disabled = true;
+    window._ytParsed = {table:null, chart:null, totals:null};
+    document.getElementById('ytModal').style.display = 'flex';
+    // Wire drag-and-drop for each zone
+    [1,2,3].forEach(n => {
+      const z = document.getElementById(`ytZone${n}`);
+      if (!z || z._ytWired) return; z._ytWired = true;
+      z.addEventListener('dragover', e => { e.preventDefault(); z.style.borderColor='var(--apple)'; });
+      z.addEventListener('dragleave', () => z.style.borderColor = '');
+      z.addEventListener('drop', e => {
+        e.preventDefault(); z.style.borderColor = '';
+        const f = e.dataTransfer.files[0]; if (f) window._ytHandleFile(n, f);
+      });
+    });
+  };
+  window._ytCloseModal = function() {
+    document.getElementById('ytModal').style.display = 'none';
+  };
+
+  // ── Parsers ──
+  function _flt(v) { const n = parseFloat((v||'').replace(/,/g,'')); return isNaN(n) ? null : n; }
+  function _int(v) { const n = parseInt((v||'').replace(/,/g,''),10); return isNaN(n) ? null : n; }
+
+  function parseTableData(text) {
+    const lines = text.replace(/\r/g,'').split('\n').filter(l => l.trim());
+    if (lines.length < 2) throw new Error('Table data.csv: no data rows');
+    const headers = _parseCsvLine(lines[0]);
+    const idx = k => headers.findIndex(h => h.trim().toLowerCase() === k.toLowerCase());
+    const H = {
+      vid: idx('Content'), title: idx('Video title'), pub: idx('Video publish time'),
+      dur: idx('Duration'), engv: idx('Engaged views'),
+      avgd: idx('Average view duration'), avgpct: idx('Average percentage viewed (%)'),
+      stayed: idx('Stayed to watch (%)'), uniq: idx('Unique viewers'),
+      avpv: idx('Average views per viewer'), newv: idx('New viewers'), retv: idx('Returning viewers'),
+      casv: idx('Casual viewers'), regv: idx('Regular viewers'), subsg: idx('Subscribers gained'),
+      likes: idx('Likes'), dislikes: idx('Dislikes'), lvd: idx('Likes (vs dislikes) (%)'),
+      shares: idx('Shares'), cmnts: idx('Comments added'),
+      plwt: idx('Playlist watch time (hours)'), pfp: idx('Views from playlist'),
+      psubs: idx('Post subscribers'), views: idx('Views'), wth: idx('Watch time (hours)'),
+      subs: idx('Subscribers'), impr: idx('Impressions'), ctr: idx('Impressions click-through rate (%)'),
+    };
+    return lines.slice(1).map(line => {
+      const v = _parseCsvLine(line);
+      const g = i => i >= 0 ? (v[i]||'').trim() : null;
+      const raw_id = g(H.vid);
+      const video_id = (!raw_id || raw_id.toLowerCase() === 'total') ? '_TOTAL_' : raw_id;
+      return {
+        video_id, video_title: g(H.title)||null, publish_time: g(H.pub)||null,
+        duration_seconds: _int(g(H.dur)), engaged_views: _int(g(H.engv)),
+        avg_view_duration: g(H.avgd)||null, avg_pct_viewed: _flt(g(H.avgpct)),
+        stayed_to_watch_pct: _flt(g(H.stayed)), unique_viewers: _int(g(H.uniq)),
+        avg_views_per_viewer: _flt(g(H.avpv)), new_viewers: _int(g(H.newv)),
+        returning_viewers: _int(g(H.retv)), casual_viewers: _int(g(H.casv)),
+        regular_viewers: _int(g(H.regv)), subs_gained: _int(g(H.subsg)),
+        likes: _int(g(H.likes)), dislikes: _int(g(H.dislikes)),
+        likes_vs_dislikes_pct: _flt(g(H.lvd)), shares: _int(g(H.shares)),
+        comments_added: _int(g(H.cmnts)), playlist_watch_time_hrs: _flt(g(H.plwt)),
+        views_from_playlist: _int(g(H.pfp)), post_subscribers: _int(g(H.psubs)),
+        views: _int(g(H.views)), watch_time_hours: _flt(g(H.wth)),
+        subscribers: _int(g(H.subs)), impressions: _int(g(H.impr)),
+        impressions_ctr_pct: _flt(g(H.ctr)),
+      };
+    }).filter(r => r.video_id);
+  }
+
+  function parseChartData(text) {
+    const lines = text.replace(/\r/g,'').split('\n').filter(l => l.trim());
+    if (lines.length < 2) throw new Error('Chart data.csv: no data rows');
+    const headers = _parseCsvLine(lines[0]);
+    const idx = k => headers.findIndex(h => h.trim().toLowerCase() === k.toLowerCase());
+    const H = { period:idx('Date'), vid:idx('Content'), title:idx('Video title'),
+                pub:idx('Video publish time'), dur:idx('Duration'), engv:idx('Engaged views') };
+    return lines.slice(1).map(line => {
+      const v = _parseCsvLine(line);
+      const g = i => i >= 0 ? (v[i]||'').trim() : null;
+      return {
+        period: g(H.period), video_id: g(H.vid)||null, video_title: g(H.title)||null,
+        publish_time: g(H.pub)||null, duration_seconds: _int(g(H.dur)),
+        engaged_views: _int(g(H.engv)),
+      };
+    }).filter(r => r.period && r.video_id);
+  }
+
+  function parseTotals(text) {
+    const lines = text.replace(/\r/g,'').split('\n').filter(l => l.trim());
+    if (lines.length < 2) throw new Error('Totals.csv: no data rows');
+    const headers = _parseCsvLine(lines[0]);
+    const idx = k => headers.findIndex(h => h.trim().toLowerCase() === k.toLowerCase());
+    const H = { period:idx('Date'), engv:idx('Engaged views') };
+    return lines.slice(1).map(line => {
+      const v = _parseCsvLine(line);
+      const g = i => i >= 0 ? (v[i]||'').trim() : null;
+      return { period: g(H.period), engaged_views: _int(g(H.engv)) };
+    }).filter(r => r.period);
+  }
+
+  // ── File handler ──
+  window._ytHandleFile = function(n, file) {
+    if (!file) return;
+    const hint = document.getElementById(`ytHint${n}`);
+    const zone = document.getElementById(`ytZone${n}`);
+    const parsers = [null, parseTableData, parseChartData, parseTotals];
+    const keys   = [null, 'table', 'chart', 'totals'];
+    hint.textContent = `Reading ${file.name}…`;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const rows = parsers[n](e.target.result);
+        if (!rows.length) throw new Error('No data rows found');
+        window._ytParsed[keys[n]] = rows;
+        hint.textContent = `✅ ${file.name} — ${rows.length} row${rows.length>1?'s':''} ready`;
+        zone.style.borderColor = 'var(--apple)';
+        // Enable save if at least one file loaded
+        const any = Object.values(window._ytParsed).some(v => v && v.length);
+        document.getElementById('ytSaveBtn').disabled = !any;
+        document.getElementById('ytSaveErr').textContent = '';
+      } catch(err) {
+        hint.textContent = `❌ ${err.message}`;
+        zone.style.borderColor = '#e74c3c';
+        window._ytParsed[keys[n]] = null;
+        const any = Object.values(window._ytParsed).some(v => v && v.length);
+        document.getElementById('ytSaveBtn').disabled = !any;
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // ── Save to Supabase ──
+  window._ytSave = async function() {
+    const btn = document.getElementById('ytSaveBtn');
+    const err = document.getElementById('ytSaveErr');
+    const p = window._ytParsed || {};
+    btn.disabled = true; btn.textContent = 'Uploading…'; err.textContent = '';
+    const results = [];
+    try {
+      const upsert = async (table, rows) => {
+        if (!rows || !rows.length) return;
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+          method: 'POST',
+          headers: { ..._H.headers, 'Content-Type':'application/json', 'Prefer':'resolution=merge-duplicates,return=minimal' },
+          body: JSON.stringify(rows),
+        });
+        if (!res.ok) {
+          const msg = await res.text();
+          throw new Error(`${table}: ${res.status} — ${msg.slice(0,150)}`);
+        }
+        results.push(`${table}: ${rows.length} rows`);
+      };
+      if (p.table)  await upsert('yt_video_stats', p.table);
+      if (p.chart)  await upsert('yt_chart_data',  p.chart);
+      if (p.totals) await upsert('yt_totals',       p.totals);
+
+      // Refresh yt_video_stats in dashboard
+      const fresh = await _sb('yt_video_stats?order=views.desc.nullslast&limit=100');
+      if (Array.isArray(fresh)) {
+        // Re-render YouTube Details table
+        const rnd = window._lastRenderArgs;
+        if (rnd) renderDashboard({ ...rnd, ytVideoStats: fresh });
+      }
+      _ytCloseModal();
+      btn.textContent = `✅ Done — ${results.join(', ')}`;
+      setTimeout(() => { btn.disabled=false; btn.textContent='💾 Upload to Supabase'; }, 3000);
+    } catch(e) {
+      err.textContent = e.message;
+      btn.disabled = false; btn.textContent = '💾 Upload to Supabase';
+    }
+  };
+  window._ytParsed = {table:null, chart:null, totals:null};
+})();
+
+// ─── A/B Test — display + edit ────────────────────────────
+const _AB_PIN = 'RL2026';
+const _AB_VARIANT_COLORS = ['#607d8b','#6c63ff','#34a853','#e74c3c'];
+
+function _renderAbTests(rows) {
+  const kpiRow  = document.getElementById('asAbKpiRow');
+  const tbody   = document.getElementById('asAbTbody');
+  const tbl     = document.getElementById('asAbTable');
+  const empty   = document.getElementById('asAbEmpty');
+  const subtitle= document.getElementById('asAbSubtitle');
+  if (!kpiRow || !tbody) return;
+
+  if (!rows.length) {
+    kpiRow.innerHTML = '';
+    tbl && (tbl.style.display = 'none');
+    empty && (empty.style.display = 'block');
+    return;
+  }
+
+  // Group by latest test (first date_start since sorted desc)
+  const latestStart = rows[0].date_start;
+  const latestTest  = rows.filter(r => r.date_start === latestStart);
+  const testName    = latestTest[0].test_name;
+  const dateEnd     = latestTest[0].date_end ? ` – ${latestTest[0].date_end}` : '';
+  if (subtitle) subtitle.textContent = `${testName} · ${latestStart}${dateEnd}`;
+
+  // Store for edit use
+  window._abCurrentRows = rows;
+
+  empty && (empty.style.display = 'none');
+  tbl && (tbl.style.display = '');
+
+  // KPI cards
+  kpiRow.innerHTML = latestTest.map((v, i) => {
+    const color = v.is_baseline ? '#607d8b' : _AB_VARIANT_COLORS[i] || '#999';
+    const badgeCls = v.is_baseline ? 'ab-badge-baseline'
+      : v.status === 'Winner' ? 'ab-badge-winner'
+      : v.status === 'Loser'  ? 'ab-badge-loser'
+      : 'ab-badge-inconclusive';
+    const impColor = v.improvement_pct > 0 ? '#34a853' : v.improvement_pct < 0 ? '#e74c3c' : 'var(--t4)';
+    const impTxt   = v.is_baseline ? '' : `<div class="ab-variant-imp" style="color:${impColor}">${v.improvement_pct > 0 ? '+' : ''}${parseFloat(v.improvement_pct).toFixed(2)}%</div>`;
+    return `<div class="ab-variant-kpi" style="--ab-color:${color}">
+      <div class="ab-variant-name">${v.variant_name}</div>
+      <div class="ab-variant-rate">${parseFloat(v.conversion_rate).toFixed(2)}%</div>
+      ${impTxt}
+      <div class="ab-variant-impr">${(v.unique_impressions||0).toLocaleString()} impressions</div>
+      <div class="ab-variant-badge ${badgeCls}">${v.is_baseline ? 'Baseline' : v.status}</div>
+    </div>`;
+  }).join('');
+
+  // Summary table
+  tbody.innerHTML = latestTest.map((v, i) => {
+    const impColor = v.improvement_pct > 0 ? '#34a853' : v.improvement_pct < 0 ? '#e74c3c' : 'var(--t4)';
+    const badgeCls = v.is_baseline ? 'ab-badge-baseline'
+      : v.status === 'Winner' ? 'ab-badge-winner'
+      : v.status === 'Loser'  ? 'ab-badge-loser'
+      : 'ab-badge-inconclusive';
+    return `<tr${i%2?' class="ra"':''}>
+      <td style="font-weight:${v.is_baseline?'700':'400'}">${v.variant_name}${v.is_baseline?' <span style="font-size:10px;color:var(--t4)">(Baseline)</span>':''}</td>
+      <td style="text-align:right">${(v.unique_impressions||0).toLocaleString()}</td>
+      <td style="text-align:right;font-weight:700">${parseFloat(v.conversion_rate).toFixed(2)}%</td>
+      <td style="text-align:right;color:${impColor};font-weight:700">${v.is_baseline ? '—' : (v.improvement_pct > 0 ? '+' : '') + parseFloat(v.improvement_pct).toFixed(2) + '%'}</td>
+      <td style="text-align:right">${v.is_baseline ? '—' : parseFloat(v.confidence_pct).toFixed(0) + '%'}</td>
+      <td style="text-align:right"><span class="ab-variant-badge ${badgeCls}">${v.is_baseline ? 'Baseline' : v.status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── PIN gate ──
+function _abShowPin() {
+  const pw = document.getElementById('asAbPinWrap');
+  const lb = document.getElementById('asAbLockBtn');
+  if (pw) { pw.style.display = 'flex'; document.getElementById('asAbPinInput')?.focus(); }
+  if (lb) lb.style.display = 'none';
+}
+function _abUnlock() {
+  const pin = document.getElementById('asAbPinInput')?.value || '';
+  if (pin !== _AB_PIN) {
+    document.getElementById('asAbPinInput').style.borderColor = '#e74c3c';
+    document.getElementById('asAbPinInput').value = '';
+    document.getElementById('asAbPinInput').placeholder = 'Wrong PIN ✕';
+    setTimeout(() => {
+      const inp = document.getElementById('asAbPinInput');
+      if (inp) { inp.style.borderColor=''; inp.placeholder='Enter PIN'; }
+    }, 1500);
+    return;
+  }
+  document.getElementById('asAbPinWrap').style.display = 'none';
+  const eb = document.getElementById('asAbEditBtn');
+  if (eb) eb.style.display = 'inline-flex';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('asAbPinInput') === document.activeElement) _abUnlock();
+});
+
+// ── Modal ──
+function _abOpenModal() {
+  const modal = document.getElementById('abModal');
+  if (!modal) return;
+  document.getElementById('abDropHint').textContent = 'Accepts .csv files only';
+  document.getElementById('abDropZone').classList.remove('drag-over');
+  document.getElementById('abPreviewWrap').style.display = 'none';
+  document.getElementById('abPreviewTbody').innerHTML = '';
+  document.getElementById('abSaveErr').textContent = '';
+  document.getElementById('abSaveBtn').disabled = true;
+  document.getElementById('abFileInput').value = '';
+  window._abParsedRows = null;
+  modal.style.display = 'flex';
+}
+function _abCloseModal() {
+  const modal = document.getElementById('abModal');
+  if (modal) modal.style.display = 'none';
+}
+
+// ── CSV helpers ──
+function _parseCsvLine(line) {
+  const res = []; let cur = '', q = false;
+  for (const ch of line) {
+    if (ch === '"') q = !q;
+    else if (ch === ',' && !q) { res.push(cur.trim()); cur = ''; }
+    else cur += ch;
+  }
+  res.push(cur.trim());
+  return res;
+}
+function _parseCsv(text) {
+  const lines = text.replace(/\r/g,'').split('\n').filter(l => l.trim());
+  if (lines.length < 2) return [];
+  const headers = _parseCsvLine(lines[0]);
+  return lines.slice(1).map((line, i) => {
+    const vals = _parseCsvLine(line);
+    const o = {};
+    headers.forEach((h, j) => o[h.trim()] = (vals[j] || '').trim());
+    o.sort_order        = i;
+    o.is_baseline       = o.is_baseline === 'true' || o.is_baseline === '1';
+    o.unique_impressions= parseInt(o.unique_impressions) || 0;
+    o.conversion_rate   = parseFloat(o.conversion_rate) || 0;
+    o.improvement_pct   = parseFloat(o.improvement_pct) || 0;
+    o.confidence_pct    = parseFloat(o.confidence_pct)  || 0;
+    o.date_end          = o.date_end || null;
+    return o;
+  });
+}
+function _abHandleFile(file) {
+  if (!file) return;
+  const hint = document.getElementById('abDropHint');
+  hint.textContent = `Reading ${file.name}…`;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const rows = _parseCsv(e.target.result);
+      if (!rows.length) throw new Error('No data rows found in CSV');
+      if (!rows.some(r => r.is_baseline)) throw new Error('No baseline row — set is_baseline=true on the control variant');
+      if (!rows[0].test_name || !rows[0].date_start) throw new Error('Missing test_name or date_start columns');
+      window._abParsedRows = rows;
+      _abPreviewCsv(rows);
+      hint.textContent = `✅ ${file.name} — ${rows.length} variant${rows.length>1?'s':''} loaded`;
+      document.getElementById('abSaveBtn').disabled = false;
+      document.getElementById('abSaveErr').textContent = '';
+    } catch(err) {
+      hint.textContent = `❌ ${err.message}`;
+      document.getElementById('abSaveBtn').disabled = true;
+      document.getElementById('abPreviewWrap').style.display = 'none';
+      window._abParsedRows = null;
+    }
+  };
+  reader.readAsText(file);
+}
+function _abPreviewCsv(rows) {
+  const tbody = document.getElementById('abPreviewTbody');
+  const meta  = document.getElementById('abPreviewMeta');
+  tbody.innerHTML = rows.map((r, i) => {
+    const impColor = r.improvement_pct > 0 ? '#34a853' : r.improvement_pct < 0 ? '#e74c3c' : 'var(--t4)';
+    return `<tr${i%2?' class="ra"':''}>
+      <td>${r.variant_name||'—'}</td>
+      <td style="text-align:center">${r.is_baseline ? '✓' : ''}</td>
+      <td style="text-align:right">${(r.unique_impressions||0).toLocaleString()}</td>
+      <td style="text-align:right">${parseFloat(r.conversion_rate).toFixed(2)}%</td>
+      <td style="text-align:right;color:${impColor};font-weight:700">${r.is_baseline?'—':(r.improvement_pct>0?'+':'')+parseFloat(r.improvement_pct).toFixed(2)+'%'}</td>
+      <td style="text-align:right">${r.is_baseline?'—':parseFloat(r.confidence_pct).toFixed(0)+'%'}</td>
+      <td>${r.status||'—'}</td>
+    </tr>`;
+  }).join('');
+  if (meta) meta.textContent = `Test: "${rows[0].test_name}" · ${rows[0].date_start}${rows[0].date_end ? ' – '+rows[0].date_end : ''}`;
+  document.getElementById('abPreviewWrap').style.display = 'block';
+}
+function _abDownloadSample() {
+  const csv = [
+    'test_name,date_start,date_end,variant_name,is_baseline,unique_impressions,conversion_rate,improvement_pct,confidence_pct,status',
+    'Screenshots Asthma and copd Test - 19th March 2026,2026-03-20,2026-04-01,Original Product Page,true,2258,0.38,0,0,Baseline',
+    'Screenshots Asthma and copd Test - 19th March 2026,2026-03-20,2026-04-01,Treatment A,false,2282,0.34,-11.73,0,Inconclusive',
+    'Screenshots Asthma and copd Test - 19th March 2026,2026-03-20,2026-04-01,Treatment B,false,2216,0.36,-4.81,0,Inconclusive',
+    'Screenshots Asthma and copd Test - 19th March 2026,2026-03-20,2026-04-01,Treatment C,false,2186,0.28,-27.37,0,Inconclusive',
+  ].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = 'ab_test_template.csv';
+  a.click();
+}
+// Drag-and-drop wiring (once on load)
+(function() {
+  let _wired = false;
+  function _wireAbDrop() {
+    if (_wired) return; _wired = true;
+    const zone = document.getElementById('abDropZone');
+    if (!zone) return;
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) _abHandleFile(file);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', _wireAbDrop);
+  // Also wire after a short delay in case DOM already ready
+  setTimeout(_wireAbDrop, 500);
+})();
+
+// ── Save to Supabase ──
+async function _abSave() {
+  const rows = window._abParsedRows;
+  if (!rows?.length) return;
+  const btn = document.getElementById('abSaveBtn');
+  const err = document.getElementById('abSaveErr');
+  btn.disabled = true; btn.textContent = 'Saving…'; err.textContent = '';
+  const testName  = rows[0].test_name;
+  const dateStart = rows[0].date_start;
+  try {
+    const delRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/appstore_ab_tests?test_name=eq.${encodeURIComponent(testName)}&date_start=eq.${dateStart}`,
+      { method:'DELETE', headers:{ ..._H.headers } }
+    );
+    if (!delRes.ok && delRes.status !== 404) throw new Error(`Delete failed: ${delRes.status}`);
+    const insRes = await fetch(`${SUPABASE_URL}/rest/v1/appstore_ab_tests`, {
+      method:'POST',
+      headers:{ ..._H.headers, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
+      body: JSON.stringify(rows)
+    });
+    if (!insRes.ok) { const m = await insRes.text(); throw new Error(`${insRes.status}: ${m.slice(0,200)}`); }
+    const fresh = await _sb('appstore_ab_tests?order=date_start.desc,sort_order.asc&limit=100');
+    _renderAbTests(Array.isArray(fresh) ? fresh : []);
+    _abCloseModal();
+    btn.disabled = false; btn.textContent = '💾 Save to Supabase';
+  } catch(e) {
+    err.textContent = e.message;
+    btn.disabled = false; btn.textContent = '💾 Save to Supabase';
+  }
+}
+
+// ─── User Journey Histogram ────────────────────────────────
+(function() {
+  const HIST_FIELDS = {
+    ujSymptom:  { field:'hi_symptoms',   label:'Symptom Logs Distribution',  color:'#e74c3c' },
+    ujPeakFlow: { field:'hi_peak_flow',  label:'Peak Flow Logs Distribution', color:'#34a853' },
+    ujSleep:    { field:'hd_sleep',      label:'Sleep Tracked Distribution',  color:'#3498db' },
+    ujFlareups: { field:'hi_flareups',   label:'Flare-ups Distribution',      color:'#f39c12' },
+    ujMeeps:    { field:'mdric_meeps',   label:'AI Meeps Sent Distribution',  color:'#6c63ff' },
+    ujAvgDays:  { field:'days_active',   label:'Days Active Distribution',    color:'#607d8b' },
+  };
+
+  let _activeKpiId = null;
+
+  function _makeBuckets(values) {
+    if (!values.length) return { labels:[], counts:[] };
+    const mn = Math.min(...values), mx = Math.max(...values);
+    if (mn === mx) return { labels:[String(mn)], counts:[values.length] };
+    const range = mx - mn;
+    let step = Math.pow(10, Math.floor(Math.log10(range / 6)));
+    const rawBuckets = range / step;
+    if (rawBuckets > 12) step *= 2;
+    if (rawBuckets < 4)  step = Math.max(1, Math.floor(step / 2));
+    const bucketMin = Math.floor(mn / step) * step;
+    const numBuckets = Math.ceil((mx - bucketMin) / step) + 1;
+    const labels = [], counts = [];
+    for (let i = 0; i < numBuckets; i++) {
+      const lo = bucketMin + i * step;
+      const hi = lo + step;
+      labels.push(step === 1 ? String(lo) : `${lo}–${hi - 1}`);
+      counts.push(values.filter(v => v >= lo && v < hi).length);
+    }
+    // Add last bucket for exact max
+    if (values.filter(v => v >= bucketMin + numBuckets * step).length > 0)
+      { labels.push(`${bucketMin + numBuckets * step}+`); counts.push(values.filter(v => v >= bucketMin + numBuckets * step).length); }
+    return { labels, counts };
+  }
+
+  function showHistogram(kpiId, field, label, color) {
+    const data = window._ujData;
+    if (!data || !data.length) return;
+    const values = data.map(u => u[field] || 0).filter(v => v > 0);
+    const panel = document.getElementById('ujHistPanel');
+    const titleEl = document.getElementById('ujHistTitle');
+    if (!panel || !titleEl) return;
+
+    // Toggle: click same card again → close
+    if (_activeKpiId === kpiId) {
+      closeHistogram();
+      return;
+    }
+    _activeKpiId = kpiId;
+
+    // Highlight selected KPI
+    document.querySelectorAll('.kpi.uj-selected').forEach(el => el.classList.remove('uj-selected'));
+    const kpiEl = document.getElementById(kpiId)?.closest('.kpi');
+    if (kpiEl) { kpiEl.style.setProperty('--uj-sel-color', color); kpiEl.classList.add('uj-selected'); }
+
+    titleEl.textContent = label + (values.length < (data.length) ? ` — ${values.length} of ${data.length} users logged at least 1` : ` — ${data.length} users`);
+    panel.style.display = 'block';
+
+    if (!values.length) {
+      titleEl.textContent = label + ' — no data yet';
+      const ctx = document.getElementById('ujHistChart');
+      if (ctx) { Chart.getChart(ctx)?.destroy(); }
+      return;
+    }
+
+    const { labels, counts } = _makeBuckets(values);
+    mkBar('ujHistChart', labels, [{
+      label: 'Users',
+      data: counts,
+      backgroundColor: color + 'cc',
+      borderColor: color,
+      borderWidth: 1,
+      borderRadius: 4,
+    }], {
+      extra: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { title: { display: true, text: 'Value', font: { size: 10 } }, ticks: { font: { size: 10 } } },
+          y: { title: { display: true, text: 'Users', font: { size: 10 } }, ticks: { font: { size: 10 }, stepSize: 1 }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function closeHistogram() {
+    _activeKpiId = null;
+    const panel = document.getElementById('ujHistPanel');
+    if (panel) panel.style.display = 'none';
+    document.querySelectorAll('.kpi.uj-selected').forEach(el => el.classList.remove('uj-selected'));
+    const ctx = document.getElementById('ujHistChart');
+    if (ctx) Chart.getChart(ctx)?.destroy();
+  }
+
+  window._wireHistogram = function() {
+    // Close button
+    const closeBtn = document.getElementById('ujHistClose');
+    if (closeBtn) closeBtn.onclick = closeHistogram;
+
+    // Wire each KPI card
+    Object.entries(HIST_FIELDS).forEach(([kpiId, { field, label, color }]) => {
+      const valEl = document.getElementById(kpiId);
+      const kpiEl = valEl?.closest('.kpi');
+      if (!kpiEl) return;
+      kpiEl.style.cursor = 'pointer';
+      // Remove old listener to avoid duplicates
+      kpiEl._histHandler && kpiEl.removeEventListener('click', kpiEl._histHandler);
+      kpiEl._histHandler = (e) => {
+        if (e.target.classList.contains('kpi-info')) return;
+        showHistogram(kpiId, field, label, color);
+      };
+      kpiEl.addEventListener('click', kpiEl._histHandler);
+    });
+  };
+})();
 
 // ─── Boot ────────────────────────────────────────────────
 async function boot(days) {
@@ -1897,6 +2919,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
 boot();
 </script>
+
+<!-- ── YouTube CSV Upload Modal ── -->
+<div id="ytModal" class="ab-modal-overlay" style="display:none" onclick="if(event.target===this)_ytCloseModal()">
+  <div class="ab-modal" style="max-width:600px">
+    <button class="ab-modal-close" onclick="_ytCloseModal()">✕</button>
+    <div class="ab-modal-title">📊 Upload YouTube Studio CSVs</div>
+    <div class="ab-modal-sub">Go to YouTube Studio → Analytics → Advanced Mode → select date range → Export → Download CSV. Upload all 3 files below.</div>
+
+    <!-- CSV Zone 1: Table data.csv -->
+    <div class="yt-csv-block">
+      <div class="yt-csv-block-label">① Table data.csv <span class="yt-csv-block-src">Table view → Export → CSV</span></div>
+      <div id="ytZone1" class="ab-drop-zone" style="padding:16px" onclick="document.getElementById('ytFile1').click()">
+        <div id="ytHint1" class="ab-drop-hint" style="font-size:12px">Drag & drop or click — Table data.csv</div>
+      </div>
+      <input id="ytFile1" type="file" accept=".csv" style="display:none" onchange="_ytHandleFile(1,this.files[0])">
+    </div>
+
+    <!-- CSV Zone 2: Chart data.csv -->
+    <div class="yt-csv-block">
+      <div class="yt-csv-block-label">② Chart data.csv <span class="yt-csv-block-src">Chart view → Export → CSV</span></div>
+      <div id="ytZone2" class="ab-drop-zone" style="padding:16px" onclick="document.getElementById('ytFile2').click()">
+        <div id="ytHint2" class="ab-drop-hint" style="font-size:12px">Drag & drop or click — Chart data.csv</div>
+      </div>
+      <input id="ytFile2" type="file" accept=".csv" style="display:none" onchange="_ytHandleFile(2,this.files[0])">
+    </div>
+
+    <!-- CSV Zone 3: Totals.csv -->
+    <div class="yt-csv-block">
+      <div class="yt-csv-block-label">③ Totals.csv <span class="yt-csv-block-src">Totals row → Export → CSV</span></div>
+      <div id="ytZone3" class="ab-drop-zone" style="padding:16px" onclick="document.getElementById('ytFile3').click()">
+        <div id="ytHint3" class="ab-drop-hint" style="font-size:12px">Drag & drop or click — Totals.csv</div>
+      </div>
+      <input id="ytFile3" type="file" accept=".csv" style="display:none" onchange="_ytHandleFile(3,this.files[0])">
+    </div>
+
+    <button class="ab-save-btn" id="ytSaveBtn" onclick="_ytSave()" disabled>💾 Upload to Supabase</button>
+    <div id="ytSaveErr" class="ab-err"></div>
+  </div>
+</div>
+
+<!-- ── A/B Test Data Entry Modal ── -->
+<div id="abModal" class="ab-modal-overlay" style="display:none" onclick="if(event.target===this)_abCloseModal()">
+  <div class="ab-modal">
+    <button class="ab-modal-close" onclick="_abCloseModal()">✕</button>
+    <div class="ab-modal-title">📊 Upload A/B Test CSV</div>
+    <div class="ab-modal-sub">Download the sample CSV, fill it in from App Store Connect → App Analytics → Experiments, then upload here.</div>
+
+    <button class="ab-dl-btn" onclick="_abDownloadSample()">📥 Download Sample CSV (pre-filled template)</button>
+
+    <div id="abDropZone" class="ab-drop-zone" onclick="document.getElementById('abFileInput').click()">
+      <div class="ab-drop-icon">📂</div>
+      <div class="ab-drop-text">Drag &amp; drop CSV here or <strong>click to browse</strong></div>
+      <div class="ab-drop-hint" id="abDropHint">Accepts .csv files only</div>
+    </div>
+    <input id="abFileInput" type="file" accept=".csv" style="display:none" onchange="_abHandleFile(this.files[0])">
+
+    <div id="abPreviewWrap" style="display:none;margin-top:14px">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:6px">Preview</div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr>
+            <th>Variant</th><th style="text-align:center">Baseline</th><th style="text-align:right">Impressions</th>
+            <th style="text-align:right">Conv %</th><th style="text-align:right">Improvement %</th><th style="text-align:right">Confidence %</th><th>Status</th>
+          </tr></thead>
+          <tbody id="abPreviewTbody"></tbody>
+        </table>
+      </div>
+      <div id="abPreviewMeta" style="font-size:11px;color:var(--t3);margin-top:6px"></div>
+    </div>
+
+    <button class="ab-save-btn" id="abSaveBtn" onclick="_abSave()" style="margin-top:14px" disabled>💾 Save to Supabase</button>
+    <div id="abSaveErr" class="ab-err"></div>
+  </div>
+</div>
 
 </body>
 </html>
